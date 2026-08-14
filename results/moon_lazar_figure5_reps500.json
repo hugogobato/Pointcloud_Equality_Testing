@@ -1,0 +1,68 @@
+{
+  "reps": 500,
+  "settings": {
+    "resolution": 40,
+    "bandwidth": 0.5,
+    "weight": "constant",
+    "filter_threshold": 80.0,
+    "adjust": "bh",
+    "im_range": [
+      0.0,
+      2.0
+    ]
+  },
+  "rows": [
+    {
+      "sigma": 0.05,
+      "pi_fpr": 0.028,
+      "pi_fpr_se": 0.007377804551490911,
+      "pi_fpr_published": 0.022,
+      "pi_power": 0.99,
+      "pi_power_se": 0.0044497190922574,
+      "pi_power_published": 0.98,
+      "pd_power": 0.99,
+      "pd_power_se": 0.0044497190922574,
+      "pd_power_published": 0.97,
+      "pd_fpr": 0.038
+    },
+    {
+      "sigma": 0.1,
+      "pi_fpr": 0.05,
+      "pi_fpr_se": 0.009746794344808964,
+      "pi_fpr_published": 0.04,
+      "pi_power": 0.576,
+      "pi_power_se": 0.022100859711784968,
+      "pi_power_published": 0.62,
+      "pd_power": 0.78,
+      "pd_power_se": 0.018525657883055057,
+      "pd_power_published": 0.55,
+      "pd_fpr": 0.05
+    },
+    {
+      "sigma": 0.15,
+      "pi_fpr": 0.034,
+      "pi_fpr_se": 0.008104813384649889,
+      "pi_fpr_published": 0.035,
+      "pi_power": 0.194,
+      "pi_power_se": 0.01768411716767337,
+      "pi_power_published": 0.24,
+      "pd_power": 0.34,
+      "pd_power_se": 0.021184900282984576,
+      "pd_power_published": 0.2,
+      "pd_fpr": 0.046
+    },
+    {
+      "sigma": 0.2,
+      "pi_fpr": 0.026,
+      "pi_fpr_se": 0.007116740827092132,
+      "pi_fpr_published": 0.025,
+      "pi_power": 0.1,
+      "pi_power_se": 0.01341640786499874,
+      "pi_power_published": 0.1,
+      "pd_power": 0.226,
+      "pd_power_se": 0.01870422412183943,
+      "pd_power_published": 0.05,
+      "pd_fpr": 0.042
+    }
+  ]
+}

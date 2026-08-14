@@ -5,10 +5,18 @@ Colab (or any Linux) box with many cores. The pytest versions in
 `tests/test_published_reproductions.py` run the same designs at 150
 replications so they stay usable locally; these run the papers' 500.
 
-| notebook | reproduces | cost |
+| notebook | reproduces | cost at 500 reps |
 |---|---|---|
-| `01_moon_lazar_figure5.ipynb` | Moon & Lazar (2023) Fig. 5a and 5b, all four noise levels, plus the "PD" (Robinson–Turner) curve of Fig. 5b | ~10–15 min on 32 cores, <4 GB |
-| `02_dubey_muller_figure1.ipynb` | Dubey & Müller (2019) Fig. 1, both panels, as dense power curves | a few minutes on 32 cores, negligible memory |
+| `01_moon_lazar_figure5.ipynb` | Moon & Lazar (2023) Fig. 5a and 5b, all four noise levels, plus the "PD" (Robinson–Turner) curve of Fig. 5b | 8.9 core-min (0.14 core-h) |
+| `02_dubey_muller_figure1.ipynb` | Dubey & Müller (2019) Fig. 1, both panels, as dense power curves | 6.4 core-min (0.11 core-h) |
+
+Costs are measured single-core on an i9-13900H, so divide by `N_JOBS` and allow
+1.5–2× for a slower Colab CPU. Both are small: at two workers each notebook is
+under ten minutes of compute, and the `pip install` of the persistent-homology
+stack is a meaningful fraction of the wall clock. Peak RSS is a few hundred MB.
+
+Completed runs are in `results/` (`*_reps500.json` plus a PNG each); the
+numbers are tabulated in `docs/phase0_completion.md` §0.5.
 
 ## Running one
 

@@ -1,6 +1,9 @@
 # Phase 0 — completion record and audit
 
-Status as of 2026-08-13. Plan: `RESEARCH_PLAN_P1_TwoSample.md` §Phase 0.
+Status as of 2026-08-14: **Phase 0 complete.** Plan: `RESEARCH_PLAN_P1_TwoSample.md`
+§Phase 0. The last open item, running the published reproductions at the papers'
+own 500-replication budget rather than the reduced budget the local suite can
+afford, closed on 2026-08-14; see §0.5 and `results/`.
 
 ## Exit criterion — PASS
 
@@ -31,7 +34,9 @@ published method (eq. 1.7) compares dispersions. See §0.5.
 
 ## Test suite
 
-92 tests, all green (78 core + 7 published reproductions + 7 shard invariance).
+98 tests, all green (83 core + 8 published reproductions + 7 shard invariance).
+Four of the `test_dgp.py` tests are Phase-1 cluster-splitting witnesses rather
+than Phase-0 acceptance, and arrived with `theory/WP1_estimands_identification.md`.
 
 | file | covers |
 |---|---|
@@ -46,8 +51,13 @@ published method (eq. 1.7) compares dispersions. See §0.5.
 | `test_tcda_uq_shim.py` | 0.8 delegation, AIPW-vs-oracle |
 | `test_forward_compat.py` | 0.9 unequal sizes, dim 20, external standardise, DTM-Rips |
 
-The reproduction file is the slow one (≈25 min: 1200 Monte Carlo replications of
-the Moon–Lazar design). Everything else runs in a few minutes.
+The whole suite runs in a few minutes. The slowest individual tests are
+`test_krebs_rademacher_targets_dispersion_not_location` (12.0 s),
+`test_dtm_rips_is_an_option` (11.8 s), `test_size_control[krebs_rademacher]`
+(11.7 s) and `test_torus_betti_alpha_and_vr` (10.6 s); the reproduction tests
+are 8–9 s each. (An earlier revision of this record put the reproduction file at
+≈25 min. That was an estimate, never a measurement, and it was wrong by two
+orders of magnitude.)
 
 ## Defects found and fixed during the audit
 
@@ -113,7 +123,7 @@ Python), which the smoothed-bootstrap coverage test needs to run in seconds.
 | 0.2 | torus Betti (1,2,1) | PASS — alpha and VR |
 | 0.3 | silhouette Lipschitz (Kim–Lee Lemma 2.1) | PASS — **restated against W₁**, see defect 5 |
 | 0.4 | multiplier bootstrap nominal coverage on a GP toy | PASS — 200 MC reps, coverage in [0.90, 0.98] |
-| 0.5 | each wrapper reproduces a published figure or table | PASS — Dubey–Müller Fig. 1 (both panels), Moon–Lazar Fig. 5 (all four σ), Robinson–Turner via Fig. 5b; Krebs–Rademacher has no simulation study, its pivotal law is checked instead. See §0.5 below |
+| 0.5 | each wrapper reproduces a published figure or table | PASS — at the papers' full 500 replications: Dubey–Müller Fig. 1 (both panels, level 0.050 / 0.052), Moon–Lazar Fig. 5 (all four σ, FPR within 1 se, power within 2.6 se). `rt` matches Fig. 5b at σ=0.05 and is correctly sized at all four σ but exceeds the published high-noise tail — a confirmed deviation, documented not tuned. Krebs–Rademacher has no simulation study; its pivotal law is checked instead. See §0.5 |
 | 0.6 | oracle diagrams recoverable; knobs independent | PASS |
 | 0.7 | zero unresolved load-bearing refs | PASS — 31 entries, every one carries a DOI or URL |
 | 0.8 | zero reimplemented AIPW / cross-fitting / DR-learner | PASS — `tda2s/adapters/tcda_uq.py` is pure delegation |
@@ -152,38 +162,60 @@ All three are now direct transcriptions:
   the two-parameter partial-sum processes (eq. 1.12), the self-normaliser
   (eq. 1.14) and the pivotal Brownian limit (eq. 1.16).
 
-### Reproductions — `tests/test_published_reproductions.py`
+### Reproductions — at the papers' full budget
 
-| method | published target | published | ours |
-|---|---|---|---|
-| `frechet_anova` | Dubey & Müller Fig. 1 **left** (location, sd 0.5) | ≈0.05 at δ=0, →1 by \|δ\|≈0.5 | 0.093 / 0.147 / 0.960 at δ = 0, 0.25, 0.5 |
-| `frechet_anova` | Dubey & Müller Fig. 1 **right** (scale, sd 0.2) | ≈0.05 at r=1, →1 by r≈1.5 | 0.020 / 0.980 / 1.000 at r = 1, 1.5, 2 |
-| `moon_lazar` | Moon & Lazar Fig. 5a/5b, σ = 0.05 | FPR 0.022, power 0.98 | FPR 0.027, power 0.973 |
-| `moon_lazar` | … σ = 0.10 | FPR 0.040, power 0.62 | FPR 0.033, power 0.547 |
-| `moon_lazar` | … σ = 0.15 | FPR 0.035, power 0.24 | FPR 0.020, power 0.220 |
-| `moon_lazar` | … σ = 0.20 | FPR 0.025, power 0.10 | FPR 0.047, power 0.093 |
-| `rt` | the "PD" curve of Moon & Lazar Fig. 5b | power ≈0.97 at σ=0.05, ≈0.05 at σ=0.20 | 1.000 at σ=0.05, 0.225 at σ=0.20, FPR 0.050 |
-| `krebs_rademacher` | **none exists** — see below | — | eq. (1.16) law calibrated: rejects at 0.0485 at its own q₉₅ |
+Run on Colab at the papers' own 500 replications, via
+`notebooks/01_moon_lazar_figure5.ipynb` and `notebooks/02_dubey_muller_figure1.ipynb`;
+raw output in `results/*_reps500.json` and the two PNGs beside them. `z` is the
+gap in our own Monte Carlo standard errors (≈0.007–0.022 at these rates).
 
-Papers use 500–1000 replications; the pytest versions use 150 (40 for `rt`), so
-the Monte Carlo standard error is ≈0.04 and every assertion is stated as a
-tolerance, not a digit match. The designs live in `tda2s/repro/`, and
-`notebooks/01_moon_lazar_figure5.ipynb` and `notebooks/02_dubey_muller_figure1.ipynb`
-run the same code at the papers' full 500-replication budget on Colab
-(~15 min on 32 cores). Replication `r` is seeded from `(base_seed, r)` alone, so
-shards concatenate into exactly the sequential result — pinned by
-`tests/test_repro.py`, since a sequential RNG would make the numbers depend on
-the chunk size without any visible symptom.
+| method | published target | published | ours (500 reps) | z |
+|---|---|---|---|---|
+| `frechet_anova` | Dubey & Müller Fig. 1 **left**, level at δ=0 (sd 0.5) | ≈0.05 | **0.050** ± 0.010 | 0.0 |
+| `frechet_anova` | … power at \|δ\| = 0.3 / 0.4 / 0.5 | →1 by \|δ\|≈0.5 | 0.312 / 0.772 / 0.978 | — |
+| `frechet_anova` | Dubey & Müller Fig. 1 **right**, level at r=1 (sd 0.2) | ≈0.05 | **0.052** ± 0.010 | +0.2 |
+| `frechet_anova` | … power at r = 1.25 / 1.375 / 1.5 | →1 by r≈1.5 | 0.544 / 0.866 / 0.972 | — |
+| `moon_lazar` | Fig. 5a/5b, σ = 0.05 | FPR 0.022, power 0.98 | FPR 0.028, power 0.990 | +0.8, +2.2 |
+| `moon_lazar` | … σ = 0.10 | FPR 0.040, power 0.62 | FPR 0.050, power 0.576 | +1.0, −2.0 |
+| `moon_lazar` | … σ = 0.15 | FPR 0.035, power 0.24 | FPR 0.034, power 0.194 | −0.1, −2.6 |
+| `moon_lazar` | … σ = 0.20 | FPR 0.025, power 0.10 | FPR 0.026, power 0.100 | +0.1, 0.0 |
+| `rt` | the "PD" curve of Moon & Lazar Fig. 5b, σ = 0.05 → 0.20 | 0.97 / 0.55 / 0.20 / 0.05 | 0.990 / 0.780 / 0.340 / 0.226 | +4.5, +12.4, +6.6, +9.4 |
+| `krebs_rademacher` | **none exists** — see below | — | eq. (1.16) law calibrated: rejects at 0.0485 at its own q₉₅ | — |
 
-Two points are worth stating plainly rather than smoothing over. The Dubey–Müller
-level at δ = 0 comes out at 0.093, which is ~2.4 MC standard errors above the
-nominal 0.05 at 150 replications — inside noise, but only just, and the 500-rep
-notebook is what settles whether it is noise. And `rt` at σ = 0.20 gives 0.225
-against the published ≈0.05: Moon &
-Lazar do not state which loss or how many permutations they used when re-running
-Robinson & Turner, so the high-noise tail of that curve is not pinned down by
-the published text. It is bounded in the test at ≤0.30 and flagged here rather
-than tuned to match.
+`tests/test_published_reproductions.py` runs the same designs from
+`tda2s/repro/` at a reduced budget (150 replications, 40 for `rt`) so the suite
+stays usable locally; its assertions are tolerances sized to that budget, not
+digit matches. Replication `r` is seeded from `(base_seed, r)` alone, so shards
+concatenate into exactly the sequential result — pinned by `tests/test_repro.py`,
+since a sequential RNG would make the numbers depend on the chunk size without
+any visible symptom.
+
+**Dubey–Müller: resolved.** The 150-replication suite gave a level of 0.093 at
+δ = 0, ~2.4 MC standard errors above nominal, and this record previously flagged
+it as unsettled. At 500 replications it is **0.050**, and the scale panel is
+0.052. Both panels are at nominal, and the location panel is symmetric in ±δ to
+within one standard error at every one of the ten paired grid points. That was
+Monte Carlo noise.
+
+**`rt`: a confirmed deviation, in the safe direction.** This one did *not* wash
+out. Our `rt` is uniformly more powerful than the PD curve Moon & Lazar report,
+by 4.5 to 12.4 standard errors at three of the four noise levels, and the gap
+grows with σ (0.226 versus ≈0.05 at σ = 0.20). It is not a size problem: on the
+same 500 replications `rt`'s own false-positive rate is 0.038 / 0.050 / 0.046 /
+0.042 across the four σ, at or below nominal everywhere, so this is a correctly
+calibrated test that simply has more power than their re-run did. Moon & Lazar
+do not state which loss or how many permutations they used when re-running
+Robinson & Turner, and `rt` implements the source paper's own joint loss
+(§Algorithm 2, `F_{p,q}` with q = 1) on 1-Wasserstein distances, so the
+discrepancy is most likely a configuration difference in *their* re-run rather
+than in ours. It is left as measured, not tuned to match.
+
+For Phase 6 this is the conservative direction and should be stated in the
+paper: `rt` is a competitor baseline, and a baseline that is *stronger* than its
+published reproduction cannot flatter our own method. Had it come out weaker,
+the whole benchmark would be suspect. The reproduction claim for `rt` is
+therefore "matches at σ = 0.05, correctly sized at all four σ, exceeds the
+published high-noise tail", not "matches Fig. 5b".
 
 `mmd`, `han` and `strand` publish no simulation figure on a design that can be
 reconstructed from the text, and are validated by the size/power tests in

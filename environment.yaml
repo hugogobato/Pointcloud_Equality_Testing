@@ -1,0 +1,21 @@
+# Reference conda-style environment for tda2s (Python 3.10, pins mirror tcda_uq).
+# The canonical installer is `uv`:  uv venv --python 3.10  &&  uv pip install -e ".[dev,tate]"
+name: tda2s
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy=2.0.2
+  - scipy=1.15.2
+  - scikit-learn=1.6.1
+  - scikit-fda=0.10.1
+  - gudhi=3.11.0
+  - ripser=0.6.10
+  - matplotlib=3.10.0
+  - pandas=2.2.3
+  - joblib=1.4.2
+  - pyarrow=19.0.1
+  - pytest>=8
+  - pip
+  - pip:
+      - "-e .[dev,tate]"

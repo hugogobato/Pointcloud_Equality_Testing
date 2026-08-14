@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Environments (uv-managed locally; Colab installs from pyproject.toml)
+.venv/
+env/
+venv/
+
+# Caches
+.cache/
+.pytest_cache/
+.ipynb_checkpoints/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Run artefacts: reproductions write here, results are committed deliberately
+# (see notebooks/README.md), not swept up automatically.
+results/*.json
+results/*.csv
+!results/.gitkeep

@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tda2s"
+version = "0.0.1"
+description = "Topological two-sample testing: PH pipeline, vectorisation, resampling, competitors, and a controlled DGP harness (shared infra for P1 and P2)."
+readme = "README.md"
+# Local development is pinned to 3.10 via uv; the upper bound is 3.13 so the
+# Colab reproduction notebooks (Python 3.11/3.12) can install the package.
+requires-python = ">=3.10,<3.13"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Hugo Souto" },
+]
+keywords = [
+    "topological data analysis",
+    "persistent homology",
+    "two-sample testing",
+    "causal inference",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+
+dependencies = [
+    "numpy==2.0.2",
+    "scipy==1.15.2",
+    "scikit-learn==1.6.1",
+    "scikit-fda==0.10.1",
+    "gudhi==3.11.0",
+    "ripser==0.6.10",
+    # reaches us transitively via ripser, but rt.py / krebs_rademacher.py import
+    # it directly for Wasserstein matching -- pin it so a ripser bump cannot
+    # silently remove it.
+    "persim==0.3.8",
+    "matplotlib==3.10.0",
+    "pandas==2.2.3",
+    "joblib==1.4.2",
+    "pyarrow==19.0.1",
+]
+
+[project.optional-dependencies]
+# tcda_uq (released CP_TATE library) is imported, not reimplemented.
+tate = [
+    "tcda_uq @ git+https://github.com/hugogobato/tcda_uq.git",
+]
+dev = [
+    "pytest>=8",
+    "pytest-cov",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["tda2s"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/tda2s",
+    "/tests",
+    "/docs",
+    "/theory",
+    "/experiments",
+    "/Literature_Review",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+    "/environment.yaml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]

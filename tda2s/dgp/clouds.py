@@ -108,7 +108,7 @@ def cluster_cloud(n, n_clusters=3, spread=3.0, noise=0.2, rng=None):
 
 
 def split_cluster_cloud(n_per_blob, n_blobs, separation=3.0, noise=0.15,
-                        deterministic=False, rng=None):
+                        deterministic=False, n_gon=12, rng=None):
     """Cloud of ``n_blobs`` Gaussian blobs on a regular polygon of side ``separation``.
 
     This is the WP1.1 / Phase 4.4 "cluster splitting" DGP: the H_0 diagram of a
@@ -119,15 +119,25 @@ def split_cluster_cloud(n_per_blob, n_blobs, separation=3.0, noise=0.15,
     different diagram laws; the mean is preserved because the silhouette is a
     normalized average and the merge-scale law is unchanged by the extra blob.
 
-    With ``deterministic=True`` each blob is a fixed regular 12-gon of radius
-    ``noise`` (degenerate randomness), so the merge scale is exactly
-    ``(separation - 2 * noise) / 2`` and the mean-silhouette equality holds
-    realization by realization, not only in expectation.
+    With ``deterministic=True`` each blob is a fixed regular ``n_gon``-gon of
+    radius ``noise`` (degenerate randomness), so under the radius-convention
+    filtrations of ``tda2s.ph`` (alpha, Delaunay-Cech) the merge scale is
+    exactly ``(separation - 2 * noise) / 2`` and the mean-silhouette equality
+    holds realization by realization, not only in expectation. Requires
+    ``n_gon`` divisible by 4 for ``n_blobs`` in {2, 3}, so that a vertex sits
+    exactly on the inter-blob axis in both arrangements; with the default
+    ``n_gon=12`` the within-blob classes all die at
+    ``noise * sin(pi / n_gon)`` (0.0388 at the defaults), well below the
+    persistence threshold used to isolate the merge classes.
+
+    Note that the two arms differ in cardinality (``n_blobs * n_gon`` points),
+    so any use of this generator as a null DGP must either state cloud size as
+    part of the treatment or equalise it by subsampling.
 
     Args:
-        n_per_blob: points per blob (stochastic case: Gaussian around the blob
-            centre with scale ``noise``; deterministic case: 12 vertices on a
-            circle of radius ``noise``).
+        n_per_blob: points per blob in the stochastic case (Gaussian around the
+            blob centre with scale ``noise``). Ignored when
+            ``deterministic=True``, which always emits ``n_gon`` vertices.
         n_blobs: number of blobs, placed at the vertices of a regular polygon
             with side length ``separation`` (2 blobs: a segment; 3 blobs: an
             equilateral triangle; more: the regular polygon, so consecutive
@@ -136,6 +146,7 @@ def split_cluster_cloud(n_per_blob, n_blobs, separation=3.0, noise=0.15,
         noise: per-blob scale: Gaussian standard deviation (stochastic) or
             blob radius (deterministic).
         deterministic: use fixed regular polygons instead of Gaussian blobs.
+        n_gon: vertices per blob in the deterministic case (default 12).
         rng: seed or Generator.
 
     Returns:
@@ -153,8 +164,7 @@ def split_cluster_cloud(n_per_blob, n_blobs, separation=3.0, noise=0.15,
     pts = []
     for k in range(n_blobs):
         if deterministic:
-            n_gon = max(12, min(n_per_blob, 12))
-            theta = 2.0 * np.pi * np.arange(n_gon) / n_gon
+            theta = 2.0 * np.pi * np.arange(int(n_gon)) / int(n_gon)
             blob = centers[k] + noise * np.column_stack([np.cos(theta), np.sin(theta)])
         else:
             blob = centers[k] + rng.normal(scale=noise, size=(n_per_blob, 2))

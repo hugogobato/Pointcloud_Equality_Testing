@@ -12,24 +12,26 @@ H(0,1), 16 workers, 200 permutations:
 
 | stage | cold | warm (cached diagrams) |
 |---|---|---|
-| generate 100 clouds | 0.00 s | 0.02 s |
-| diagrams (16 workers) | 0.08 s | 0.24 s |
-| vectorise × 6 representations | 0.35 s | 0.17 s |
-| all 7 competitors | 166.7 s | 170.6 s |
-| **total** | **167.1 s** | **171.0 s** |
+| generate 100 clouds | 0.01 s | 0.01 s |
+| diagrams (16 workers) | 0.08 s | 0.09 s |
+| vectorise × 6 representations | 0.51 s | 0.11 s |
+| all 7 competitors | 48.9 s | 46.2 s |
+| **total** | **49.5 s** | **46.4 s** |
 
-Budget 600 s. Diagram computation is negligible; `han` (bandwidth-aggregated
-kernel test) is 83% of the whole run at 138 s and is the cost to watch when
-Phases 3–5 need thousands of permutations.
+Budget 600 s. Diagram computation is negligible (18,946 finite features across
+the 100 diagrams). `han` is still the single largest cost at 24–28 s, and is
+what to watch when Phases 3–5 need thousands of permutations, but the blockwise
+Gram of defect 9 cut it from 138 s and cut the whole run from 167 s.
 
 Sanity: with `group_effect=1` (group A gets one extra loop), six of seven
 competitors reject at 5% — rt 0.015, mmd 0.005, han 0.010, strand 0.005,
-moon_lazar ~0, krebs_rademacher 0.005; frechet_anova 0.134 is the outlier,
-consistent with its coordinate-wise-median proxy being coarse (see below).
+moon_lazar ~0, frechet_anova 0.005. `krebs_rademacher` at 0.239 is the
+exception and is **correct**: the planted effect is a location shift, and the
+published method (eq. 1.7) compares dispersions. See §0.5.
 
 ## Test suite
 
-85 tests, all green (78 core + 7 published reproductions).
+92 tests, all green (78 core + 7 published reproductions + 7 shard invariance).
 
 | file | covers |
 |---|---|
@@ -39,6 +41,7 @@ consistent with its coordinate-wise-median proxy being coarse (see below).
 | `test_resample.py` | 0.4 permutation / multiplier / paired / smoothed / folds |
 | `test_benchmarks.py` | 0.5 size and power of all 7 wrappers |
 | `test_published_reproductions.py` | 0.5 published figures — Dubey–Müller Fig. 1, Moon–Lazar Fig. 5, Robinson–Turner, Krebs–Rademacher pivotal law |
+| `test_repro.py` | shard invariance of the published designs in `tda2s/repro/` |
 | `test_dgp.py` | 0.6 knob independence, oracle recovery |
 | `test_tcda_uq_shim.py` | 0.8 delegation, AIPW-vs-oracle |
 | `test_forward_compat.py` | 0.9 unequal sizes, dim 20, external standardise, DTM-Rips |
@@ -81,7 +84,19 @@ the Moon–Lazar design). Everything else runs in a few minutes.
    fallback. Now calls `tda2s.vec.silhouette` directly.
 8. **Three wrappers did not implement their source paper** — `frechet_anova`,
    `moon_lazar` and `krebs_rademacher`. All three rewritten; see §0.5.
-9. Minor: unused `np.random.default_rng(seed)` in `CloudSampleDGP.__init__`
+9. **`mmd` and `han` allocated ~10 GB and took down the machine.** Both need
+   only the `(n_samples, n_samples)` matrix of diagram-level kernel sums, but
+   both built the point-level Gram first, and built it as
+   `X[:, None, :] - X[None, :, :]` — which materialises the difference in 3-D
+   before reducing it. At benchmark scale the pooled diagram set is 21,653
+   points, so that intermediate is 7.8 GB on top of a 3.5 GB Gram, times four
+   bandwidths for `han`. Replaced by `_gaussian_gram_blocks`, which accumulates
+   `B K B^T` one column block at a time; `han`'s weighted product kernel
+   factorises into the same isotropic form on coordinates rescaled by the
+   bandwidth, so both share it. Peak process RSS went from OOM to **654 MB**,
+   and `han` from 138 s to 28 s. Verified equal to the dense construction to
+   3.6e-15 absolute.
+10. Minor: unused `np.random.default_rng(seed)` in `CloudSampleDGP.__init__`
    (the `seed` argument does not affect sampling — `sample(rng=...)` does);
    `n_per_group` documented as if groups were balanced, when labels are drawn
    `A ~ Bern(π(X))` and deliberately are not; stale comment in
@@ -141,18 +156,30 @@ All three are now direct transcriptions:
 
 | method | published target | published | ours |
 |---|---|---|---|
-| `frechet_anova` | Dubey & Müller Fig. 1 **left** (location, sd 0.5) | ≈0.05 at δ=0, →1 by \|δ\|≈0.5 | 0.073 / 0.227 / 0.947 at δ = 0, 0.25, 0.5 |
-| `frechet_anova` | Dubey & Müller Fig. 1 **right** (scale, sd 0.2) | ≈0.05 at r=1, →1 by r≈1.5 | 0.047 / 0.967 / 1.000 at r = 1, 1.5, 2 |
-| `moon_lazar` | Moon & Lazar Fig. 5a/5b, σ = 0.05 | FPR 0.022, power 0.98 | FPR 0.047, power 0.987 |
-| `moon_lazar` | … σ = 0.10 | FPR 0.040, power 0.62 | FPR 0.040, power 0.600 |
-| `moon_lazar` | … σ = 0.15 | FPR 0.035, power 0.24 | FPR 0.020, power 0.213 |
-| `moon_lazar` | … σ = 0.20 | FPR 0.025, power 0.10 | FPR 0.020, power 0.073 |
-| `rt` | the "PD" curve of Moon & Lazar Fig. 5b | power ≈0.97 at σ=0.05, ≈0.05 at σ=0.20 | 1.000 at σ=0.05, 0.275 at σ=0.20, FPR 0.075 |
+| `frechet_anova` | Dubey & Müller Fig. 1 **left** (location, sd 0.5) | ≈0.05 at δ=0, →1 by \|δ\|≈0.5 | 0.093 / 0.147 / 0.960 at δ = 0, 0.25, 0.5 |
+| `frechet_anova` | Dubey & Müller Fig. 1 **right** (scale, sd 0.2) | ≈0.05 at r=1, →1 by r≈1.5 | 0.020 / 0.980 / 1.000 at r = 1, 1.5, 2 |
+| `moon_lazar` | Moon & Lazar Fig. 5a/5b, σ = 0.05 | FPR 0.022, power 0.98 | FPR 0.027, power 0.973 |
+| `moon_lazar` | … σ = 0.10 | FPR 0.040, power 0.62 | FPR 0.033, power 0.547 |
+| `moon_lazar` | … σ = 0.15 | FPR 0.035, power 0.24 | FPR 0.020, power 0.220 |
+| `moon_lazar` | … σ = 0.20 | FPR 0.025, power 0.10 | FPR 0.047, power 0.093 |
+| `rt` | the "PD" curve of Moon & Lazar Fig. 5b | power ≈0.97 at σ=0.05, ≈0.05 at σ=0.20 | 1.000 at σ=0.05, 0.225 at σ=0.20, FPR 0.050 |
 | `krebs_rademacher` | **none exists** — see below | — | eq. (1.16) law calibrated: rejects at 0.0485 at its own q₉₅ |
 
-Papers use 500–1000 replications; these use 150 (40 for `rt`), so the Monte
-Carlo standard error is ≈0.04 and every assertion is stated as a tolerance, not
-a digit match. The one visible gap is `rt` at σ = 0.20 (0.275 vs ≈0.05): Moon &
+Papers use 500–1000 replications; the pytest versions use 150 (40 for `rt`), so
+the Monte Carlo standard error is ≈0.04 and every assertion is stated as a
+tolerance, not a digit match. The designs live in `tda2s/repro/`, and
+`notebooks/01_moon_lazar_figure5.ipynb` and `notebooks/02_dubey_muller_figure1.ipynb`
+run the same code at the papers' full 500-replication budget on Colab
+(~15 min on 32 cores). Replication `r` is seeded from `(base_seed, r)` alone, so
+shards concatenate into exactly the sequential result — pinned by
+`tests/test_repro.py`, since a sequential RNG would make the numbers depend on
+the chunk size without any visible symptom.
+
+Two points are worth stating plainly rather than smoothing over. The Dubey–Müller
+level at δ = 0 comes out at 0.093, which is ~2.4 MC standard errors above the
+nominal 0.05 at 150 replications — inside noise, but only just, and the 500-rep
+notebook is what settles whether it is noise. And `rt` at σ = 0.20 gives 0.225
+against the published ≈0.05: Moon &
 Lazar do not state which loss or how many permutations they used when re-running
 Robinson & Turner, so the high-noise tail of that curve is not pinned down by
 the published text. It is bounded in the test at ≤0.30 and flagged here rather

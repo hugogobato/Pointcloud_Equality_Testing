@@ -234,6 +234,86 @@ class CloudSampleDGP:
         return CloudSample(clouds=clouds, X=X, A=A, propensity=pi, oracle=oracle)
 
 
+# --- Phase 2.2 masking DGP (exact Simpson cancellation) -----------------------
+# Three covariate strata X in {0, 1, 2} (uniform), propensity e = (1/2, 1/2, 1/4).
+# Conditional diagram laws: strata 0, 1 have identical laws in both arms; the
+# treatment effect lives entirely in stratum 2, where the treated law L_C and
+# the control law (4/15)(L_A + L_B) + (7/15)L_C are chosen so that the marginal
+# observational laws coincide exactly:
+#
+#     L(D|A=1) = (2/5)(L_A + L_B) + (1/5)L_C  =  L(D|A=0).
+#
+# This is exact (verified in tests/test_phase2.py): every valid level-alpha
+# permutation test of H0^cond has power exactly alpha there, while the
+# covariate-standardized topological effect is
+#
+#     psi_d = (1/3)(8/15)(m_C - (m_A + m_B) / 2) != 0
+#
+# whenever the mean silhouettes of the three types do not satisfy m_C =
+# (m_A + m_B) / 2 (here m_A = Lambda_{r_A}, m_B = Lambda_{r_B}, m_C = Lambda_{r_C}
+# on the persistence scale ~0.75 * radius, with r_A = 1, r_B = 2, r_C = 4).
+
+_MASK_E = np.array([0.5, 0.5, 0.25])          # per-stratum propensity
+_MASK_W0 = 4.0 / 15.0                          # control-mixture weights at stratum 2
+_MASK_W1 = 7.0 / 15.0
+
+
+def masking_stratum_sample(n_per_group, m=120, noise=0.05, radius_a=1.0,
+                           radius_b=2.0, radius_c=4.0, seed=None):
+    """Exact Simpson-masking DGP: H0^cond true, H0^out false (Phase 2.2).
+
+    Stratum 0 and 1 units are 1-loop clouds of radius ``radius_a`` / ``radius_b``
+    in *both* arms (no treatment effect there). Stratum 2 treated units are
+    2-loop clouds of radius ``radius_c``; stratum 2 control units draw a cloud
+    type from the mixture ``(4/15, 4/15, 7/15)`` over the three types. With
+    propensity e = (1/2, 1/2, 1/4) the marginal observational diagram laws
+    coincide exactly between arms, while the covariate-standardized silhouette
+    effect is non-zero.
+
+    Args:
+        n_per_group: number of units per arm of the sample.
+        m: points per cloud.
+        noise: per-cloud Gaussian jitter scale.
+        radius_a, radius_b, radius_c: loop radii of the three cloud types.
+        seed: RNG seed.
+
+    Returns:
+        :class:`CloudSample` with ``X`` in {0, 1, 2}, the true propensity, and
+        an oracle recording per-unit (stratum, cloud type, radii).
+    """
+    rng = np.random.default_rng(seed)
+    n = 2 * int(n_per_group)
+    X = np.tile(np.arange(3), int(np.ceil(n / 3)))[:n]
+    e = _MASK_E[X]
+    A = rng.binomial(1, e).astype(int)
+
+    def _cloud(radius, n_loops):
+        return loops_cloud(m, n_loops, radius=radius, noise=noise, rng=rng)
+
+    clouds, oracle = [], {}
+    for i in range(n):
+        x, a = int(X[i]), int(A[i])
+        if x in (0, 1):
+            radius = radius_a if x == 0 else radius_b
+            n_loops = 1
+        else:  # stratum 2: the only stratum carrying the effect
+            if a == 1:
+                radius, n_loops = radius_c, 2
+            else:
+                u = rng.random()
+                if u < _MASK_W0:
+                    radius, n_loops = radius_a, 1
+                elif u < 2 * _MASK_W0:
+                    radius, n_loops = radius_b, 1
+                else:
+                    radius, n_loops = radius_c, 2
+        clouds.append(_cloud(radius, n_loops))
+        oracle[i] = {"stratum": x, "n_loops": n_loops,
+                     "radii": np.full(n_loops, float(radius)), "noise": noise}
+    return CloudSample(clouds=clouds, X=np.asarray(X, dtype=float).reshape(-1, 1),
+                       A=A, propensity=e, oracle=oracle)
+
+
 def _silhouette_from_diagrams(diags, interval, r, resolution):
     """Power-weighted silhouette of a diagram list (tcda_uq convention).
 

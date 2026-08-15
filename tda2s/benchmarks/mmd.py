@@ -28,7 +28,7 @@ from ._common import (_gaussian_gram_blocks, _median_euclidean, _membership,
                       _perm_groups, _perm_pvalue, _points, _validate)
 
 
-def _point_features(diags, coords):
+def _point_features(diags, coords, epsilon=0.0):
     """Per-sample coordinate matrix for all diagram points of ``diags``."""
     feats = []
     counts = []
@@ -36,6 +36,8 @@ def _point_features(diags, coords):
         block = []
         for dgm in d:
             p = _points(dgm)
+            if epsilon > 0.0 and len(p):
+                p = p[p[:, 1] - p[:, 0] >= epsilon]
             if len(p):
                 if coords == "bdp":
                     p = np.column_stack([p, p[:, 1] - p[:, 0]])
@@ -56,7 +58,69 @@ def _mmd2(P, g):
     return float(w0 + w1 - 2.0 * b)
 
 
-def test_mmd(diags0, diags1, sigma=None, coords="bdp", n_perm=200, seed=None):
+def mmd_gram(diags, sigma=None, coords="bdp", epsilon=0.0):
+    """Diagram-level kernel matrix of a pooled sample, before any labelling.
+
+    The matrix, and the median-heuristic bandwidth that scales it, depend only
+    on the pooled diagrams, so a caller comparing several label draws over one
+    sample (the Phase 2 imbalance sweep) builds it once here and reads it back
+    per split through :func:`test_mmd_from_gram`.
+
+    Args:
+        diags: list over samples of lists (per homology dim) of ``(k, 2)``
+            birth-death arrays, in whatever order the caller will label them.
+        sigma: Gaussian bandwidth; ``None`` (default) = median heuristic.
+        coords: "bdp" (birth, death, persistence) or "bd".
+        epsilon: near-diagonal persistence filter (see :func:`test_mmd`).
+
+    Returns:
+        ``(P, sigma)`` with ``P`` the ``(N, N)`` kernel matrix, or
+        ``(None, None)`` when the pooled sample has no finite diagram points.
+    """
+    pooled = [list(d) for d in diags]
+    N = len(pooled)
+    feats, counts = _point_features(pooled, coords, epsilon=epsilon)
+    if sum(counts) == 0:
+        return None, None
+    X = np.vstack(feats)
+    if sigma is None:
+        sigma = _median_euclidean(X)
+    P = _gaussian_gram_blocks(X, _membership(counts, N),
+                              gamma=1.0 / (2.0 * sigma * sigma))
+    return P, float(sigma)
+
+
+def test_mmd_from_gram(P, group, n_perm=200, seed=None):
+    """MMD p-value from a precomputed diagram-level kernel matrix.
+
+    Args:
+        P: ``(N, N)`` matrix from :func:`mmd_gram`, or ``None`` (degenerate
+            sample; the p-value is then 1).
+        group: ``(N,)`` boolean mask in ``P``'s row order, ``True`` = group 0.
+        n_perm: number of label permutations (default 200).
+        seed: RNG seed for the permutations.
+
+    Returns:
+        float p-value in [0, 1].
+    """
+    if P is None:
+        return 1.0
+    g = np.asarray(group, dtype=bool)
+    N = P.shape[0]
+    if g.shape != (N,):
+        raise ValueError(f"group mask has shape {g.shape}, expected ({N},)")
+    n0 = int(g.sum())
+    if n0 == 0 or n0 == N:
+        raise ValueError("each group must contain at least one diagram")
+    rng = np.random.default_rng(seed)
+    obs = _mmd2(P, g)
+    perms = _perm_groups(N, n0, n_perm, rng)
+    null = np.array([_mmd2(P, perms[k]) for k in range(n_perm)])
+    return _perm_pvalue(obs, null, "greater")
+
+
+def test_mmd(diags0, diags1, sigma=None, coords="bdp", n_perm=200, seed=None,
+             epsilon=0.0):
     """Kernel MMD two-sample test between two groups of diagrams.
 
     Args:
@@ -68,6 +132,13 @@ def test_mmd(diags0, diags1, sigma=None, coords="bdp", n_perm=200, seed=None):
             "bd" = (birth, death).
         n_perm: number of label permutations (default 200).
         seed: RNG seed for the permutations.
+        epsilon: diagram points with persistence below this threshold are
+            dropped before the kernel is built (default 0.0 = the published
+            embedding over all points).  By the boundedness of the Gaussian
+            kernel each dropped point perturbs the diagram-level kernel by a
+            tiny amount; the permutation null remains exactly valid for any
+            embedding, so ``epsilon`` only trades a negligible power shift
+            against the O(n^2) point-level Gram cost (a sweep convenience).
 
     Returns:
         float p-value in [0, 1].
@@ -75,27 +146,11 @@ def test_mmd(diags0, diags1, sigma=None, coords="bdp", n_perm=200, seed=None):
     d0, d1, _ = _validate(diags0, diags1)
     n0, n1 = len(d0), len(d1)
     N = n0 + n1
-    pooled = d0 + d1
-    rng = np.random.default_rng(seed)
-
-    feats, counts = _point_features(pooled, coords)
-    npts = sum(counts)
-    if npts == 0:
-        return 1.0
-
-    X = np.vstack(feats)
-    if sigma is None:
-        sigma = _median_euclidean(X)
 
     # diagram-level kernel matrix, accumulated blockwise: the point-level Gram
     # is ~18k x 18k at benchmark size and is never needed in full.
-    P = _gaussian_gram_blocks(X, _membership(counts, N),
-                              gamma=1.0 / (2.0 * sigma * sigma))
+    P, _ = mmd_gram(d0 + d1, sigma=sigma, coords=coords, epsilon=epsilon)
 
     obs_group = np.zeros(N, dtype=bool)
     obs_group[:n0] = True
-    obs = _mmd2(P, obs_group)
-
-    perms = _perm_groups(N, n0, n_perm, rng)
-    null = np.array([_mmd2(P, perms[k]) for k in range(n_perm)])
-    return _perm_pvalue(obs, null, "greater")
+    return test_mmd_from_gram(P, obs_group, n_perm=n_perm, seed=seed)

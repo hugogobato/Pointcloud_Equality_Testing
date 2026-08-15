@@ -67,9 +67,95 @@ def _u_statistic(P, g):
     return float(w0 + w1 - 2.0 * b)
 
 
+def han_kernels(diags, weight="persistence", weight_power=1.0,
+                scales=(0.5, 1.0, 2.0, 4.0), aggregate=True, epsilon=0.0):
+    """Per-bandwidth diagram kernel matrices of a pooled sample, before labelling.
+
+    Both the bandwidth grid (a multiple of the pooled median pairwise scale)
+    and the kernel matrices depend only on the pooled diagrams, so a caller
+    comparing several label draws over one sample (the Phase 2 imbalance
+    sweep) builds them once here and reads them back per split through
+    :func:`test_han_from_kernels`. This is the whole cost of the test: the
+    Aggtest permutation loop is block sums on the matrices returned here.
+
+    Args:
+        diags: list over samples of lists (per homology dim) of ``(k, 2)``
+            birth-death arrays, in whatever order the caller will label them.
+        weight, weight_power, scales, aggregate, epsilon: as in
+            :func:`test_han`. ``aggregate`` decides the grid size only; pass
+            the same value to :func:`test_han_from_kernels`.
+
+    Returns:
+        list of ``(N, N)`` matrices, one per bandwidth, or ``None`` when the
+        pooled sample has no diagram points above ``epsilon``.
+    """
+    pooled = [list(d) for d in diags]
+    N = len(pooled)
+    X, counts = _flatten_bd(pooled, epsilon=epsilon)
+    if len(X) == 0:
+        return None
+    pers = X[:, 1] - X[:, 0]
+    if weight == "persistence":
+        weights = pers ** float(weight_power)
+    elif weight is None:
+        weights = np.ones(len(X))
+    else:
+        raise ValueError(f"unknown weight: {weight!r}")
+
+    Bw = _membership(counts, N, weights=weights)
+    med = _median_pairwise_scale(X)
+    grid = [med * s for s in scales] if aggregate else [med]
+    return [_weighted_diagram_kernel(X, Bw, lam) for lam in grid]
+
+
+def test_han_from_kernels(Ps, group, aggregate=True, n_perm=200, seed=None):
+    """Han-Kim-Kim p-value from precomputed per-bandwidth kernel matrices.
+
+    Args:
+        Ps: list of ``(N, N)`` matrices from :func:`han_kernels`, or ``None``
+            (degenerate sample; the p-value is then 1).
+        group: ``(N,)`` boolean mask in the matrices' row order, ``True`` =
+            group 0.
+        aggregate: must match the value passed to :func:`han_kernels`.
+        n_perm: number of label permutations (default 200).
+        seed: RNG seed for the permutations.
+
+    Returns:
+        float p-value in [0, 1].
+    """
+    if Ps is None:
+        return 1.0
+    g = np.asarray(group, dtype=bool)
+    N = Ps[0].shape[0]
+    if g.shape != (N,):
+        raise ValueError(f"group mask has shape {g.shape}, expected ({N},)")
+    n0 = int(g.sum())
+    if n0 == 0 or n0 == N:
+        raise ValueError("each group must contain at least one diagram")
+    rng = np.random.default_rng(seed)
+
+    perms = _perm_groups(N, n0, n_perm, rng)
+    stat_obs = np.empty(len(Ps))
+    stat_null = np.zeros((len(Ps), n_perm))
+    for li, P in enumerate(Ps):
+        stat_obs[li] = _u_statistic(P, g)
+        for k in range(n_perm):
+            stat_null[li, k] = _u_statistic(P, perms[k])
+
+    if not aggregate:
+        return _perm_pvalue(stat_obs[0], stat_null[0], "greater")
+
+    # Aggtest: rank p-values per bandwidth over the B + 1 replicates
+    all_stats = np.concatenate([stat_null, stat_obs[:, None]], axis=1)  # (n_bw, B+1)
+    B1 = n_perm + 1
+    ranks = (B1 - np.argsort(np.argsort(all_stats, axis=1), axis=1)) / B1
+    A = ranks.min(axis=0)
+    return float((1.0 + np.count_nonzero(A <= A[-1])) / B1)
+
+
 def test_han(diags0, diags1, weight="persistence", weight_power=1.0,
              scales=(0.5, 1.0, 2.0, 4.0), aggregate=True, n_perm=200,
-             seed=None):
+             seed=None, epsilon=0.0):
     """Han-Kim-Kim kernel permutation test on weighted persistence intensity.
 
     Args:
@@ -84,6 +170,14 @@ def test_han(diags0, diags1, weight="persistence", weight_power=1.0,
             (Aggtest); otherwise a single bandwidth ``(median, median)``.
         n_perm: number of label permutations (default 200).
         seed: RNG seed for the permutations.
+        epsilon: diagram points with persistence below this threshold are
+            dropped before the kernel is built (default 0.0 = the published
+            weighted intensity over all points).  Near-diagonal points carry
+            weight ``(d - b)^q < epsilon^q``, so the perturbation of the
+            diagram kernel is bounded by their kernel contribution and the
+            permutation null remains exactly valid; ``epsilon`` only trades a
+            negligible power shift against the O(n^2) point-level Gram cost
+            (a sweep convenience).
 
     Returns:
         float p-value in [0, 1].
@@ -91,64 +185,25 @@ def test_han(diags0, diags1, weight="persistence", weight_power=1.0,
     d0, d1, _ = _validate(diags0, diags1)
     n0, n1 = len(d0), len(d1)
     N = n0 + n1
-    pooled = d0 + d1
-    rng = np.random.default_rng(seed)
 
-    # point-level data: (b, d) coordinates and persistence weights
-    X = _flatten_bd(pooled)
-    if len(X) == 0:
-        return 1.0
-    pers = X[:, 1] - X[:, 0]
-    if weight == "persistence":
-        weights = pers ** float(weight_power)
-    elif weight is None:
-        weights = np.ones(len(X))
-    else:
-        raise ValueError(f"unknown weight: {weight!r}")
-
-    # per-diagram point membership
-    counts = []
-    for d in pooled:
-        c = 0
-        for dgm in d:
-            c += len(_points(dgm))
-        counts.append(c)
-    Bw = _membership(counts, N, weights=weights)
-
-    med = _median_pairwise_scale(X)
-    if aggregate:
-        grid = [med * s for s in scales]
-    else:
-        grid = [med]
-
-    perms = _perm_groups(N, n0, n_perm, rng)
-    stat_obs = []
-    stat_null = np.zeros((len(grid), n_perm))
-    for li, lam in enumerate(grid):
-        P = _weighted_diagram_kernel(X, Bw, lam)
-        g0 = np.zeros(N, dtype=bool)
-        g0[:n0] = True
-        stat_obs.append(_u_statistic(P, g0))
-        for k in range(n_perm):
-            stat_null[li, k] = _u_statistic(P, perms[k])
-    stat_obs = np.asarray(stat_obs)
-
-    if not aggregate:
-        return _perm_pvalue(stat_obs[0], stat_null[0], "greater")
-
-    # Aggtest: rank p-values per bandwidth over the B + 1 replicates
-    all_stats = np.concatenate([stat_null, stat_obs[:, None]], axis=1)  # (n_bw, B+1)
-    B1 = n_perm + 1
-    ranks = (B1 - np.argsort(np.argsort(all_stats, axis=1), axis=1)) / B1
-    A = ranks.min(axis=0)
-    return float((1.0 + np.count_nonzero(A <= A[-1])) / B1)
+    Ps = han_kernels(d0 + d1, weight=weight, weight_power=weight_power,
+                     scales=scales, aggregate=aggregate, epsilon=epsilon)
+    g0 = np.zeros(N, dtype=bool)
+    g0[:n0] = True
+    return test_han_from_kernels(Ps, g0, aggregate=aggregate, n_perm=n_perm,
+                                 seed=seed)
 
 
-def _flatten_bd(diags):
-    pts = []
+def _flatten_bd(diags, epsilon=0.0):
+    pts, counts = [], []
     for d in diags:
+        n = 0
         for dgm in d:
             p = _points(dgm)
+            if epsilon > 0.0 and len(p):
+                p = p[p[:, 1] - p[:, 0] >= epsilon]
             if len(p):
                 pts.append(p)
-    return np.vstack(pts) if pts else np.empty((0, 2))
+                n += len(p)
+        counts.append(n)
+    return (np.vstack(pts) if pts else np.empty((0, 2))), counts

@@ -33,11 +33,11 @@ Competitors:
                             pure location shift by construction (eq. 1.7).
 """
 from .frechet_anova import test_frechet_anova
-from .han import test_han
+from .han import han_kernels, test_han, test_han_from_kernels
 from .krebs_rademacher import test_krebs_rademacher
-from .mmd import test_mmd
+from .mmd import mmd_gram, test_mmd, test_mmd_from_gram
 from .moon_lazar import test_moon_lazar
-from .rt import test_rt
+from .rt import test_rt, test_rt_from_matrix
 from .strand import test_strand
 
 COMPETITORS = {
@@ -83,4 +83,8 @@ def run_competitor(name, diags0, diags1, **kwargs):
 
 __all__ = ["COMPETITORS", "ANALYTIC", "run_competitor", "test_rt", "test_mmd",
            "test_han", "test_strand", "test_moon_lazar", "test_frechet_anova",
-           "test_krebs_rademacher"]
+           "test_krebs_rademacher",
+           # label-independent precompute / read-back pairs, for sweeps that
+           # share one pooled sample across many group splits (Phase 2).
+           "test_rt_from_matrix", "mmd_gram", "test_mmd_from_gram",
+           "han_kernels", "test_han_from_kernels"]

@@ -17,10 +17,12 @@ from tda2s.dgp import (
     cluster_cloud,
     loops_cloud,
     sphere_cloud,
+    split_cluster_cloud,
     torus_cloud,
     to_silhouette_sample,
 )
 from tda2s.ph import compute_diagrams
+from tda2s.vec import silhouette
 
 
 def _max_h1_persistence(cloud, filtration="alpha"):
@@ -157,3 +159,52 @@ def test_observed_format_matches_trioracle():
     assert A.shape == ref_A.shape
     assert X.shape == ref_X.shape
     assert isinstance(A[0], (int, np.integer))
+
+# --- WP1.1 / Phase 4.4 cluster-splitting witness -----------------------------
+
+_SPLIT_SEP, _SPLIT_RHO, _SPLIT_TAU = 3.0, 0.15, 0.3
+
+
+def _split_h0(n_blobs, **kw):
+    """Thresholded H0 diagram of a deterministic split-cluster cloud."""
+    cloud = split_cluster_cloud(n_per_blob=100, n_blobs=n_blobs,
+                                separation=_SPLIT_SEP, noise=_SPLIT_RHO,
+                                deterministic=True, rng=0, **kw)
+    deaths = compute_diagrams(cloud, homology_dims=(0,))[0][:, 1]
+    return cloud, np.array([[0.0, d] for d in deaths if d > _SPLIT_TAU]).reshape(-1, 2)
+
+
+def test_split_cluster_cloud_deterministic_geometry():
+    """n_blobs - 1 finite H0 classes, all at the exact merge scale."""
+    merge = (_SPLIT_SEP - 2 * _SPLIT_RHO) / 2.0
+    for n_blobs in (2, 3):
+        cloud, dgm = _split_h0(n_blobs)
+        assert cloud.shape == (12 * n_blobs, 2)
+        assert len(dgm) == n_blobs - 1
+        assert np.allclose(dgm[:, 1], merge, atol=1e-9)
+
+
+def test_split_cluster_cloud_is_deterministic_in_rng():
+    """The deterministic branch ignores the rng, so both arms are reproducible."""
+    a = split_cluster_cloud(100, 3, deterministic=True, rng=0)
+    b = split_cluster_cloud(7, 3, deterministic=True, rng=12345)
+    assert np.array_equal(a, b)
+
+
+def test_split_cluster_cloud_preserves_mean_silhouette():
+    """W1: the 2-blob and 3-blob arms share a mean silhouette exactly."""
+    _, d0 = _split_h0(2)
+    _, d1 = _split_h0(3)
+    s0 = silhouette([d0], interval=(0.0, 2.0), r=3.0)[0]
+    s1 = silhouette([d1], interval=(0.0, 2.0), r=3.0)[0]
+    assert np.abs(s0 - s1).max() == 0.0
+
+
+def test_split_cluster_cloud_stochastic_branch_uses_n_per_blob():
+    cloud = split_cluster_cloud(n_per_blob=40, n_blobs=3, deterministic=False, rng=1)
+    assert cloud.shape == (120, 2)
+
+
+def test_split_cluster_cloud_rejects_single_blob():
+    with pytest.raises(ValueError):
+        split_cluster_cloud(10, 1, deterministic=True, rng=0)

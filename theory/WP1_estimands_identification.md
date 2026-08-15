@@ -1,18 +1,36 @@
 # WP1 — Estimands and Identification (Phase 1 deliverable)
 
-Status: drafted 2026-08-14, after Phase 0 PASS. Plan: `RESEARCH_PLAN_P1_TwoSample.md` §Phase 1.
+Status: drafted 2026-08-14, after Phase 0 PASS; audited and revised 2026-08-14.
+Plan: `RESEARCH_PLAN_P1_TwoSample.md` §Phase 1.
 
 Exit audit of Phase 1: every null has a stated identification condition and a stated failure
 mode; task 1.3 (the marginal-identification question) is answered. **Gate 1.3 → PASS**: the
 paper's targets need no change, but the headline estimand must be named as the
 *covariate-standardized* topological effect (§4).
 
-Sources read in full for this work package: Souto & Diamantis, *A Mathematical Framework for
-TCDA*, arXiv:2607.28161 (identification, distribution level, topological ignorability, Theorem
-5.9); Saki & Faghihi, arXiv:2603.14169v2 (non-identification of the marginal effect, Propositions
-3 and 6, Theorem 5, Remarks 4 and 7, Example 8); Faghihi, arXiv:2606.01184 (injectivity); Kim &
+Sources read for this work package: Souto & Diamantis, *A Mathematical Framework for TCDA*,
+arXiv:2607.28161 (identification, distribution level, topological ignorability; Theorems 4.1,
+5.3, 5.9, Corollary 5.4, Definition 5.5, Propositions 4.3, 5.6, 8.2, Remarks 5.7) — statements
+and hypotheses checked against the manuscript source, not from memory; Saki & Faghihi,
+arXiv:2603.14169v2 (non-identification of the marginal effect; Propositions 3 and 6, Theorem 5,
+Remarks 4 and 7, Example 8, Table 1) — full text, internal numbering verified item by item;
+Faghihi, arXiv:2606.01184 (injectivity) — abstract only, see the attribution note in §4; Kim &
 Lee, arXiv:2603.02289 (silhouette definition, Lemma 2.1, identification conditions C1–C3). All
 citations carry DOI/URL per `Literature_Review/VERIFIED.bib`.
+
+**Revisions made in the 2026-08-14 audit** (each is argued in place): the $H_0^{\mathrm{dist}}
+\Rightarrow H_0^{\mathrm{out}}$ analysis is now stated per Phase-4.1 candidate and the appeal to
+Souto & Diamantis Theorem 5.9 carries its shared-codomain hypothesis (§1.3); the empty-diagram
+witness W2 is demoted in favour of W2′, which needs no degenerate convention (§1.3, §1.4); the
+claimed weak-versus-joint exchangeability asymmetry between the outcome and distribution levels
+is withdrawn — both levels are identified under the same A1 (§2, §3, §4, §7); $\tau_d$ and
+$\tau_{\mathrm{dist}}$ are separated (§2); the Remark 7 quotation is restored to full, with its
+"unless weak ignorability holds" qualifier, and Saki & Faghihi's Table 1 is what makes the gate
+verdict coherent (§3); Theorem 5 is re-attributed to Saki & Faghihi (§4); the claim that
+Robinson–Turner cannot reject on the exact witness is **reversed** — it rejects at the minimum
+attainable $p$-value, measured (§6.3); and a persistence-measure binning bug that silently
+collapses the distribution-level statistic is documented and fixed (§6.5). Numerics in §1.4 were
+re-run after the fix.
 
 ---
 
@@ -97,13 +115,23 @@ $(\mathcal M, \|\cdot\|_{TV})$. State it instead in the dual pairing against a s
 codomain-match repair below is exactly such a class), or embed into a separable RKHS. Divol &
 Chazal's LLN for expected persistence measures is stated in the vague/weak topology for this
 reason, not in TV.
-2. *Kernel mean embedding (plan candidate (ii)).* If $T_{\mathrm{dist}}$ is the mean embedding of
-$\mathcal L(D)$ under a **characteristic** kernel on diagram space, $T_{\mathrm{dist}}$ is
-injective on laws, so $T_{\mathrm{dist}}(P^1) = T_{\mathrm{dist}}(P^0)$ forces
-$\mathcal L(D^1) = \mathcal L(D^0)$ and hence equality of the mean of *any* integrable $\Phi$.
-The plan's original unhedged sentence is therefore **true** for this candidate, and
-$H_0^{\mathrm{dist}}$ is then the strictly stronger null. This is the one regime in which C2
-subsumes C3's outcome-level content rather than complementing it.
+2. *Kernel mean embedding (plan candidate (ii)) — and such a kernel exists.* If $T_{\mathrm{dist}}$
+is the mean embedding of $\mathcal L(D)$ under a **characteristic** kernel on diagram space,
+$T_{\mathrm{dist}}$ is injective on laws, so $T_{\mathrm{dist}}(P^1) = T_{\mathrm{dist}}(P^0)$
+forces $\mathcal L(D^1) = \mathcal L(D^0)$ and hence equality of the mean of *any* integrable
+$\Phi$. The plan's original unhedged sentence is therefore **true** for this candidate, and
+$H_0^{\mathrm{dist}}$ is then the strictly stronger null. This regime is **not hypothetical**:
+Kwitt, Huber, Niethammer, Lin & Bauer (NIPS 2015), Proposition 2, prove that
+$k^U_\sigma(F,G) = \exp(k_\sigma(F,G))$ — the exponentiated Reininghaus persistence scale-space
+kernel — is *universal with respect to $d_{W,1}$* on the set $S$ of diagrams whose birth/death
+coordinates are bounded by a fixed $R$ and whose total multiplicity is bounded by a fixed $N$.
+Universal implies characteristic, so the mean embedding is injective on laws over $S$. Their
+proof routes through Christmann & Steinwart's Taylor-kernel theorem, using injectivity and
+continuity of the PSS feature map $\Phi_\sigma : \mathcal D \to L^2(\Omega)$ and compactness of
+$(S, d_{W,1})$; the two boundedness restrictions are what buy that compactness, and they are
+mild for data from a finite process. Consequently the manuscript cannot treat the
+$H_0^{\mathrm{dist}}$ / $H_0^{\mathrm{out}}$ relation as a fact about topology — it is a
+consequence of a representation choice that Phase 4.1 makes and must state.
 3. *Expected persistence intensity (plan candidate (iii)).* The intensity is a smoothing of the
 expected measure, so it inherits case 1 against the un-normalized $\Phi$ and fails, exactly as
 in Theorem 2, against the normalized silhouette.
@@ -494,13 +522,22 @@ evidence in `scripts/wp1_counterexample.py` and the reusable DGP `split_cluster_
 Gate 1.3 answered: the headline is the covariate-standardized topological effect; no estimand
 changes for Phases 3–5.
 
-**Two obligations this document hands forward.** (i) Phase 4.1's choice of $T_{\mathrm{dist}}$
-now carries a logical consequence, not just a computational one: candidate (i) makes
-$H_0^{\mathrm{dist}}$ *coincide* with $H_0^{\mathrm{out}}$ against the matching un-normalized
-$\Phi$ and *independent* of it against the normalized silhouette, while candidate (ii) with a
-characteristic kernel makes $H_0^{\mathrm{dist}}$ strictly stronger. The paper's "two tests"
-framing survives only under a pairing in which the two nulls are genuinely distinct, so the
-pairing must be fixed in Phase 4.1 and named in the abstract. (ii) The plan's §1 bullet list is
-internally inconsistent as written — its first bullet asserts $H_0^{\mathrm{dist}} \Rightarrow
-H_0^{\mathrm{out}}$ unhedged, and its second bullet correctly warns that the two levels can
-disagree. Replace both with Theorem 1 and Theorem 2 of §1.3.
+**Both obligations this document handed forward are now discharged in the plan (2026-08-14).**
+The plan's §1 bullet list was internally inconsistent — its first bullet asserted
+$H_0^{\mathrm{dist}} \Rightarrow H_0^{\mathrm{out}}$ unhedged while its second warned that the two
+levels can disagree — and has been replaced by the pairing-conditional statement of §1.3, with
+task 1.1 rewritten so it no longer instructs a proof of a false claim. Task 4.1 is now marked a
+logical decision and carries the witness table below, computed exactly in
+`scripts/wp1_pairing_separation.py` (the witness laws are finitely supported, so no Monte Carlo
+enters; $0$ means the statistic cannot see the witness):
+
+| Statistic | W1 | W2′ | Induced relation to $H_0^{\mathrm{out}}$ |
+|---|---|---|---|
+| $\mathcal A$: mean normalized silhouette | $0$ | $0.544$ | *is* $H_0^{\mathrm{out}}$ |
+| (i) expected persistence measure, $L^1$ | $1.350$ | $0$ | **logically independent** |
+| (ii) MMD under the universal kernel $k^U_\sigma$ | $1.385$ | $0.631$ | **strictly stronger** |
+
+The middle row is the paper's headline pairing and is what keeps C2 a genuinely second test; the
+bottom row is available off the shelf (the kernel is already wrapped by task 0.5) and should be
+reported as a secondary. What must not happen is for the manuscript to print a relation between
+the two nulls without naming the pairing that makes it true.

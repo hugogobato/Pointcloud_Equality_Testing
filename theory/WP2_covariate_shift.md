@@ -259,7 +259,11 @@ $\psi_d \equiv 0$ holds by construction, 240 replications:
 | mean $p$-value (want $0.5$) | 0.598 | 0.534 |
 
 The prototype is therefore **severely conservative**, not merely imprecise: it
-rejected $0$ of $240$ replications at nominal $5\%$. Two measured components,
+rejected $0$ of $240$ replications at nominal $5\%$. The full 1000-replication
+fleet (§6.1) reproduces this at four times the precision: size $0.006$ at
+$\lambda = 0$ and $0.015$ at $\lambda = 1$, with mean $p$-values $0.600$ and
+$0.533$, so the diagnostic below is describing the same object the gate
+measured. Two measured components,
 from 200 replications comparing the bootstrap's variance estimate against the
 Monte-Carlo truth:
 
@@ -374,11 +378,17 @@ rather than skipped: $d_B(\varnothing, D)$ is half the largest persistence of
 $D$, and a diagram that filters down to nothing is exactly the informative case
 when the contrast is a difference in loop *count*.
 
-### 6.1 Results (provisional, 100 of 1000 replications)
+### 6.1 Results (1000 replications, complete)
 
-Shards 90-99, run locally on the final code. Monte-Carlo standard error is
-$0.022$ at rates near $\alpha$ and smaller near $0$ and $1$; the full fleet
-replaces this table.
+Shards 0-99, replications 0-999 of both parts, all on the final code: shards
+0-89 on the Colab fleet (Python 3.12) and 90-99 locally (Python 3.10).
+Monte-Carlo standard error is $0.0069$ at rates near $\alpha$ and smaller near
+$0$ and $1$. The ten shards that were computed in both places agree to the last
+digit of every p-value, which is the intended consequence of keying all
+randomness off the replication index: where a shard ran is not part of the
+result. Reproduce with `python experiments/phase2_imbalance_sweep.py --mode
+aggregate`; Figure 1 and its data are `results/phase2_figure1.png` and
+`results/phase2_figure1.json`.
 
 **Part A --- type-I error under covariate shift.** Both causal nulls hold
 *exactly* at every $\lambda$: every rejection in this table is a false
@@ -386,25 +396,37 @@ positive.
 
 | test | $\lambda=0$ | $0.2$ | $0.4$ | $0.6$ | $0.8$ | $1.0$ |
 |---|---|---|---|---|---|---|
-| Robinson-Turner | 0.06 | 0.08 | 0.47 | 0.83 | 0.95 | **0.99** |
-| MMD (Kwitt et al.) | 0.03 | 0.22 | 0.77 | 0.96 | 0.99 | **1.00** |
-| Han, Kim & Kim | 0.03 | 0.18 | 0.73 | 0.94 | 0.99 | **1.00** |
-| STRAND | 0.01 | 0.20 | 0.81 | 0.94 | 1.00 | **1.00** |
-| Moon-Lazar | 0.06 | 0.16 | 0.55 | 0.83 | 0.90 | **0.98** |
-| Frechet ANOVA | 0.04 | 0.03 | 0.14 | 0.24 | 0.45 | **0.68** |
-| DR prototype | 0.01 | 0.01 | 0.01 | 0.02 | 0.00 | 0.00 |
+| Robinson-Turner | 0.050 | 0.134 | 0.456 | 0.811 | 0.968 | **0.992** |
+| MMD (Kwitt et al.) | 0.052 | 0.243 | 0.709 | 0.946 | 0.996 | **1.000** |
+| Han, Kim & Kim | 0.044 | 0.212 | 0.687 | 0.933 | 0.990 | **1.000** |
+| STRAND | 0.052 | 0.260 | 0.745 | 0.951 | 0.997 | **1.000** |
+| Moon-Lazar | 0.035 | 0.160 | 0.469 | 0.774 | 0.917 | **0.980** |
+| Frechet ANOVA | 0.052 | 0.052 | 0.117 | 0.211 | 0.434 | **0.651** |
+| DR prototype | 0.006 | 0.008 | 0.005 | 0.015 | 0.011 | 0.015 |
 
 The $\lambda = 0$ column is the load-bearing control, and it is why the rest of
 the table means what it claims: under randomisation all six competitors sit at
-their nominal level ($0.01$--$0.06$, all within $2$ SE of $0.05$). The climb is
-therefore attributable to the imbalance and not to a mis-specified wrapper. By
-$\lambda = 1$ five of the six reject essentially always, against a DGP with no
-topological effect whatsoever. Theorem 2.1's conclusion is realized in full.
+their nominal level. Four of them are within $0.3$ SE of $\alpha$ (RT $0.050$,
+MMD and STRAND and Frechet ANOVA $0.052$), Han is $0.9$ SE low, and only
+Moon-Lazar deviates appreciably, at $0.035$ ($2.2$ SE low, mildly conservative
+in the direction that *understates* its later false positives). The climb across
+the row is therefore attributable to the imbalance and not to a mis-specified
+wrapper. By $\lambda = 1$ five of the six reject essentially always, against a
+DGP with no topological effect whatsoever, a roughly $20$-fold inflation of the
+nominal level ($98.0\%$ to $100\%$ against $5\%$). Theorem 2.1's conclusion
+is realized in full, and the inflation is already severe at moderate imbalance
+($\lambda = 0.4$ gives $0.46$ to $0.75$ for five of the six).
 
-Frechet ANOVA's slower climb ($0.68$ at $\lambda = 1$) is not a defence of it:
+Frechet ANOVA's slower climb ($0.651$ at $\lambda = 1$) is not a defence of it:
 it is the least powerful of the six against this alternative, so it also
 accumulates false positives more slowly. Its rate is still an order of
 magnitude above $\alpha$.
+
+The DR prototype's row is the one place where the design's *causal* null is
+visible as such: it holds flat at $0.005$--$0.015$ across the entire sweep,
+uncorrelated with $\lambda$, because the estimand it tests genuinely does not
+move with the propensity. That the level is below $\alpha$ rather than at it is
+the calibration defect of §5.1, not a response to imbalance.
 
 **Part B --- masking.** $\mathcal L(D \mid A=1) = \mathcal L(D \mid A=0)$
 holds exactly while $\psi_d \neq 0$, so the competitors' null is *true* and
@@ -412,25 +434,36 @@ only a covariate-adjusted test should fire.
 
 | RT | MMD | Han | STRAND | Moon-Lazar | Frechet ANOVA | DR prototype |
 |---|---|---|---|---|---|---|
-| 0.06 | 0.07 | 0.08 | 0.09 | 0.04 | 0.05 | **1.00** |
+| 0.045 | 0.051 | 0.044 | 0.054 | 0.029 | 0.044 | **1.000** |
 
-All six sit at $\alpha$ within Monte-Carlo error, exactly as Theorem 2.2
-requires, and the DR prototype detects the effect in every replication.
-Sanity check on the construction: $\mathbb E[\text{H}_1 \text{ pers} \mid A=1]
-- \mathbb E[\cdot \mid A=0] = +0.0018$ (sd $0.0103$ across replications),
-centered on zero as the algebra demands.
+All six sit at $\alpha$ within Monte-Carlo error (the largest deviation is
+Moon-Lazar's $0.029$, the same conservatism it shows at $\lambda = 0$ in Part
+A), exactly as Theorem 2.2 requires, and the DR prototype detects the effect in
+every one of the 1000 replications. Its largest p-value anywhere in the part is
+$0.0195$, so the power is $1.000$ at $\alpha = 0.02$ as well and the result does
+not depend on the threshold.
+
+Two sanity checks on the construction, both of which the algebra of §4 predicts
+and neither of which is imposed by the estimator: $\mathbb E[\text{H}_1
+\text{ pers} \mid A=1] - \mathbb E[\cdot \mid A=0] = +0.00034$ (sd $0.00947$
+across replications, i.e. $0.04$ SE from zero), and a two-sample KS test on the
+pooled $\text{H}_1$ persistences rejects in $4.5\%$ of replications with mean
+p-value $0.511$, which is the uniform p-value distribution a *true* null
+produces. The marginal laws really are equal, so the competitors are not merely
+underpowered here; they have nothing to see.
 
 Note that Part B's contrast is achieved *despite* the prototype being
-conservative (§5.1): a test rejecting $0$--$2\%$ of the time under the null
-still has power $1.00$ here. The masking effect is large enough that
-calibration is not what carries it.
+conservative (§5.1): a test rejecting $0.5$--$1.5\%$ of the time under the null
+still has power $1.000$ here. The masking effect is large enough that
+calibration is not what carries it, and calibrating the test upward to its
+nominal level can only widen the gap.
 
-- Figure 1(a): rejection rate versus $\lambda$ for the six competitors and
-  the DR prototype, with the $\alpha$ line and the $\pm 3$ SE size band.
-- Figure 1(b): rejection rates under the masking DGP.
-- Gate targets: worst competitor type-I error at $\lambda = 1$ at least 0.20;
-  DR size in $[0.03, 0.08]$ across the sweep; masking: competitor maximum at
-  most 0.10 with DR power at least 0.70.
+Figure 1(a) plots rejection rate against $\lambda$ for the six competitors and
+the DR prototype, with the $\alpha$ line and the $\pm 3$ SE size band; Figure
+1(b) plots the rejection rates under the masking DGP. The gate targets are a
+worst competitor type-I error at $\lambda = 1$ of at least 0.20, a DR size in
+$[0.03, 0.08]$ across the sweep, and, for masking, a competitor maximum of at
+most 0.10 with DR power at least 0.70.
 
 At 1000 replications the Monte-Carlo standard error of a rejection rate near
 $\alpha$ is $0.0069$, so the size band $[0.03, 0.08]$ sits $-2.9$ to $+4.3$
@@ -468,9 +501,32 @@ the field's null is fine. That combination is therefore reported as
 | **INCONCLUSIVE** | (2.1 or 2.2) but DR size out of band | Calibrate in 3.2 / 3.3, then re-fire; C1 is not in question |
 | **FAIL** | neither 2.1 nor 2.2 | Drop C1; rewrite around C2 + C3; compress Phase 3 to a reproduction |
 
-[Numbers and the verdict are filled from
-`python experiments/phase2_imbalance_sweep.py --mode aggregate`, which prints
-this table's row and the per-criterion measurements.]
+**Fired on the complete fleet (1000 replications, 2026-08-15).**
+
+| criterion | requirement | measured | |
+|---|---|---|---|
+| 2.1 false positives | worst competitor at $\lambda = 1$ $\geq 0.20$ | $1.000$ | **met** |
+| 2.2 masking | competitor max $\leq 0.10$; DR power $\geq 0.70$ | $0.054$; $1.000$ | **met** |
+| 2.4 DR size | every $\lambda$ in $[0.03, 0.08]$ | $0.005$--$0.015$ | **not met** |
+
+**Verdict: INCONCLUSIVE.** Both arms of the disjunction are met, and met by
+margins that are not close: the false-positive arm exceeds its threshold by a
+factor of five, and the masking arm clears both of its conditions
+simultaneously. The single unmet condition is the size of the 2.4 prototype,
+which is conservative rather than anti-conservative, is conservative *uniformly
+in* $\lambda$, and has a diagnosed cause that is a property of the multiplier
+null rather than of the estimand or the nuisances (§5.1). Every measured
+consequence of that defect runs against the paper's own claims: a conservative
+test understates its Part B power and cannot manufacture the Part A contrast,
+since the contrast is carried by the competitors' rows. The evidence for C1 is
+therefore established and the escalation is narrow.
+
+Phase 3 proceeds as written. Task 3.2 replaces the multiplier bootstrap with the
+covariate-preserving stratified-permutation null and re-fires 2.4's size
+criterion against this same sweep, which is why the shards store per-replication
+p-values rather than rates. The instruction that follows from §5.1 is to stop
+re-tuning nuisance settings (the basis size, the fold count and the propensity
+learner were each swept and each ruled out) and to change the null.
 
 ## References
 

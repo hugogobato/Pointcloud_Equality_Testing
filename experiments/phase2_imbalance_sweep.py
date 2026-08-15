@@ -433,10 +433,13 @@ def make_figure(sweep_rates, masking_rates, n_reps):
         ax1.plot(xs, [sweep_rates[t][k] for k in lam_keys], marker="o",
                  ms=4, lw=1.4, label=labels[t])
     ax1.axhline(ALPHA, color="k", ls="--", lw=0.9)
-    ax1.text(0.01, 0.045, r"$\alpha = 0.05$", fontsize=8)
     # a rejection rate cannot be negative, so clip the band rather than let it
     # run below the axis at small replication counts
     se = np.sqrt(ALPHA * (1 - ALPHA) / max(1, n_reps))
+    # annotate at the right edge, above the band: the left edge is where every
+    # curve starts at alpha, so a label there sits on top of the data
+    ax1.text(xs[-1], ALPHA + 3 * se + 0.015, r"$\alpha = 0.05$", fontsize=8,
+             ha="right", va="bottom")
     ax1.fill_between(xs, max(0.0, ALPHA - 3 * se), ALPHA + 3 * se, color="k",
                      alpha=0.12,
                      label=f"$\\alpha \\pm 3\\,\\mathrm{{SE}}$ ({n_reps} reps)")
@@ -457,7 +460,8 @@ def make_figure(sweep_rates, masking_rates, n_reps):
     ax2.set_title("(b) Simpson masking ($L(D|A{=}1)=L(D|A{=}0)$, $\\psi_d \\neq 0$)")
     ax2.grid(axis="y", alpha=0.25)
     for b, v in zip(bars, y):
-        ax2.text(b.get_x() + b.get_width() / 2, v + 0.02, f"{v:.2f}",
+        # clear the alpha line: a near-alpha bar's label lands on it at +0.02
+        ax2.text(b.get_x() + b.get_width() / 2, v + 0.045, f"{v:.3f}",
                  ha="center", fontsize=8)
     fig.tight_layout()
     fig.savefig(FIG_PNG, dpi=200)

@@ -14,17 +14,20 @@ Both experiments run in every notebook: Part A is the covariate-shift
 false-positive sweep over six propensity strengths, Part B the Simpson
 masking experiment.
 
-**Current state (2026-08-14): shards 90-99 are already done** (run locally,
-in `results/shards/`), so **notebooks 18 and 19 do not need running** --- the
-outstanding fleet is **`phase2_nb_00` through `phase2_nb_17`**, covering
-shards 0-89. Confirm with the coverage report below before starting.
+**Current state (2026-08-15): the fleet has run and Phase 2 is closed.** All
+100 shards are in `results/shards/`, gate 2.5 fired from them, and Figure 1
+is `results/phase2_figure1.{png,json}`. Nothing here needs running again
+unless the sweep's configuration changes; the instructions below are kept
+for that case and for Phase 3, which re-fires the size criterion against
+these same shards.
 
 ## Run
 
 1. Upload the notebooks to Colab (one per account/session is fine, and
-   they are completely independent of each other). **Re-upload after
-   2026-08-15** --- the fleet generated before that date crashes partway
-   into the first shard; see "The multimethod pin" below.
+   they are completely independent of each other). Regenerate first if
+   `tda2s/` or the sweep driver has changed since the notebooks were
+   written; notebooks generated before 2026-08-15 also crash partway into
+   the first shard (see "The multimethod pin" below).
 2. **Runtime -> Run all.** Expect roughly 1.5-2 h per notebook. The
    import cell finishes with `DR smoke p = ...`; if that line prints, the
    environment is sound and the run cell will not hit an import error.
@@ -108,3 +111,44 @@ Fewer, longer notebooks (`--n-notebooks 10 --shards-per-notebook 10`)
 means less uploading and a longer session to keep alive; more, shorter
 ones is the reverse. The replication total is the product of the three
 numbers and should stay at 1000.
+
+## Phase 3 DR calibration fleet
+
+`phase3_oracle_nb_00.ipynb` through `phase3_oracle_nb_09.ipynb` are independent,
+self-contained notebooks for the Phase 3 functional tables. The default fleet
+runs five ten-replication shards per notebook, giving 500 replications at
+every `n in {50, 100, 200, 500}`, propensity regime, and null or alternative
+cell. Each shard downloads `phase3_oracle_shard<i>.json` immediately on
+completion.
+
+The oracle fleet isolates DR calibration from persistent-homology runtime. The
+four `phase3_clouds_nb_*.ipynb` notebooks run the same cached calibration on
+the point-cloud DGP for a smaller topological confirmation. The two learner
+and two stress notebooks cover the propensity-learner sweep and the
+double-robustness misspecification configurations. All fleets freeze the
+fitted cross-fit nuisances, so permutation draws do not refit `cross_fit` or
+recompute diagrams.
+
+Regenerate the fleets after changing the Phase 3 module or driver:
+
+```bash
+python experiments/colab/make_phase3_notebooks.py --design oracle
+python experiments/colab/make_phase3_notebooks.py --design clouds
+python experiments/colab/make_phase3_notebooks.py --design learners
+python experiments/colab/make_phase3_notebooks.py --design stress
+```
+
+Run the notebooks in Colab. The download cell includes a safe
+`google.colab.files.download` fallback, so a non-Colab run keeps output in
+`results/phase3_shards/`. Aggregate downloaded shards with:
+
+```bash
+python experiments/phase3_dr_calibration.py --mode aggregate --design oracle
+python experiments/phase3_dr_calibration.py --mode aggregate --design clouds
+python experiments/phase3_dr_calibration.py --mode aggregate --design learners
+python experiments/phase3_dr_calibration.py --mode aggregate --design stress
+```
+
+The oracle fleet stays within the memory limit by using one bounded-memory job
+per notebook and vectorized permutation batches instead of storing all draws
+at once.

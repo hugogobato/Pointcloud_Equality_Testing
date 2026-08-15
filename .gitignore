@@ -25,6 +25,8 @@ results/*.csv
 !results/.gitkeep
 # ...except the Phase 0.5 acceptance runs, which are evidence for docs/phase0_completion.md
 !results/*_reps500.json
+# ...and Figure 1's data, which is the Phase 2 gate's evidence (theory/WP2_covariate_shift.md section 6.1)
+!results/phase2_figure1.json
 
 # Windows alternate-data-stream markers, created when Colab output is
 # downloaded through a browser onto the WSL mount.

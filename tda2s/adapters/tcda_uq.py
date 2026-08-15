@@ -52,6 +52,11 @@ def aipw_curve(sample, tseq, n_basis: int, n_folds: int = 5, **cross_fit_kwargs)
         "scores": np.stack(result.scores, axis=1),
         "pi_hat": result.pi_hat,
         "tseq": np.asarray(result.tseq),
+        # Keep the released result available to P1's calibration layer.  The
+        # point estimator and cross-fitting still live entirely in tcda_uq;
+        # P1 only uses the fitted fold nuisances to avoid refitting them for
+        # every stratified-permutation draw.
+        "raw_result": result,
     }
 
 

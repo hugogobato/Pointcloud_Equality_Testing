@@ -22,8 +22,12 @@ shards 0-89. Confirm with the coverage report below before starting.
 ## Run
 
 1. Upload the notebooks to Colab (one per account/session is fine, and
-   they are completely independent of each other).
-2. **Runtime -> Run all.** Expect roughly 1.5-2 h per notebook.
+   they are completely independent of each other). **Re-upload after
+   2026-08-15** --- the fleet generated before that date crashes partway
+   into the first shard; see "The multimethod pin" below.
+2. **Runtime -> Run all.** Expect roughly 1.5-2 h per notebook. The
+   import cell finishes with `DR smoke p = ...`; if that line prints, the
+   environment is sound and the run cell will not hit an import error.
 3. Each shard downloads the moment it finishes, so a dropped session
    costs at most the shard in flight rather than the notebook's block.
    Anything already finished also stays in the VM's
@@ -63,6 +67,32 @@ disagrees), writes `results/phase2_figure1.png` +
 `results/phase2_figure1.json`, and prints the Phase 2 GATE summary. It is
 safe to run on a partial fleet to watch the numbers settle; just do not
 read the verdict off an under-powered subset.
+
+## The multimethod pin
+
+`scikit-fda` registers multiple-dispatch hints on `ABCMeta`-based classes.
+`multimethod` 2.1 builds its `subtype` metaclass off `type` rather than
+`ABCMeta`, so that registration raises
+
+```
+TypeError: metaclass conflict: the metaclass of a derived class must be
+a (non-strict) subclass of the metaclasses of all its bases
+```
+
+the first time `skfda.ml.regression` is imported. Nothing in the
+dependency graph constrains the version, so Colab's preinstalled 2.1
+survived every install line; and because `tcda_uq` imports `skfda`
+lazily from inside `cross_fit`, the crash landed on the first DR
+replication (minutes into a shard) rather than at import. The install
+cell now pins `multimethod==2.0.2` last, and the import cell exercises
+the full chain plus a few-second DR smoke test, so a broken environment
+fails in the first minute.
+
+Verified on Python 3.12 (Colab's version) in a venv built from the
+install cell starting at multimethod 2.1: the chain imports, and
+replication 900 of both parts reproduces `results/shards/phase2_shard90.json`
+exactly, so Colab shards remain interchangeable with the locally
+computed 90-99.
 
 ## Regenerate
 

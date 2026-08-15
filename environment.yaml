@@ -9,6 +9,7 @@ dependencies:
   - scipy=1.15.2
   - scikit-learn=1.6.1
   - scikit-fda=0.10.1
+  - multimethod=2.0.2   # 2.1 breaks scikit-fda's dispatch (metaclass conflict)
   - gudhi=3.11.0
   - ripser=0.6.10
   - matplotlib=3.10.0

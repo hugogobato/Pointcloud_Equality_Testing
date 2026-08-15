@@ -34,6 +34,11 @@ dependencies = [
     "scipy==1.15.2",
     "scikit-learn==1.6.1",
     "scikit-fda==0.10.1",
+    # transitive through scikit-fda, which does not constrain it: 2.1 derives
+    # its `subtype` metaclass from `type` instead of ABCMeta, so importing
+    # skfda.ml.regression raises "metaclass conflict". Pin it here so a fresh
+    # resolve cannot pick it up.
+    "multimethod==2.0.2",
     "gudhi==3.11.0",
     "ripser==0.6.10",
     # reaches us transitively via ripser, but rt.py / krebs_rademacher.py import

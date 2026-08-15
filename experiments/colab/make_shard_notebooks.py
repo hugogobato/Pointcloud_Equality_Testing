@@ -20,8 +20,8 @@ per part that the Phase 2 gate is powered for, at roughly 1.5-2 h per notebook.
 Each notebook: creates the package tree, embeds every ``tda2s`` module the
 sweep imports and the sweep driver itself (``%%writefile`` cells), installs the
 third-party dependencies (gudhi, ripser, persim, scikit-fda, tcda_uq from git),
-checks the imports before committing to a long run, then runs its shards over
-however many CPUs the Colab VM turns out to have.
+imports the full chain and smoke-tests the DR path before committing to a long
+run, then runs its shards over however many CPUs the Colab VM turns out to have.
 
 Because the module sources are embedded at generation time, regenerate the
 fleet after any edit to ``tda2s/`` or to the sweep driver.
@@ -86,9 +86,19 @@ once the whole fleet is in.
 # %%bash so a failed install is visible in the cell output rather than swallowed
 INSTALL_CELL = (
     "%%bash\n"
+    "set -e\n"
     "pip install -q numpy scipy scikit-learn joblib matplotlib scikit-fda \\\n"
     "              gudhi ripser persim pot\n"
     "pip install -q git+https://github.com/hugogobato/tcda_uq.git\n"
+    "\n"
+    "# Pinned, and pinned last. scikit-fda registers dispatch hints on\n"
+    "# ABCMeta-based classes; multimethod 2.1 builds its `subtype` metaclass\n"
+    "# off `type`, so that registration dies with 'metaclass conflict' the\n"
+    "# first time skfda.ml.regression is imported. 2.0.2 derives `subtype`\n"
+    "# from ABCMeta and works (verified on 3.12). Nothing in the dependency\n"
+    "# graph constrains the version, so Colab's preinstalled 2.1 survives\n"
+    "# every line above unless it is overridden explicitly.\n"
+    "pip install -q 'multimethod==2.0.2'\n"
     "echo '--- install done ---'\n"
 )
 
@@ -102,16 +112,37 @@ print("package tree ready")
 """
 
 CHECK_CELL = """\
+import importlib.metadata as md
 import os, sys
 
 sys.path.insert(0, "/content")
 os.environ["PYTHONPATH"] = "/content"   # joblib workers inherit this
 
-import gudhi, numpy, tcda_uq                      # noqa: F401
+import gudhi, numpy as np, tcda_uq                          # noqa: F401
+# The whole chain, eagerly. tcda_uq imports skfda lazily from inside
+# cross_fit, so `import tcda_uq` on its own does not prove the run will
+# survive its first DR replication -- an incompatible environment would
+# otherwise announce itself an hour into the shard rather than here.
+from skfda.ml.regression import LinearRegression            # noqa: F401
+from tcda_uq.estimators import cross_fit                    # noqa: F401
+from tda2s.adapters.dr_test import prototype_dr_from_phi
 from experiments.phase2_imbalance_sweep import LAMBDAS, N_PER_GROUP, run_shard
 
-print("imports OK |", N_PER_GROUP, "units per arm |", len(LAMBDAS), "lambdas |",
-      os.cpu_count(), "CPUs")
+print("versions |", " ".join(
+    f"{p}={md.version(p)}" for p in
+    ["numpy", "scipy", "scikit-learn", "scikit-fda", "multimethod", "gudhi"]))
+
+# A few seconds of end-to-end DR on junk data: cross-fitting, the skfda
+# outcome regression and the multiplier bootstrap, at a size where a broken
+# environment fails now instead of after the first real replication.
+_rng = np.random.default_rng(0)
+_p = prototype_dr_from_phi(_rng.normal(size=(24, 2, 16)), np.array([0, 1] * 12),
+                           _rng.normal(size=(24, 3)), np.linspace(0.0, 2.0, 16),
+                           n_basis=5, n_folds=2, n_draws=50, seed=0)
+assert 0.0 < _p <= 1.0, _p
+
+print("imports OK | DR smoke p =", round(_p, 3), "|", N_PER_GROUP,
+      "units per arm |", len(LAMBDAS), "lambdas |", os.cpu_count(), "CPUs")
 """
 
 RUN_CELL_TEMPLATE = """\

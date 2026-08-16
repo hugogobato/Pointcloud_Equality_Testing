@@ -5,7 +5,9 @@ module adds the testing layer that P1 owns:
 
 * the max-over-scale and max-over-degree statistic;
 * a shared-multiplier null over the cross-fitted score process;
-* a fast covariate-preserving permutation null.
+* a fast covariate-preserving permutation null;
+* the Phase 3.5 studentized empirical-null degree comparator adapted from
+  Vejdemo-Johansson and Mukherjee (:func:`vjm_multiplicity_test`).
 
 The permutation implementation is deliberately explicit about its scope.  A
 full permutation test that refits the nuisances for every label draw is
@@ -199,16 +201,21 @@ def _select_curves(curves: np.ndarray, degrees=None) -> np.ndarray:
     return curves[idx]
 
 
-def _curve_norm(curves: np.ndarray, norm: str) -> np.ndarray:
-    """Return one max-over-degree norm for each leading draw."""
+def _per_degree_norm(curves: np.ndarray, norm: str) -> np.ndarray:
+    """Return one scale norm per degree, keeping the degree axis."""
     curves = np.asarray(curves, dtype=float)
     if norm == "sup":
-        return np.max(np.abs(curves), axis=(-2, -1))
+        return np.max(np.abs(curves), axis=-1)
     if norm == "l2":
         # Root-mean-square on the common grid.  The common 1/resolution factor
         # makes this comparable across the Phase 3 grids.
-        return np.max(np.sqrt(np.mean(curves ** 2, axis=-1)), axis=-1)
+        return np.sqrt(np.mean(curves ** 2, axis=-1))
     raise ValueError("norm must be 'sup' or 'l2'")
+
+
+def _curve_norm(curves: np.ndarray, norm: str) -> np.ndarray:
+    """Return one max-over-degree norm for each leading draw."""
+    return np.max(_per_degree_norm(curves, norm), axis=-1)
 
 
 def dr_statistic(curves: np.ndarray, n: int, *, degrees=None,
@@ -235,11 +242,22 @@ def dr_statistic(curves: np.ndarray, n: int, *, degrees=None,
 def _bootstrap_stats(centered: np.ndarray, n_draws: int, rng: np.random.Generator,
                      *, degrees=None, studentize: bool = False,
                      sd_floor: float = 1e-10, multiplier: str = "gaussian",
-                     norm: str = "sup") -> np.ndarray:
-    """Shared-multiplier max statistics with one multiplier per unit."""
+                     norm: str = "sup", reduce: str = "max") -> np.ndarray:
+    """Shared-multiplier statistics with one multiplier per unit.
+
+    ``reduce="max"`` returns one max-over-degree statistic per draw, which is
+    the Phase 3 primary specification.  ``reduce="per_degree"`` keeps the
+    degree axis, returning ``[n_draws, n_selected_degrees]``; the multiplier
+    stream is identical either way, so the two reductions describe the same
+    null draws.  Phase 3.5 needs the per-degree form because the
+    Vejdemo-Johansson--Mukherjee comparator studentizes each degree against
+    its own null before taking the joint maximum.
+    """
     centered = np.asarray(centered, dtype=float)
     n, n_dim, res = centered.shape
-    if not studentize and norm == "sup":
+    if reduce not in ("max", "per_degree"):
+        raise ValueError("reduce must be 'max' or 'per_degree'")
+    if reduce == "max" and not studentize and norm == "sup":
         flat = centered.reshape(n, n_dim * res)
         return multiplier_bootstrap(flat, n_draws, rng, kind=multiplier)
 
@@ -247,7 +265,8 @@ def _bootstrap_stats(centered: np.ndarray, n_draws: int, rng: np.random.Generato
     if sd is not None:
         sd = np.maximum(_select_curves(sd, degrees), sd_floor)
     d_idx = list(range(n_dim)) if degrees is None else list(np.asarray(list(degrees), dtype=int))
-    out = np.empty(n_draws, dtype=float)
+    out = (np.empty((n_draws, len(d_idx)), dtype=float) if reduce == "per_degree"
+           else np.empty(n_draws, dtype=float))
     for b in range(n_draws):
         if multiplier == "gaussian":
             xi = rng.standard_normal(n)
@@ -260,7 +279,10 @@ def _bootstrap_stats(centered: np.ndarray, n_draws: int, rng: np.random.Generato
             draw = draw[d_idx] / sd
         else:
             draw = draw[d_idx]
-        out[b] = _curve_norm(draw[None, :, :], norm)[0]
+        if reduce == "per_degree":
+            out[b] = _per_degree_norm(draw, norm)
+        else:
+            out[b] = _curve_norm(draw[None, :, :], norm)[0]
     return out
 
 
@@ -295,10 +317,11 @@ def degree_multiplicity_test(fit: DRFit, *, n_draws: int = 2000,
 
     The max-statistic uses one multiplier per unit shared across all degrees,
     preserving their dependence.  The Bonferroni line is included as the
-    transparent conservative comparator.  A Vejdemo-Johansson--Mukherjee
-    implementation is not silently substituted here: its published
-    persistence-specific multiple-testing construction remains a separate
-    benchmark to add once its exact finite-sample convention is frozen.
+    transparent conservative comparator.  Neither line is a
+    Vejdemo-Johansson--Mukherjee procedure; that comparator is
+    :func:`vjm_multiplicity_test`, which studentizes each degree against its
+    own empirical null before taking the joint maximum, and whose mapping to
+    P1 is audited in ``docs/phase3_5_vjm_mapping.md``.
     """
     per_degree = [
         multiplier_test(fit, n_draws=n_draws, alpha=alpha, degrees=[d],
@@ -351,8 +374,15 @@ def _draw_stratified_labels(labels: np.ndarray, strata: np.ndarray,
 
 def _permutation_stats(fit: DRFit, label_draws: np.ndarray, *, degrees=None,
                        studentize: bool = False, batch_size: int = 64,
-                       sd_floor: float = 1e-10, norm: str = "sup") -> np.ndarray:
-    """Vectorized permutation statistics with a bounded temporary footprint."""
+                       sd_floor: float = 1e-10, norm: str = "sup",
+                       reduce: str = "max") -> np.ndarray:
+    """Vectorized permutation statistics with a bounded temporary footprint.
+
+    ``reduce`` behaves as in :func:`_bootstrap_stats`: ``"max"`` collapses the
+    degree axis, ``"per_degree"`` keeps it for the Phase 3.5 comparator.  The
+    label draws are identical either way, so both reductions read the same
+    null.
+    """
     draws = np.asarray(label_draws, dtype=float)
     if draws.ndim != 2 or draws.shape[1] != fit.n:
         raise ValueError("label_draws must have shape [n_draws, n]")
@@ -368,7 +398,10 @@ def _permutation_stats(fit: DRFit, label_draws: np.ndarray, *, degrees=None,
         sd = observed_scores.std(axis=0, ddof=1)
         sd = np.maximum(_select_curves(sd, degrees), sd_floor)
     d_idx = list(range(fit.n_hom_dim)) if degrees is None else list(np.asarray(list(degrees), dtype=int))
-    out = np.empty(n_draws, dtype=float)
+    if reduce not in ("max", "per_degree"):
+        raise ValueError("reduce must be 'max' or 'per_degree'")
+    out = (np.empty((n_draws, len(d_idx)), dtype=float) if reduce == "per_degree"
+           else np.empty(n_draws, dtype=float))
     for lo in range(0, n_draws, batch_size):
         hi = min(lo + batch_size, n_draws)
         a = draws[lo:hi]
@@ -379,7 +412,10 @@ def _permutation_stats(fit: DRFit, label_draws: np.ndarray, *, degrees=None,
             curves = curves[:, d_idx, :] / sd[None, :, :]
         else:
             curves = curves[:, d_idx, :]
-        out[lo:hi] = _curve_norm(curves, norm) * np.sqrt(fit.n)
+        if reduce == "per_degree":
+            out[lo:hi] = _per_degree_norm(curves, norm) * np.sqrt(fit.n)
+        else:
+            out[lo:hi] = _curve_norm(curves, norm) * np.sqrt(fit.n)
     return out
 
 
@@ -418,6 +454,218 @@ def stratified_permutation_test(fit: DRFit, strata: np.ndarray, *, n_perm: int =
         "scores": observed_scores,
         "strata": strata,
         "n_strata": int(len(np.unique(strata))),
+    }
+
+
+def degree_null_statistics(fit: DRFit, *, mechanism: str = "permutation",
+                           strata: Optional[np.ndarray] = None,
+                           n_draws: int = 399, seed: Optional[int] = 0,
+                           norm: str = "sup", multiplier: str = "gaussian",
+                           batch_size: int = 64) -> dict:
+    """Observed and null per-degree statistics from one shared null draw.
+
+    Every degree is evaluated on the *same* multiplier draw or the *same*
+    label permutation, so the returned ``null`` matrix carries the dependence
+    between degrees induced by the shared units and the shared cross-fitting.
+    This is the object every Phase 3/3.5 multiplicity procedure consumes:
+    Bonferroni, the shared max-statistic, and the studentized empirical-null
+    comparator all reduce this one matrix differently, which makes their
+    comparison exact rather than Monte-Carlo noisy.
+
+    Returns a dict with ``observed`` of shape ``[n_degrees]`` and ``null`` of
+    shape ``[n_draws, n_degrees]``, both on the ``sqrt(n)`` scale.
+    """
+    observed_scores = _scores_for_labels(fit, fit.labels_order)
+    estimate = observed_scores.mean(axis=0)
+    observed = np.sqrt(fit.n) * _per_degree_norm(estimate, norm)
+    rng = np.random.default_rng(seed)
+    if mechanism == "multiplier":
+        centered = observed_scores - estimate[None, :, :]
+        null = _bootstrap_stats(centered, n_draws, rng, multiplier=multiplier,
+                                norm=norm, reduce="per_degree")
+    elif mechanism == "permutation":
+        if strata is None:
+            raise ValueError("the permutation mechanism requires strata")
+        strata = np.asarray(strata)
+        if strata.shape != (fit.n,):
+            raise ValueError("strata must be in original sample order with length n")
+        label_draws = _draw_stratified_labels(fit.labels_order, strata[fit.order],
+                                              n_draws, rng)
+        null = _permutation_stats(fit, label_draws, norm=norm,
+                                  batch_size=batch_size, reduce="per_degree")
+    else:
+        raise ValueError("mechanism must be 'multiplier' or 'permutation'")
+    return {
+        "mechanism": mechanism,
+        "norm": norm,
+        "observed": observed,
+        "null": null,
+        "estimate": estimate,
+        "scores": observed_scores,
+    }
+
+
+def _ks_statistic(a: np.ndarray, b: np.ndarray) -> float:
+    """Two-sample Kolmogorov-Smirnov statistic (no p-value).
+
+    Only the statistic is reported: the null draws are dependent across
+    degrees, so a KS *p-value* would not be valid here.  The statistic is used
+    as a descriptive comparability measure, the P1 analogue of the source's
+    own empirical check that standardized invariants share a distribution.
+    """
+    a = np.sort(np.asarray(a, dtype=float))
+    b = np.sort(np.asarray(b, dtype=float))
+    grid = np.concatenate([a, b])
+    cdf_a = np.searchsorted(a, grid, side="right") / len(a)
+    cdf_b = np.searchsorted(b, grid, side="right") / len(b)
+    return float(np.max(np.abs(cdf_a - cdf_b)))
+
+
+def _standardize_family(observed: np.ndarray, null: np.ndarray,
+                        convention: str, sd_floor: float):
+    """Location-scale standardization of a family of scalar statistics.
+
+    ``convention="source"`` reproduces the source's step 4 literally: the
+    centering and scaling constants come from the null replicates only.
+    ``convention="pooled"`` computes them from the ``n_draws + 1`` values that
+    include the observed statistic.  Only the pooled version is a symmetric
+    function of the augmented sample, so only the pooled version leaves the
+    rank test exact when the observed statistic and the null replicates are
+    exchangeable.  See ``docs/phase3_5_vjm_mapping.md``.
+    """
+    if convention == "source":
+        mu = null.mean(axis=0)
+        sd = null.std(axis=0, ddof=1)
+    elif convention == "pooled":
+        pooled = np.vstack([observed[None, :], null])
+        mu = pooled.mean(axis=0)
+        sd = pooled.std(axis=0, ddof=1)
+    else:
+        raise ValueError("standardization must be 'pooled' or 'source'")
+    sd = np.maximum(sd, sd_floor)
+    return mu, sd, (observed - mu) / sd, (null - mu[None, :]) / sd[None, :]
+
+
+def _fdr_threshold(z_obs: np.ndarray, z_null: np.ndarray, alpha: float) -> dict:
+    """Source Method 3/6 false-discovery threshold on standardized statistics.
+
+    The proportions are the source's ``%V`` and ``%R``; the only deviation is
+    bookkeeping, since all ``n_draws`` null replicates are used in ``%V``
+    rather than the source's ``N - 1`` (their first column holds the observed
+    value).  With only three homology degrees the estimator is very coarse
+    (``%R`` takes four possible values), which is why Phase 3.5 reports it as
+    a diagnostic and forwards the procedure to the many-hypothesis families of
+    Phase 5.2 rather than treating it as a degree-level control.
+    """
+    candidates = np.unique(z_obs)[::-1]
+    chosen, chosen_q = None, None
+    trace = []
+    for c in candidates:
+        pV = float(np.mean(z_null >= c))
+        pR = float(np.mean(z_obs >= c))
+        q = float(pV / pR) if pR > 0 else 0.0
+        trace.append({"cutoff": float(c), "prop_null": pV, "prop_observed": pR,
+                      "q_hat": q})
+        if q <= alpha and (chosen is None or c < chosen):
+            chosen, chosen_q = float(c), q
+    rejected = ([int(d) for d in np.flatnonzero(z_obs >= chosen)]
+                if chosen is not None else [])
+    return {
+        "alpha": float(alpha),
+        "cutoff": chosen,
+        "q_hat": chosen_q,
+        "rejected_degrees": rejected,
+        "attainable_q_hat": float(min(entry["q_hat"] for entry in trace)) if trace else 1.0,
+        "trace": trace,
+    }
+
+
+def vjm_multiplicity_test(fit: DRFit, *, mechanism: str = "permutation",
+                          strata: Optional[np.ndarray] = None,
+                          n_draws: int = 399, alpha: float = 0.05,
+                          seed: Optional[int] = 0, norm: str = "sup",
+                          multiplier: str = "gaussian",
+                          standardization: str = "pooled",
+                          sd_floor: float = 1e-10,
+                          batch_size: int = 64) -> dict:
+    """Studentized empirical-null degree multiplicity comparator (Phase 3.5).
+
+    This is the P1 transfer of the Vejdemo-Johansson--Mukherjee empirical-null
+    multiple-testing construction (arXiv:1812.06491v4, Method 5 in section 3.5,
+    which is Method 2 of section 3.3.1 applied across homological dimensions of
+    one object).  Three things are deliberately *not* imported from the source
+    and the change is recorded in ``docs/phase3_5_vjm_mapping.md``:
+
+    1. the null replicates come from P1's frozen-nuisance stratified
+       permutation or shared-multiplier mechanism, not from the source's
+       uniform-on-a-convex-body point-process null, which has no meaning for a
+       covariate-adjusted treatment-effect null;
+    2. the replicates are drawn *jointly* across degrees, whereas the source
+       simulates each family member independently;
+    3. standardization defaults to the pooled convention, which keeps the rank
+       test exact under exchangeability; ``standardization="source"`` restores
+       the source's null-only constants for comparison.
+
+    Bonferroni and the unstudentized shared max-statistic are returned from the
+    same null matrix, so the three procedures are compared on identical draws.
+    """
+    family = degree_null_statistics(
+        fit, mechanism=mechanism, strata=strata, n_draws=n_draws, seed=seed,
+        norm=norm, multiplier=multiplier, batch_size=batch_size)
+    observed, null = family["observed"], family["null"]
+    n_degrees = len(observed)
+
+    per_degree_p = np.array([p_value(observed[d], null[:, d])
+                             for d in range(n_degrees)])
+    shared_max_stat = float(np.max(observed))
+    shared_max_p = p_value(shared_max_stat, np.max(null, axis=1))
+
+    conventions = {}
+    for name in ("pooled", "source"):
+        mu, sd, z_obs, z_null = _standardize_family(observed, null, name, sd_floor)
+        joint_null = np.max(z_null, axis=1)
+        joint_obs = float(np.max(z_obs))
+        conventions[name] = {
+            "mu": mu, "sigma": sd,
+            "standardized_observed": z_obs,
+            "statistic": joint_obs,
+            "pvalue": p_value(joint_obs, joint_null),
+            "critical_value": float(np.quantile(joint_null, 1.0 - alpha)),
+            "joint_null": joint_null,
+            "fdr": _fdr_threshold(z_obs, z_null, alpha),
+            "standardized_null_mean": z_null.mean(axis=0),
+            "standardized_null_sd": z_null.std(axis=0, ddof=1),
+            "standardized_null_q95": np.quantile(z_null, 0.95, axis=0),
+        }
+
+    _, _, _, z_null_pooled = _standardize_family(observed, null, "pooled", sd_floor)
+    pairwise_ks = [
+        _ks_statistic(z_null_pooled[:, i], z_null_pooled[:, j])
+        for i in range(n_degrees) for j in range(i + 1, n_degrees)
+    ]
+    primary = conventions[standardization]
+    return {
+        "method": "vjm_studentized_empirical_null",
+        "mechanism": mechanism,
+        "standardization": standardization,
+        "n_draws": int(n_draws),
+        "observed": observed,
+        "null": null,
+        "estimate": family["estimate"],
+        "statistic": primary["statistic"],
+        "pvalue": primary["pvalue"],
+        "critical_value": primary["critical_value"],
+        "fdr": primary["fdr"],
+        "conventions": conventions,
+        "per_degree_pvalue": per_degree_p,
+        "bonferroni_pvalue": float(min(1.0, n_degrees * per_degree_p.min())),
+        "shared_max_statistic": shared_max_stat,
+        "shared_max_pvalue": shared_max_p,
+        "comparability": {
+            "raw_null_mean": null.mean(axis=0),
+            "raw_null_sd": null.std(axis=0, ddof=1),
+            "max_pairwise_ks": float(max(pairwise_ks)) if pairwise_ks else 0.0,
+        },
     }
 
 

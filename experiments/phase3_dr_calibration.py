@@ -282,9 +282,27 @@ def run_shard(shard_idx: int, reps_per_shard: int, *, design: str = "oracle",
 def _load_rows(pattern: str):
     import glob
     rows = []
+    seen = {}
     for path in sorted(glob.glob(pattern)):
         with open(path) as fh:
-            rows.extend(json.load(fh)["rows"])
+            payload = json.load(fh)
+        for row in payload["rows"]:
+            # Colab appends ``(1)`` when a checkpoint is downloaded twice.
+            # Treat an identical replication-cell record as the same result,
+            # but fail loudly if two files disagree for that cell.
+            key = (row.get("rep"), row.get("n"), row.get("regime"),
+                   row.get("alternative"), row.get("learner"),
+                   row.get("stress_case"))
+            fingerprint = json.dumps(row, sort_keys=True, separators=(",", ":"))
+            previous = seen.get(key)
+            if previous is not None:
+                if previous != fingerprint:
+                    raise ValueError(
+                        f"conflicting Phase 3 rows for replication cell {key}"
+                    )
+                continue
+            seen[key] = fingerprint
+            rows.append(row)
     return rows
 
 
@@ -295,13 +313,16 @@ def aggregate(design: str = "oracle", input_dir: str = SHARDS,
         raise FileNotFoundError(f"no Phase 3 {design} shard files in {input_dir}")
     grouped = defaultdict(list)
     for row in rows:
-        key = (row.get("n"), row.get("regime"), row.get("alternative"), row.get("learner"))
+        key = (row.get("n"), row.get("regime"), row.get("alternative"),
+               row.get("learner"), row.get("stress_case"))
         grouped[key].append(row)
     summary = []
-    for (n, regime, alternative, learner), cells in sorted(grouped.items(), key=str):
+    for (n, regime, alternative, learner, stress_case), cells in sorted(
+            grouped.items(), key=str):
         out = {
             "n": n, "regime": regime, "alternative": alternative,
-            "learner": learner, "replications": len(cells),
+            "learner": learner, "stress_case": stress_case,
+            "replications": len(cells),
         }
         for method in ("multiplier", "permutation"):
             vals = np.array([c[f"{method}_p"] for c in cells])

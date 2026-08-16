@@ -152,3 +152,45 @@ python experiments/phase3_dr_calibration.py --mode aggregate --design stress
 The oracle fleet stays within the memory limit by using one bounded-memory job
 per notebook and vectorized permutation batches instead of storing all draws
 at once.
+
+## Phase 3.5 multiplicity comparator fleet
+
+`make_phase3_5_notebooks.py` writes eight self-contained notebooks for the
+Phase 3.5 benchmark of the four degree-multiplicity procedures: Bonferroni,
+the Phase 3 unstudentized shared max-statistic, and the studentized
+empirical-null comparator adapted from Vejdemo-Johansson and Mukherjee under
+both its pooled and its source standardization. Every replication produces one
+cross-fitted fit and one shared null matrix per mechanism, and all four
+procedures are read off that single matrix, so the differences between them
+carry no Monte Carlo noise from the calibration.
+
+Four `phase3_5_fwer_nb_*.ipynb` notebooks carry the 500-replication
+pre-registered decision (FWER in [0.03, 0.08] at alpha = 0.05). One
+`phase3_5_power_nb_00.ipynb` measures validity and power under a deliberate
+per-degree scale imbalance, `phase3_5_degrees3_nb_00.ipynb` repeats it with the
+three-degree family, and `phase3_5_learners_nb_00.ipynb` and
+`phase3_5_stress_nb_00.ipynb` cover the propensity-learner and
+double-robustness nulls. Each notebook is roughly 25 minutes at measured local
+rates, and each shard is 25 replications, so a dropped session costs one
+checkpoint.
+
+```bash
+python experiments/colab/make_phase3_5_notebooks.py            # all designs
+python experiments/phase3_5_vjm.py --mode aggregate --design fwer
+python experiments/phase3_5_vjm.py --mode aggregate --design power
+python experiments/phase3_5_vjm.py --mode aggregate --design degrees3
+python experiments/phase3_5_vjm.py --mode aggregate --design learners
+python experiments/phase3_5_vjm.py --mode aggregate --design stress
+```
+
+Downloaded shards belong in `results/phase3_5_shards/`. The `fwer` design
+reuses the Phase 3 oracle null design and every Phase 3 seed, so its shared-max
+column reproduces the published Phase 3 p-values exactly; verify with
+
+```bash
+python experiments/phase3_5_vjm.py --mode check-phase3
+```
+
+which recomputes 36 null cells from the downloaded Phase 3 shards and fails on
+any digit of disagreement. The audit that licenses the comparator, and the
+list of what does not transfer from the source, is `docs/phase3_5_vjm_mapping.md`.

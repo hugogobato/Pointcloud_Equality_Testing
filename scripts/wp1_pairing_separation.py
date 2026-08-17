@@ -11,9 +11,10 @@ Statistics
 ----------
   A      -- the mean functional of the NORMALIZED power-weighted silhouette
             (Kim & Lee's estimand; what H0^out compares).
-  T(i)   -- expected persistence measure, L1 on a fixed grid (Divol-Lacombe;
-            plan candidate (i)).
-  T(ii)  -- MMD under the universal persistence scale-space kernel
+  T(i)   -- expected persistence measure, L1 on a fixed grid, with the same
+            persistence power r=3 as the silhouette (Divol-Lacombe; plan
+            candidate (i)).
+  T(ii)  -- squared MMD under the universal persistence scale-space kernel
             k^U_sigma(F, G) = exp(k_sigma(F, G)) of Kwitt, Huber, Niethammer,
             Lin & Bauer, NIPS 2015, Proposition 2: universal with respect to
             d_{W,1} on the set S of diagrams with birth/death bounded by R and
@@ -65,11 +66,12 @@ def mean_silhouette(law):
 
 
 def expected_measure(law):
-    """Expected persistence measure on the fixed grid, weight = persistence."""
+    """Expected persistence measure on the fixed grid, matched to silhouette r."""
     out = 0.0
     for prob, dgm in law:
         out = out + prob * persistence_measure(
             [np.asarray(dgm, float).reshape(-1, 2)],
+            weight=lambda p: float(abs(p[1] - p[0]) ** R_POW),
             interval=IV, n_bins=N_BINS)[0].ravel()
     return out
 
@@ -119,11 +121,11 @@ def main():
     for name, (law0, law1) in witnesses().items():
         a = float(np.abs(mean_silhouette(law1) - mean_silhouette(law0)).max())
         t1 = float(np.abs(expected_measure(law1) - expected_measure(law0)).sum())
-        t2 = mmd_universal(law0, law1)
+        t2 = mmd_universal(law0, law1) ** 2
         rows.append((name, a, t1, t2))
 
     print(f"{'witness':>8} | {'A: sup|mean sil gap|':>21} | "
-          f"{'T(i): L1 exp. measure':>22} | {'T(ii): MMD, universal':>22}")
+          f"{'T(i): L1 exp. measure (r=3)':>28} | {'T(ii): MMD^2, universal':>25}")
     print("-" * 84)
     for name, a, t1, t2 in rows:
         print(f"{name:>8} | {a:21.6f} | {t1:22.6f} | {t2:22.6f}")

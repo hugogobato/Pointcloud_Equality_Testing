@@ -176,14 +176,17 @@ checkpoint.
 
 ```bash
 python experiments/colab/make_phase3_5_notebooks.py            # all designs
-python experiments/phase3_5_vjm.py --mode aggregate --design fwer
-python experiments/phase3_5_vjm.py --mode aggregate --design power
-python experiments/phase3_5_vjm.py --mode aggregate --design degrees3
-python experiments/phase3_5_vjm.py --mode aggregate --design learners
-python experiments/phase3_5_vjm.py --mode aggregate --design stress
+for d in fwer power degrees3 learners stress; do
+  python -m experiments.phase3_5_vjm --mode aggregate --design "$d" \
+      --input-dir experiments/colab
+done
 ```
 
-Downloaded shards belong in `results/phase3_5_shards/`. The `fwer` design
+Downloaded shards live here in `experiments/colab/`, next to the Phase 3 ones,
+which is why the aggregation above passes `--input-dir`; the driver defaults to
+`results/phase3_5_shards/` instead, so pass the flag or move the files. The
+fleet is complete: 20 `fwer` shards, 8 `power`, 8 `degrees3`, 4 `learners` and
+4 `stress`, with no duplicate or conflicting records. The `fwer` design
 reuses the Phase 3 oracle null design and every Phase 3 seed, so its shared-max
 column reproduces the published Phase 3 p-values exactly; verify with
 
@@ -192,5 +195,10 @@ python experiments/phase3_5_vjm.py --mode check-phase3
 ```
 
 which recomputes 36 null cells from the downloaded Phase 3 shards and fails on
-any digit of disagreement. The audit that licenses the comparator, and the
-list of what does not transfer from the source, is `docs/phase3_5_vjm_mapping.md`.
+any digit of disagreement. At full budget the aggregated `fwer` summary also
+matches all 12 published Phase 3 oracle null cells in both mechanisms.
+
+The pre-registered band fired PASS: 0.0392 under the frozen permutation and
+0.0448 under the multiplier, over 6000 replications each. The audit that
+licenses the comparator, the list of what does not transfer from the source,
+and the full result tables are in `docs/phase3_5_vjm_mapping.md` §4.5-4.6.

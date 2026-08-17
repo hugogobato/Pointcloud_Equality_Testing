@@ -123,9 +123,10 @@ def split_cluster_cloud(n_per_blob, n_blobs, separation=3.0, noise=0.15,
     radius ``noise`` (degenerate randomness), so under the radius-convention
     filtrations of ``tda2s.ph`` (alpha, Delaunay-Cech) the merge scale is
     exactly ``(separation - 2 * noise) / 2`` and the mean-silhouette equality
-    holds realization by realization, not only in expectation. Requires
-    ``n_gon`` divisible by 4 for ``n_blobs`` in {2, 3}, so that a vertex sits
-    exactly on the inter-blob axis in both arrangements; with the default
+    holds realization by realization, not only in expectation. For the exact
+    orientations used here, ``n_gon`` must be even for two blobs and divisible
+    by 12 for three blobs, so a vertex sits exactly on each relevant inter-blob
+    axis; with the default
     ``n_gon=12`` the within-blob classes all die at
     ``noise * sin(pi / n_gon)`` (0.0388 at the defaults), well below the
     persistence threshold used to isolate the merge classes.
@@ -146,7 +147,9 @@ def split_cluster_cloud(n_per_blob, n_blobs, separation=3.0, noise=0.15,
         noise: per-blob scale: Gaussian standard deviation (stochastic) or
             blob radius (deterministic).
         deterministic: use fixed regular polygons instead of Gaussian blobs.
-        n_gon: vertices per blob in the deterministic case (default 12).
+        n_gon: vertices per blob in the deterministic case (default 12; use an
+            even count for the two-blob line and a multiple of 12 for three
+            blobs in the exact orientation).
         rng: seed or Generator.
 
     Returns:
@@ -168,6 +171,54 @@ def split_cluster_cloud(n_per_blob, n_blobs, separation=3.0, noise=0.15,
             blob = centers[k] + noise * np.column_stack([np.cos(theta), np.sin(theta)])
         else:
             blob = centers[k] + rng.normal(scale=noise, size=(n_per_blob, 2))
+        pts.append(blob)
+    return np.vstack(pts)
+
+
+def merge_staircase_cloud(merge_scales, noise=0.15, deterministic=True,
+                          n_gon=12, rng=None):
+    """Cloud whose H_0 classes die at the prescribed merge scales, one by one.
+
+    This is the Phase 4 reverse-witness (W2') arm-0 DGP: ``len(merge_scales) + 1`` blobs on
+    a line, placed so that consecutive blobs merge at exactly the given
+    scales.  With ``deterministic=True`` each blob is a fixed regular
+    ``n_gon``-gon of radius ``noise`` and the alpha-filtration merge scales
+    are exactly ``(distance - 2 * noise) / 2``, so the H_0 diagram (filtered
+    above the within-blob class scale ``noise * sin(pi / n_gon)``) is
+    realization-invariant: ``{(0, s_1), ..., (0, s_k)}``.
+
+    Args:
+        merge_scales: the H_0 death scales, in the order the blobs merge
+            (blob ``k+1`` sits ``2 * s_{k+1} + 2 * noise`` beyond blob ``k``).
+        noise: blob radius in the deterministic case.
+        deterministic: fixed regular polygons (exact merges); the stochastic
+            Gaussian case is a diagnostic only and does not keep the deaths
+            exact.
+        n_gon: vertices per blob in the deterministic case (must be even so a
+            vertex sits on the line's inter-blob axis).
+        rng: seed or Generator.
+
+    Returns:
+        ``(n, 2)`` point cloud with one H_0 class per merge scale.
+    """
+    rng = _as_rng(rng)
+    scales = [float(s) for s in merge_scales]
+    if not scales or any(s <= 0.0 for s in scales):
+        raise ValueError("merge_scales must be a non-empty list of positive scales")
+    centers = [(0.0, 0.0)]
+    p = 0.0
+    for s in scales:
+        p += 2.0 * s + 2.0 * float(noise)
+        centers.append((p, 0.0))
+    pts = []
+    for cx, cy in centers:
+        if deterministic:
+            theta = 2.0 * np.pi * np.arange(int(n_gon)) / int(n_gon)
+            blob = np.column_stack([cx + noise * np.cos(theta),
+                                    cy + noise * np.sin(theta)])
+        else:
+            blob = np.column_stack([cx, cy]) + rng.normal(
+                scale=noise, size=(int(n_gon), 2))
         pts.append(blob)
     return np.vstack(pts)
 

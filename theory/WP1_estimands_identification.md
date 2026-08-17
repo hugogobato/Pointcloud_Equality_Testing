@@ -229,33 +229,31 @@ and is the Phase 4.4 separation DGP. Results at $n=300$ clouds per group, 300 pe
 | Cloud exact (deterministic blobs + threshold $\tau = 0.3$) | H0 counts | 1 vs 2 | the split is realized by the PH pipeline |
 | Cloud exact | H0 deaths | 1.350 both groups | equal merge scale exactly |
 | Cloud exact | mean-silhouette gap | 0.000e+00 | mean preserved, realization by realization |
-| Cloud exact | expected-measure distance | 1.350 | distribution-level separation |
+| Cloud exact | expected-measure distance | 2.460375 | distribution-level separation, weight power $r=3$ |
 | Cloud exact | Robinson–Turner "within" $p$, $N=16$ | 0.005 | **RT rejects**, at the minimum attainable $p$; see §6.3 |
 | Cloud Gaussian (diagnostic) | gap / null SD | 3.2 | noisy geometry breaks exactness, see remark |
 
 **Three caveats on this table, so it is not over-read.** First, 10 Monte Carlo replications
 establish *existence* of the two witnesses, nothing about calibration: a test with true size 0.20
 yields $\ge 1/10$ rejections with probability 0.89, so "1/10" is not evidence of size control and
-must not be quoted as such. Phase 4.4's exit criterion (power $\ge 0.8$ against $\le 0.07$) needs
-$\ge 500$ replications and is out of scope here. Second, the deterministic cloud witness has
-different cardinalities in the two arms (24 versus 36 points, $n_{\mathrm{blobs}} \times 12$), so
-cloud size is confounded with the split; Phase 4.4 must either declare cloud size part of the
-treatment or equalise it by subsampling before claiming the outcome-level test has power exactly
-$\alpha$. Third, the persistence-measure grid is now pinned (see §6.5): binning each diagram
+must not be quoted as such. Phase 4.4's 300-replication fleet supplies an empirical exit check, not a
+formal calibration theorem. Second, the Phase 4 deterministic cloud witness has equal total cardinality in both arms.
+The 18-gon versus 12-gon choice equalises total cardinality at 36 points; the different within-blob
+resolutions are part of the construction and their short classes are removed by the threshold.
+Third, the persistence-measure grid is now pinned (see §6.5): binning each diagram
 against its own range silently collapses the statistic to total weighted mass.
 
-The deterministic cloud construction: each blob is a regular 12-gon of radius 0.15; two blobs
+The deterministic cloud construction: the two-blob arm uses regular 18-gons and the three-blob
+arm regular 12-gons, all of radius 0.15; two blobs
 (one $H_0$ class, death $(3.0 - 0.3)/2 = 1.35$) versus three blobs in an equilateral
 arrangement (two classes, both dying at 1.35). Persistence thresholding at $\tau = 0.3$ removes
-the tiny within-blob classes (death 0.039) that exist in both groups; without it the mean
+the tiny within-blob classes (deaths below 0.039) that exist in both groups; without it the mean
 silhouette equality is only approximate at the $10^{-4}$ level. With noisy Gaussian blobs the
 two classes become the two smallest order statistics of three pair-merge scales, biasing the
 mean silhouette (gap 3.2 null SDs in the diagnostic), so Phase 4.4 must use the deterministic
-DGP or tightly-clustered thresholded diagrams for its "power equals alpha" claim. (The 12-gon
-orientation is not incidental: the inter-blob axis lies at $0°/180°$ for two blobs and at
-$150°/330°$ for three, both multiples of $30°$, so a vertex sits exactly on the axis in both
-arrangements and the merge scale is identical to machine precision. A polygon count not divisible
-by 4 would break the exactness.)
+DGP or tightly-clustered thresholded diagrams for its low-outcome-rejection claim. The 18-gon
+two-blob arm has vertices on the $0°/180°$ axis, while the 12-gon three-blob arm has vertices on
+the relevant $150°/330°$ axes, so the merge scale is identical to machine precision.
 
 ---
 
@@ -471,9 +469,9 @@ conclusion.
 2. **Exact mean-preserving DGPs need deterministic geometry or thresholding.** Noisy blob
    geometry turns the two $H_0$ classes of the split group into order statistics of three
    pair-merge scales, biasing the mean silhouette (3.2 null SDs at the diagnostic's settings).
-   Phase 4.4's "Phase 3 has power = $\alpha$" claim must use `split_cluster_cloud(...,
-   deterministic=True)` with the persistence threshold, exactly as in `wp1_counterexample.py`,
-   and must additionally equalise cloud cardinality across arms (§1.4).
+   Phase 4.4's low-outcome-rejection diagnostic must use
+   `split_cluster_cloud(..., deterministic=True)` with the persistence threshold, exactly as in
+   `wp1_counterexample.py`, and must additionally equalise cloud cardinality across arms (§1.4).
 3. **Robinson–Turner detects W1 decisively; the earlier "p = 1" reading was inverted.** With
    equal merge scales, within-group bottleneck distances are zero and cross-group distances are
    $\ell/2 = 0.675$, so the observed within-loss is the *minimum* attainable — and RT rejects for
@@ -502,6 +500,9 @@ conclusion.
    is $4.02$ — zero power. W1 and W2′ survived it only because their separation *is* mass. Fixed
    in `scripts/wp1_counterexample.py` (`_meas` now pins `interval=(0, 2)`); Phase 4.2/4.3 must
    pin the grid once, globally, before any group contrast, and Phase 2.3 must do the same.
+   Accordingly, the implemented Phase 4 target is the fixed-grid projection of the expected
+   persistence measure. Equality of the unprojected measures is not certified by a finite grid
+   unless a resolution or injectivity argument is added.
 
 ---
 
@@ -534,8 +535,8 @@ enters; $0$ means the statistic cannot see the witness):
 | Statistic | W1 | W2′ | Induced relation to $H_0^{\mathrm{out}}$ |
 |---|---|---|---|
 | $\mathcal A$: mean normalized silhouette | $0$ | $0.544$ | *is* $H_0^{\mathrm{out}}$ |
-| (i) expected persistence measure, $L^1$ | $1.350$ | $0$ | **logically independent** |
-| (ii) MMD under the universal kernel $k^U_\sigma$ | $1.385$ | $0.631$ | **strictly stronger** |
+| (i) expected persistence measure, $L^1$ (weight power $r=3$) | $2.460375$ | $0$ | **logically independent** |
+| (ii) squared MMD under the universal kernel $k^U_\sigma$ | $1.916989$ | $0.398762$ | **strictly stronger** |
 
 The middle row is the paper's headline pairing and is what keeps C2 a genuinely second test; the
 bottom row is available off the shelf (the kernel is already wrapped by task 0.5) and should be

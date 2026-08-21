@@ -63,7 +63,9 @@ def test_dtm_rips_noisy_circle_prominent_h1():
 
     gudhi 3.11's DistanceToMeasure is not callable; the module uses
     fit_transform and the weighted Rips complex. The circle has radius 1, so
-    the H1 class persisting for more than half the radius scale is prominent.
+    on the radius scale the H1 class persists for more than a quarter of the
+    radius: its death is near the radius and its birth near the smallest
+    chord (both far below 0.25 for a dense cloud).
     """
     pts = _noisy_circle(n=200, noise=0.05)
     diags = compute_diagrams(pts, filtration="dtm-rips", homology_dims=(0, 1),
@@ -72,7 +74,7 @@ def test_dtm_rips_noisy_circle_prominent_h1():
     assert h1.shape[1] == 2
     assert len(h1) > 0
     pers = h1[:, 1] - h1[:, 0]
-    assert pers.max() > 0.5 * 1.0
+    assert pers.max() > 0.25 * 1.0
     assert np.isfinite(h1).all()
 
 
@@ -138,10 +140,9 @@ def test_torus_betti_alpha_and_vr():
     """Alpha and VR filtrations on a noisy grid torus recover Betti (1, 2, 1).
 
     Features are counted above the largest persistence gap per dim (with a
-    floor of 0.1 relative to the torus minor radius r=1). For this fixed cloud
-    the gaps are: H0 0.289 -> 0.326 (alpha) / 0.578 -> 0.652 (vr), H1
-    0.324 -> 0.52 (alpha) / 0.62 -> 0.96 (vr), H2 0.108 -> 0.326 (alpha) /
-    0.204 -> 0.538 (vr).
+    floor of 0.1 relative to the torus minor radius r=1). Both filtrations
+    share the radius scale, so the persistence gaps agree; the counts are
+    scale-invariant in any case.
     """
     pts = _torus_grid()
     assert len(pts) <= 500
@@ -156,6 +157,36 @@ def test_torus_betti_alpha_and_vr():
         for dim, count in enumerate(counts):
             pers = diags[dim][:, 1] - diags[dim][:, 0]
             assert (np.sort(pers)[-count:] > 0.1).all()
+
+
+def test_two_point_radius_scale():
+    """Every filtration reports the radius scale: two points at distance 2
+    merge at radius 1.
+
+    GUDHI Rips, ripser and DTM-Rips report *edge lengths* (the diameter
+    parameterization) internally, so their extractors must halve the
+    filtration values; Alpha and Delaunay-Cech report squared circumradii and
+    are square-rooted. A regression here means one backend silently changed
+    axis, which would corrupt every cross-filtration comparison and the
+    locked Phase 5 Vietoris--Rips target.
+    """
+    pts = [[0.0, 0.0], [2.0, 0.0]]
+    for filtration, kw in (
+        ("alpha", dict(max_edge_length=4.0)),
+        ("cech", dict(max_edge_length=4.0)),
+        ("vr", dict(max_edge_length=4.0)),
+        ("ripser", dict(max_edge_length=4.0)),
+        ("dtm-rips", dict(dtm_k=1, max_edge_length=4.0)),
+    ):
+        dgm = compute_diagrams(pts, filtration=filtration, homology_dims=(0, 1), **kw)
+        assert len(dgm[0]) == 1, filtration
+        assert np.allclose(dgm[0][:, 1], 1.0), f"{filtration} H0 death {dgm[0][:, 1]}"
+        assert len(dgm[1]) == 0, filtration
+
+    # cubical resolves the same merge on a discrete grid (within grid error)
+    cub = compute_diagrams([[-1.0], [1.0]], filtration="cubical",
+                           homology_dims=(0, 1), grid_size=200)
+    assert np.allclose(cub[0][:, 1], 1.0, atol=0.01)
 
 
 def test_vr_ripser_agreement():

@@ -148,8 +148,8 @@ def test_simpson_unstratified_permutation_is_anticonservative():
 # bootstrap distribution, as if the latter were a null, is a category error:
 # the bootstrap distribution is centred at the statistic, not at zero.
 
-_H1_GRID = (0.0, 2.0)   # a circle of radius r has its H1 class die near sqrt(3) r
-_T0_INDEX = 40          # t ~ 0.808 on a 100-point grid over [0, 2]
+_H1_GRID = (0.0, 1.0)   # radius scale: a circle of radius r has its H1 class die near sqrt(3) r / 2
+_T0_INDEX = 40          # t ~ 0.404 on a 100-point grid over [0, 1]
 
 
 def _h1_diagrams(n_samples, n=80, seed=0):

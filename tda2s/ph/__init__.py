@@ -9,11 +9,17 @@ Conventions
   homology dimension, returned as a list indexed by homology dim.
 * Essential classes (death = inf) are dropped: with filtrations of compact
   point sets every class dies, and tcda_uq uses the same convention.
-* All filtration values are radii. Alpha *and* Delaunay-Cech report squared
-  circumradii internally, so both extractors take a square root; Rips/ripser
-  and DTM-Rips are already on the radius scale.
-* Diagrams are cached to disk keyed by (point-cloud hash, filtration, params):
-  permutation tests must never recompute PH inside the permutation loop.
+* All filtration values are on the radius scale: an edge between two points
+  at distance ``d`` enters the complex at radius ``d/2``. The six backends
+  disagree internally on the raw scale they report, so every extractor
+  normalises explicitly: Alpha and Delaunay-Cech report *squared*
+  circumradii (``sqrt`` in the extractor), while GUDHI Rips, ripser and
+  DTM-Rips report edge lengths (``0.5 *`` in the extractor). This is pinned
+  by ``test_ph.py::test_two_point_radius_scale``.
+* Diagrams are cached to disk keyed by (point-cloud hash, filtration, params,
+  scale schema): permutation tests must never recompute PH inside the
+  permutation loop, and a change of scale convention must never be served
+  from a stale cache.
 * gudhi pair format: ``st.persistence()`` yields ``(dim, (birth, death))``
   tuples with essential classes as ``(dim, (birth, inf))``. Extractors are
   defensive about non-tuple payloads anyway (see ``_drop_infinite``), and
@@ -33,6 +39,11 @@ import numpy as np
 
 _HOMOLOGY_DIMS = (0, 1, 2)
 
+#: Scale schema of the cached diagrams. Bump when the filtration-value
+#: convention changes so stale caches (keyed by cloud + params only) can
+#: never be served as if they were current.
+_SCALE_SCHEMA = "radius-scale-v2"
+
 
 @dataclass
 class PhParams:
@@ -49,7 +60,7 @@ class PhParams:
         h = hashlib.sha256()
         h.update(np.ascontiguousarray(points, dtype=np.float32).tobytes())
         h.update(repr((self.filtration, self.homology_dims, self.max_edge_length,
-                       self.grid_size, self.dtm_k)).encode())
+                       self.grid_size, self.dtm_k, _SCALE_SCHEMA)).encode())
         return h.hexdigest()[:24]
 
 
@@ -67,6 +78,21 @@ def _drop_infinite(dgm: np.ndarray) -> np.ndarray:
     if dgm.size == 0:
         return dgm.reshape(0, 2)
     return dgm[np.isfinite(dgm[:, 1])]
+
+
+def _to_radius_scale(dgm: np.ndarray) -> np.ndarray:
+    """Convert a diagram on the edge-length scale to the radius scale.
+
+    GUDHI Rips, ripser and DTM-Rips assign an edge between points at distance
+    ``d`` the filtration value ``d`` (the diameter parameterization); the
+    radius filtration puts that edge at ``d/2``. All other extractors in this
+    module already return radius-scale values, so the module's public
+    convention is the radius scale.
+    """
+    dgm = np.asarray(dgm, dtype=float)
+    if dgm.size == 0:
+        return dgm.reshape(0, 2)
+    return dgm * 0.5
 
 
 def _alpha_diagrams(pts: np.ndarray, max_dim: int, max_edge_length) -> List[np.ndarray]:
@@ -92,8 +118,8 @@ def _vr_diagrams(pts: np.ndarray, max_dim: int, max_edge_length) -> List[np.ndar
     rc = gd.RipsComplex(points=pts, max_edge_length=max_edge_length or np.inf)
     st = rc.create_simplex_tree(max_dimension=max_dim + 1)
     st.compute_persistence()
-    return [_drop_infinite(np.array(
-        [p[1] for p in st.persistence() if p[0] == d], dtype=float).reshape(-1, 2))
+    return [_to_radius_scale(_drop_infinite(np.array(
+        [p[1] for p in st.persistence() if p[0] == d], dtype=float).reshape(-1, 2)))
         for d in range(max_dim + 1)]
 
 
@@ -104,7 +130,7 @@ def _ripser_diagrams(pts: np.ndarray, max_dim: int, max_edge_length) -> List[np.
     out = []
     for d in range(max_dim + 1):
         dgm = _drop_infinite(np.asarray(dgms[d], dtype=float))
-        out.append(dgm)
+        out.append(_to_radius_scale(dgm))
     return out
 
 
@@ -170,8 +196,8 @@ def _dtm_rips_diagrams(pts: np.ndarray, max_dim: int, dtm_k: int, max_edge_lengt
                              max_filtration=max_edge_length if max_edge_length is not None else np.inf)
     st = rc.create_simplex_tree(max_dimension=max_dim + 1)
     st.compute_persistence()
-    return [_drop_infinite(np.array(
-        [p[1] for p in st.persistence() if p[0] == d], dtype=float).reshape(-1, 2))
+    return [_to_radius_scale(_drop_infinite(np.array(
+        [p[1] for p in st.persistence() if p[0] == d], dtype=float).reshape(-1, 2)))
         for d in range(max_dim + 1)]
 
 

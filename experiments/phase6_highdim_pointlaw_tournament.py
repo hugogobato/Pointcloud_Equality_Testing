@@ -172,10 +172,14 @@ NOISE_SCALE_PCA_FAIL = 1.5
 CORE_FAMILIES = ("iid_null", "weak_barcode_null", "same_support_density", "same_square_four_atom_density", "topology_alt")
 SPARSE_DENSE_FAMILIES = ("sparse_shift_08", "dense_shift_08")
 PCA_FAIL_FAMILIES = ("pca_fail_sparse_shift", "pca_fail_topology")
+# New dense-signal families: signal in many raw dimensions (ecology realism)
+EXTRA_DENSE_FAMILIES = ("dense_same_support_density", "dense_topology_rotated", "covariance_shift")
 # Primary benchmark families (as requested)
 PRIMARY_FAMILIES = CORE_FAMILIES
 # Extended families for PCA-failure exploration (high-noise embedding)
 EXTENDED_FAMILIES = CORE_FAMILIES + SPARSE_DENSE_FAMILIES + PCA_FAIL_FAMILIES
+# Full extra dense set (core + sparse/dense + pca_fail + dense_signal)
+EXTRA_DENSE_FULL = CORE_FAMILIES + SPARSE_DENSE_FAMILIES + PCA_FAIL_FAMILIES + EXTRA_DENSE_FAMILIES
 
 FAMILY_ROLE_EXT = dict(FAMILY_ROLE)
 FAMILY_ROLE_EXT.update({
@@ -184,6 +188,9 @@ FAMILY_ROLE_EXT.update({
     "dense_shift_08": "power_dense",
     "pca_fail_sparse_shift": "pca_failure_sparse",
     "pca_fail_topology": "pca_failure_topology",
+    "dense_same_support_density": "dense_density",
+    "dense_topology_rotated": "dense_topology",
+    "covariance_shift": "covariance_shift",
 })
 FAMILY_DESCRIPTION_EXT = dict(FAMILY_DESCRIPTION)
 FAMILY_DESCRIPTION_EXT.update({
@@ -192,6 +199,9 @@ FAMILY_DESCRIPTION_EXT.update({
     "dense_shift_08": "dense mean shift +0.8/sqrt(d) in all d coordinates (same L2 as sparse)",
     "pca_fail_sparse_shift": "sparse shift +1.0 in low-variance dim with high-noise background (noise_scale=1.5) — PCA discards signal",
     "pca_fail_topology": "disk vs circle in low-variance subspace (2 dims var 0.1) with d-2 noise dims var 2.25 — PCA discards topology",
+    "dense_same_support_density": "dense density: uniform vs 0.2U+0.8Beta(2.5,2.5) independently in all d dims (signal in many dims)",
+    "dense_topology_rotated": "dense topology: disk vs circle in 2D then randomly rotated into d dims (signal spread across many coords)",
+    "covariance_shift": "covariance shift: N(0,I) vs N(0,Sigma) with block correlation rho=0.6 in d/2 dims (signal in correlation, many dims)",
 })
 
 RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results")
@@ -434,6 +444,73 @@ def make_cloud_pair_highdim(family: str, n0: int, n1: int, seed: int, d: int = 2
         if d != 2:
             c0 = _embed_cloud_high(c0, d, noise_scale, _seed("embed0", seed, d))
             c1 = _embed_cloud_high(c1, d, noise_scale, _seed("embed1", seed, d))
+        return c0, c1
+    if family == "dense_same_support_density":
+        # Dense density: mixture independently in ALL d dimensions (signal in many dims)
+        # P0: Uniform[0,1]^d, P1: 0.2 Uniform + 0.8 Beta(2.5,2.5) per dimension iid
+        rng0 = np.random.default_rng(seed)
+        rng1 = np.random.default_rng(_seed("dense_density_q", seed))
+        c0 = rng0.uniform(0.0, 1.0, size=(n0, d))
+        # For P1, per point per dimension mixture
+        mask = rng1.uniform(size=(n1, d)) < 0.8
+        beta = rng1.beta(2.5, 2.5, size=(n1, d))
+        uniform = rng1.uniform(0.0, 1.0, size=(n1, d))
+        # Need second rng for uniform vs beta? Use same rng1 but need independent uniform for mixture selection
+        # mask already decides, beta and uniform already drawn
+        c1 = np.where(mask, beta, uniform)
+        return c0, c1
+    if family == "dense_topology_rotated":
+        # Dense topology: disk vs circle in 2D then randomly rotated into d dims
+        # Generate base 2D as before, pad to d dims with zeros, rotate by random orthogonal R
+        rng0 = np.random.default_rng(_seed("dense_topo_base0", seed))
+        rng1 = np.random.default_rng(_seed("dense_topo_base1", seed))
+        # Base 2D signals centered at 0 (like pca_fail but without high-var noise)
+        def filled_disk(n, rng_):
+            theta = rng_.uniform(0.0, 2*np.pi, size=int(n))
+            radial = 0.3 * np.sqrt(rng_.uniform(0.0, 1.0, size=int(n)))
+            pts = np.column_stack([radial * np.cos(theta), radial * np.sin(theta)])
+            return pts
+        def noisy_circle(n, rng_):
+            theta = rng_.uniform(0.0, 2*np.pi, size=int(n))
+            pts = np.column_stack([np.cos(theta), np.sin(theta)]) * 0.3
+            pts += rng_.normal(0.0, 0.008, size=pts.shape)
+            return pts
+        base0_2d = filled_disk(n0, rng0)
+        base1_2d = noisy_circle(n1, rng1)
+        # Pad to d dims
+        pad0 = np.zeros((n0, d))
+        pad1 = np.zeros((n1, d))
+        pad0[:, :2] = base0_2d
+        pad1[:, :2] = base1_2d
+        # Add small isotropic noise in all dims to avoid exact degeneracy (ecological measurement noise)
+        pad0 += np.random.default_rng(_seed("dense_topo_noise0", seed)).normal(0.0, 0.02, size=pad0.shape)
+        pad1 += np.random.default_rng(_seed("dense_topo_noise1", seed)).normal(0.0, 0.02, size=pad1.shape)
+        # Random rotation: sample Gaussian matrix, QR to get orthogonal, deterministic from seed
+        rng_rot = np.random.default_rng(_seed("dense_topo_rot", seed, d))
+        G = rng_rot.normal(size=(d, d))
+        Q, _ = np.linalg.qr(G)
+        # Ensure determinant 1 (proper rotation) - not essential
+        if np.linalg.det(Q) < 0:
+            Q[:, 0] *= -1
+        c0 = pad0 @ Q.T
+        c1 = pad1 @ Q.T
+        # Finally add moderate irrelevant noise? Already included 0.02, keep as is
+        # Optionally add noise_scale-like extra irrelevant dims? Already dense, so not needed
+        return c0, c1
+    if family == "covariance_shift":
+        # Covariance shift: P0 = N(0, I), P1 = N(0, Sigma) where Sigma has block correlation rho=0.6
+        # Signal in many dims (covariance structure), mean unchanged — tests must detect correlation, not location
+        rng0 = np.random.default_rng(seed)
+        rng1 = np.random.default_rng(_seed("cov_shift_q", seed))
+        c0 = rng0.normal(0.0, 1.0, size=(n0, d))
+        # Build Sigma: block of size k = d//2 with rho=0.6, rest identity
+        k = max(2, d // 2)
+        Sigma = np.eye(d)
+        Sigma[:k, :k] = 0.6
+        np.fill_diagonal(Sigma[:k, :k], 1.0)
+        # Use Cholesky
+        L = np.linalg.cholesky(Sigma)
+        c1 = rng1.normal(0.0, 1.0, size=(n1, d)) @ L.T
         return c0, c1
     # default: use base DGP then embed
     c0, c1 = make_cloud_pair(family, n0, n1, seed)

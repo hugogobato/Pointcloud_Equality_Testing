@@ -38,3 +38,7 @@ RESEARCH_DECISION.md
 RESEARCH_PLAN_P1_TwoSample.md
 RESEARCH_PLAN_P2_FiltrationEquivalence.md
 interim_report/
+
+# Phase 5 single-pointcloud benchmark — archived to its own repo (copy-then-verify-then-delete)
+# Will be moved to \\wsl.localhost\Ubuntu\home\hugo_souto\Stuff\Research\single_pointcloud_testing
+single_pointcloud_testing/

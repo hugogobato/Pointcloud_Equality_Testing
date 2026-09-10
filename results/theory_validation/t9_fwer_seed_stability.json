@@ -1,0 +1,100 @@
+{
+ "alpha": 0.05,
+ "chisq_in_two_sided_3se": 0,
+ "chisq_pooled_mc_se": 0.0017385787298825443,
+ "chisq_pooled_rate": 0.031200000000000006,
+ "gaussian_in_two_sided_3se": 4,
+ "gaussian_pooled_mc_se": 0.0021056531053333548,
+ "gaussian_pooled_rate": 0.0465,
+ "reps": 2500,
+ "rows": [
+  {
+   "alpha": 0.05,
+   "indep_mc_se": 0.0040661411682330955,
+   "indep_rate": 0.0432,
+   "kind": "gaussian",
+   "n": 100,
+   "reps": 2500,
+   "rho_deg": 0.9,
+   "shared_mc_se": 0.004292199436186534,
+   "shared_rate": 0.0484
+  },
+  {
+   "alpha": 0.05,
+   "indep_mc_se": 0.0037850315718630408,
+   "indep_rate": 0.0372,
+   "kind": "gaussian",
+   "n": 100,
+   "reps": 2500,
+   "rho_deg": 0.9,
+   "shared_mc_se": 0.004308993385931336,
+   "shared_rate": 0.0488
+  },
+  {
+   "alpha": 0.05,
+   "indep_mc_se": 0.00376540887554061,
+   "indep_rate": 0.0368,
+   "kind": "gaussian",
+   "n": 100,
+   "reps": 2500,
+   "rho_deg": 0.9,
+   "shared_mc_se": 0.004342342225113078,
+   "shared_rate": 0.0496
+  },
+  {
+   "alpha": 0.05,
+   "indep_mc_se": 0.0033448802669153945,
+   "indep_rate": 0.0288,
+   "kind": "gaussian",
+   "n": 100,
+   "reps": 2500,
+   "rho_deg": 0.9,
+   "shared_mc_se": 0.003881410053060614,
+   "shared_rate": 0.0392
+  },
+  {
+   "alpha": 0.05,
+   "indep_mc_se": 0.003060980235153439,
+   "indep_rate": 0.024,
+   "kind": "chisq",
+   "n": 100,
+   "reps": 2500,
+   "rho_deg": 0.9,
+   "shared_mc_se": 0.0035622554652916176,
+   "shared_rate": 0.0328
+  },
+  {
+   "alpha": 0.05,
+   "indep_mc_se": 0.003010764686919255,
+   "indep_rate": 0.0232,
+   "kind": "chisq",
+   "n": 100,
+   "reps": 2500,
+   "rho_deg": 0.9,
+   "shared_mc_se": 0.003498653455259609,
+   "shared_rate": 0.0316
+  },
+  {
+   "alpha": 0.05,
+   "indep_mc_se": 0.0028272842092722126,
+   "indep_rate": 0.0204,
+   "kind": "chisq",
+   "n": 100,
+   "reps": 2500,
+   "rho_deg": 0.9,
+   "shared_mc_se": 0.003583169546644423,
+   "shared_rate": 0.0332
+  },
+  {
+   "alpha": 0.05,
+   "indep_mc_se": 0.0028,
+   "indep_rate": 0.02,
+   "kind": "chisq",
+   "n": 100,
+   "reps": 2500,
+   "rho_deg": 0.9,
+   "shared_mc_se": 0.0032533158469475417,
+   "shared_rate": 0.0272
+  }
+ ]
+}

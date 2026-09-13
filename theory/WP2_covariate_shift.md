@@ -1,5 +1,20 @@
 # WP2: The covariate-shift failure of the field's null (Phase 2 gate)
 
+> **Corrections (added 2026-09-10, after the independent WP7 audit).** Three
+> prose numbers below are superseded by the recorded measurements. The
+> original text is deliberately left unchanged. 1. Section 3(c) states that
+> the $\lambda = 1$ loop-count gap is "about 1.2 loops": the measured value is
+> $0.373$ in magnitude (exact quadrature $0.372664$; direct simulation
+> $-0.373810 \pm 0.001347$; WP7 T1 population value $0.3730 \pm 0.0009$), with
+> the negative sign given by this document's own inequality
+> $\mathbb{E}[k \mid A=1] < \mathbb{E}[k \mid A=0]$. 2. Section 4 states the
+> masking silhouette contrast as "about 1.45" at $t = 1.5$: on the actual
+> pipeline (same cloud generator and `tda2s.vec.silhouette` conventions),
+> WP7 T1 measures $\sup_t |\psi_d| = 0.4934$ (batch SE $0.00019$), and its
+> finite-grid persistence-measure contrast is $L^1 = 1.1295$. 3. Section 6
+> labels the masking persistence diagnostic "$0.04$ SE from zero"; the correct
+> value is $0.00034 / (0.00947/\sqrt{1000}) = 1.14$ SE.
+
 Status: results pending final aggregation (Colab shard fleet, 1000 reps/part).
 Sections 1-5 are complete; Section 6 is filled from the aggregation.
 

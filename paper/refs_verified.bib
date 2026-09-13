@@ -1,0 +1,793 @@
+% ============================================================================
+% refs_verified.bib -- consolidated, verified bibliography for the submission
+%
+% Built from (a) the \begin{thebibliography} block of
+% interim_report/interim_report_p1.tex, (b) Literature_Review/VERIFIED.bib
+% (Phase 0.7 sweep, 2026-08-13), and (c) every source cited in
+% theory/WP7_T1..T9_*.md, theory/WP7_local_power.md and
+% docs/paper/THEORY_DEV_BRIEF.md.
+%
+% Independent re-verification date: 2026-09-10. Method: Crossref API,
+% DataCite API, arXiv API (full record), OpenAlex, Semantic Scholar,
+% publisher pages (Econometric Society, JMLR, JoCG, NeurIPS proceedings,
+% IMS TOC PDFs at imstat.org), OpenLibrary, and text extraction of the
+% local PDFs of Kim & Lee (arXiv:2603.02289v1), Souto & Diamantis
+% (arXiv:2607.28161), Han et al. (arXiv:2607.20893v3), VJM
+% (arXiv:1812.06491v4), CCK (arXiv:1212.6906v6), DML (arXiv:1608.00060v5),
+% Kennedy et al. (arXiv:1801.03635v2), Robinson & Turner (arXiv:1310.7467),
+% Kwitt et al. (NeurIPS 2015 PDF) and Gretton et al. (JMLR 13 PDF).
+%
+% Rules applied. Every entry carries a DOI and/or a stable URL, EXCEPT where
+% explicitly flagged by a "% NO DOI OR URL:" comment directly above the
+% entry. DOIs were never guessed: each DOI below was resolved and its
+% metadata matched to the entry. Corrections relative to the source notes
+% are flagged with "% CORRECTED:" comments.
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+% CAUSAL INFERENCE AND ESTIMATION (paper foundations)
+% ----------------------------------------------------------------------------
+
+% ICLR 2026 proceedings issue no DOI. arXiv journal_ref confirms ICLR 2026;
+% OpenReview forum id from the Phase 0.7 sweep. Theorem numbers independently
+% re-verified against the local PDF ../CP_TATE/2603.02289v1.pdf on 2026-09-10.
+@inproceedings{kim_lee_tce_2026,
+  title     = {Topological Causal Effects},
+  author    = {Kim, Kwangho and Lee, Hajin},
+  booktitle = {Proceedings of the Fourteenth International Conference on Learning Representations (ICLR 2026)},
+  year      = {2026},
+  note      = {ICLR 2026 Poster; no DOI (conference proceedings)},
+  url       = {https://openreview.net/forum?id=dYaos1ITw4},
+  eprint    = {2603.02289},
+  archivePrefix = {arXiv},
+  primaryClass = {stat.ME}
+}
+
+% arXiv-only preprint; no DOI and no journal version (as of 2026-09-10).
+@article{souto_diamantis_tcda_2026,
+  title   = {A Mathematical Framework for Topological Causal Data Analysis},
+  author  = {Souto, Hugo Gobato and Diamantis, Ioannis},
+  journal = {arXiv preprint arXiv:2607.28161},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2607.28161},
+  eprint  = {2607.28161},
+  archivePrefix = {arXiv},
+  primaryClass = {stat.ME}
+}
+
+% CORRECTED (against the requester's premise, not against the note): this
+% paper is Econometrica 66(2), 1998, pages 315-331, not JASA. The T4 note
+% already had the correct venue/pages. Publisher (Econometric Society)
+% volume page confirms pp. 315-331.
+@article{hahn_1998,
+  title   = {On the Role of the Propensity Score in Efficient Semiparametric Estimation of Average Treatment Effects},
+  author  = {Hahn, Jinyong},
+  journal = {Econometrica},
+  volume  = {66},
+  number  = {2},
+  pages   = {315--331},
+  year    = {1998},
+  doi     = {10.2307/2998560},
+  url     = {https://www.econometricsociety.org/publications/econometrica/1998/03/01/role-propensity-score-efficient-semiparametric-estimation}
+}
+
+@article{hirano_imbens_ridder_2003,
+  title   = {Efficient Estimation of Average Treatment Effects Using the Estimated Propensity Score},
+  author  = {Hirano, Keisuke and Imbens, Guido W. and Ridder, Geert},
+  journal = {Econometrica},
+  volume  = {71},
+  number  = {4},
+  pages   = {1161--1189},
+  year    = {2003},
+  doi     = {10.1111/1468-0262.00442}
+}
+
+@article{kennedy_drlearner_2023,
+  title   = {Towards Optimal Doubly Robust Estimation of Heterogeneous Causal Effects},
+  author  = {Kennedy, Edward H.},
+  journal = {Electronic Journal of Statistics},
+  volume  = {17},
+  number  = {2},
+  pages   = {3008--3049},
+  year    = {2023},
+  doi     = {10.1214/23-EJS2157},
+  eprint  = {2004.14497},
+  archivePrefix = {arXiv}
+}
+
+% arXiv-only review; no DOI and no journal version (as of 2026-09-10).
+@article{kennedy_review_2022,
+  title   = {Semiparametric Doubly Robust Targeted Double Machine Learning: A Review},
+  author  = {Kennedy, Edward H.},
+  journal = {arXiv preprint arXiv:2203.06469},
+  year    = {2022},
+  url     = {https://arxiv.org/abs/2203.06469},
+  eprint  = {2203.06469},
+  archivePrefix = {arXiv},
+  primaryClass = {stat.ME}
+}
+
+% This is the "Kennedy et al. (2020), Lemma 2" maximal inequality invoked
+% in T3 Step 3; verified in the arXiv text (their Lemma 2).
+@article{kennedy_balakrishnan_gsell_2020,
+  title   = {Sharp Instruments for Classifying Compliers and Generalizing Causal Effects},
+  author  = {Kennedy, Edward H. and Balakrishnan, Sivaraman and G'Sell, Max},
+  journal = {The Annals of Statistics},
+  volume  = {48},
+  number  = {4},
+  pages   = {2008--2030},
+  year    = {2020},
+  doi     = {10.1214/19-AOS1874},
+  eprint  = {1801.03635},
+  archivePrefix = {arXiv}
+}
+
+@article{chernozhukov_dml_2018,
+  title   = {Double/Debiased Machine Learning for Treatment and Structural Parameters},
+  author  = {Chernozhukov, Victor and Chetverikov, Denis and Demirer, Mert and Duflo, Esther and Hansen, Christian and Newey, Whitney and Robins, James},
+  journal = {The Econometrics Journal},
+  volume  = {21},
+  number  = {1},
+  pages   = {C1--C68},
+  year    = {2018},
+  doi     = {10.1111/ectj.12097},
+  note    = {Also NBER Working Paper 23564 and arXiv:1608.00060; Theorem 3.1, Theorem 3.2 and Assumption 3.2 verified against arXiv v5}
+}
+
+% CORRECTED: T3 and T4 cite Newey & Robins as arXiv:1712.05423; that ID is
+% an unrelated algebra paper (Alcock-Zeilinger & Weigert). The correct ID is
+% arXiv:1801.09138, "Cross-Fitting and Fast Remainder Rates for
+% Semiparametric Estimation", confirmed through the arXiv API.
+@article{new_robins_2018,
+  title   = {Cross-Fitting and Fast Remainder Rates for Semiparametric Estimation},
+  author  = {Newey, Whitney K. and Robins, James R.},
+  journal = {arXiv preprint arXiv:1801.09138},
+  year    = {2018},
+  url     = {https://arxiv.org/abs/1801.09138},
+  eprint  = {1801.09138},
+  archivePrefix = {arXiv},
+  primaryClass = {math.ST}
+}
+
+% arXiv-only preprint (v2). Negative-identification claim verified verbatim
+% in the abstract (see Literature_Review/VERIFIED_NOTES.md sec. 1.1 and the
+% re-fetched abstract on 2026-09-10).
+@article{saki_faghihi_2026,
+  title   = {Beyond Means: Topological Causal Effects under Persistent-Homology Ignorability},
+  author  = {Saki, Amir and Faghihi, Usef},
+  journal = {arXiv preprint arXiv:2603.14169},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2603.14169},
+  eprint  = {2603.14169},
+  archivePrefix = {arXiv},
+  primaryClass = {stat.ME}
+}
+
+% arXiv-only preprint. Possible companion/duplicate of saki_faghihi_2026: the
+% arXiv comment on this paper says it is a new version of "Beyond Means ..."
+% and will be resubmitted as v2 of arXiv:2603.14169. Retained as a separate
+% entry because both were cited, but the paper should decide on one.
+@article{faghihi_2026,
+  title   = {Topological Ignorability for Structural Causal Effects Beyond Means},
+  author  = {Faghihi, Usef},
+  journal = {arXiv preprint arXiv:2606.01184},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2606.01184},
+  eprint  = {2606.01184},
+  archivePrefix = {arXiv},
+  primaryClass = {stat.ME}
+}
+
+% ----------------------------------------------------------------------------
+% SEMIPARAMETRIC THEORY, EMPIRICAL PROCESSES, MINIMAX TESTING
+% ----------------------------------------------------------------------------
+
+% Book exists in two editions: Johns Hopkins University Press, Baltimore,
+% 1993 (the edition cited in T4/T5) and Springer, New York, 1998 (reprint,
+% ISBN 978-0-387-98473-5, confirmed via OpenLibrary). No DOI found for
+% either edition; stable URL points at the Springer reprint record. The
+% ISBN 0-8018-4529-6 asserted in T4 could not be independently confirmed
+% (see citation_audit.md).
+@book{bickel_klaassen_ritov_wellner_1993,
+  title     = {Efficient and Adaptive Estimation for Semiparametric Models},
+  author    = {Bickel, Peter J. and Klaassen, Chris A. J. and Ritov, Ya'acov and Wellner, Jon A.},
+  publisher = {Johns Hopkins University Press},
+  address   = {Baltimore, MD},
+  year      = {1993},
+  note      = {Reprinted by Springer, New York, 1998, ISBN 978-0-387-98473-5; no DOI},
+  url       = {https://link.springer.com/book/9780387984735}
+}
+
+@article{vdv_1991,
+  title   = {On Differentiable Functionals},
+  author  = {van der Vaart, Aad W.},
+  journal = {The Annals of Statistics},
+  volume  = {19},
+  number  = {1},
+  pages   = {178--204},
+  year    = {1991},
+  doi     = {10.1214/aos/1176347976}
+}
+
+@book{vdv_1998,
+  title     = {Asymptotic Statistics},
+  author    = {van der Vaart, Aad W.},
+  publisher = {Cambridge University Press},
+  series    = {Cambridge Series in Statistical and Probabilistic Mathematics},
+  year      = {1998},
+  doi       = {10.1017/CBO9780511802256}
+}
+
+% Chapter-level work inside LNM 1781. Crossref exposes the book DOI only;
+% the chapter DOI could not be located in Crossref and is not carried.
+@incollection{vdv_2002,
+  title     = {Semiparametric Statistics},
+  author    = {van der Vaart, Aad W.},
+  booktitle = {Lectures on Probability Theory and Statistics (Saint-Flour, 1999)},
+  series    = {Lecture Notes in Mathematics},
+  volume    = {1781},
+  pages     = {331--457},
+  publisher = {Springer},
+  year      = {2002},
+  doi       = {10.1007/b93152},
+  note      = {Book DOI; chapter DOI not carried. MR1915446 (not independently re-checked)}
+}
+
+@book{vdv_wellner_1996,
+  title     = {Weak Convergence and Empirical Processes: With Applications to Statistics},
+  author    = {van der Vaart, Aad W. and Wellner, Jon A.},
+  publisher = {Springer},
+  series    = {Springer Series in Statistics},
+  year      = {1996},
+  doi       = {10.1007/978-1-4757-2545-2}
+}
+
+% arXiv v6 numbering verified section-wise on 2026-09-10 (Lemma 2.1
+% anti-concentration, Theorem 2.2, Corollary 2.1, Lemma 3.1, Lemmas 3.2-3.3,
+% Theorems 3.1-3.2, equation (13)). See citation_audit.md for the one
+% wording caveat (Theorem 3.2 is about approximate means, not maxima).
+@article{cck_2013,
+  title   = {Gaussian Approximations and Multiplier Bootstrap for Maxima of Sums of High-Dimensional Random Vectors},
+  author  = {Chernozhukov, Victor and Chetverikov, Denis and Kato, Kengo},
+  journal = {The Annals of Statistics},
+  volume  = {41},
+  number  = {6},
+  pages   = {2786--2819},
+  year    = {2013},
+  doi     = {10.1214/13-AOS1161},
+  eprint  = {1212.6906},
+  archivePrefix = {arXiv}
+}
+
+% CORRECTED mapping inside T6: the four-author "Improved central limit
+% theorem and bootstrap approximations in high dimensions" is AoS 50(5),
+% 2562-2586 (IMS TOC, 2026-09-10), DOI 10.1214/22-AOS2193; its arXiv
+% preprint is 1912.10529. T6 instead attached arXiv:2012.09513 to the
+% four-author paper.
+@article{cckk_improved_2022,
+  title   = {Improved Central Limit Theorem and Bootstrap Approximations in High Dimensions},
+  author  = {Chernozhukov, Victor and Chetverikov, Denis and Kato, Kengo and Koike, Yuta},
+  journal = {The Annals of Statistics},
+  volume  = {50},
+  number  = {5},
+  pages   = {2562--2586},
+  year    = {2022},
+  doi     = {10.1214/22-AOS2193},
+  eprint  = {1912.10529},
+  archivePrefix = {arXiv}
+}
+
+% The paper that actually corresponds to arXiv:2012.09513; three authors,
+% AAP 33(3) (June 2023), pages 2374-2425 (IMS TOC: next article starts at
+% 2426). T6 mentions this modern n^{-1/4} sharpening but conflates it with
+% the four-author paper above.
+@article{cck_koike_nearly_2023,
+  title   = {Nearly Optimal Central Limit Theorem and Bootstrap Approximations in High Dimensions},
+  author  = {Chernozhukov, Victor and Chetverikov, Denis and Koike, Yuta},
+  journal = {The Annals of Applied Probability},
+  volume  = {33},
+  number  = {3},
+  pages   = {2374--2425},
+  year    = {2023},
+  doi     = {10.1214/22-AAP1870},
+  eprint  = {2012.09513},
+  archivePrefix = {arXiv}
+}
+
+@article{chung_romano_2013,
+  title   = {Exact and Asymptotically Robust Permutation Tests},
+  author  = {Chung, EunYi and Romano, Joseph P.},
+  journal = {The Annals of Statistics},
+  volume  = {41},
+  number  = {2},
+  pages   = {484--507},
+  year    = {2013},
+  doi     = {10.1214/13-AOS1090}
+}
+
+@article{janssen_1997,
+  title   = {Studentized Permutation Tests for Non-i.i.d. Hypotheses and the Generalized Behrens--Fisher Problem},
+  author  = {Janssen, Arnold},
+  journal = {Statistics \& Probability Letters},
+  volume  = {36},
+  number  = {1},
+  pages   = {9--21},
+  year    = {1997},
+  doi     = {10.1016/S0167-7152(97)00043-6}
+}
+
+@article{lin_2013,
+  title   = {Agnostic Notes on Regression Adjustments to Experimental Data: Reexamining Freedman's Critique},
+  author  = {Lin, Winston},
+  journal = {The Annals of Applied Statistics},
+  volume  = {7},
+  number  = {1},
+  pages   = {295--318},
+  year    = {2013},
+  doi     = {10.1214/12-AOAS583}
+}
+
+@book{tsybakov_2009,
+  title     = {Introduction to Nonparametric Estimation},
+  author    = {Tsybakov, Alexandre B.},
+  publisher = {Springer},
+  series    = {Springer Series in Statistics},
+  year      = {2009},
+  doi       = {10.1007/b13794}
+}
+
+@book{le_cam_1986,
+  title     = {Asymptotic Methods in Statistical Decision Theory},
+  author    = {Le Cam, Lucien},
+  publisher = {Springer},
+  series    = {Springer Series in Statistics},
+  year      = {1986},
+  doi       = {10.1007/978-1-4612-4946-7}
+}
+
+% NO DOI OR URL: "Mathematical Methods of Statistics" vol. 2 (1993) is not
+% indexed in Crossref/DataCite and no stable publisher URL was found as of
+% 2026-09-10. Metadata (three-part series, 2:85-114; 3:171-189; 4:249-268)
+% is corroborated by independent reference lists (T8 note; Yang & Yuan,
+% arXiv:1909.03302; ICML 2020 paper) and matches the T8 note.
+@article{ingster_1993,
+  title   = {Asymptotically Minimax Hypothesis Testing for Nonparametric Alternatives},
+  author  = {Ingster, Yuri I.},
+  journal = {Mathematical Methods of Statistics},
+  volume  = {2},
+  pages   = {85--114},
+  year    = {1993},
+  note    = {Part I of a three-part series; Parts II and III appear in vols. 3 and 4 (1993--1994). No DOI or stable URL found}
+}
+
+@book{ingster_suslina_2003,
+  title     = {Nonparametric Goodness-of-Fit Testing Under Gaussian Models},
+  author    = {Ingster, Yuri I. and Suslina, Irina A.},
+  publisher = {Springer},
+  series    = {Lecture Notes in Statistics},
+  volume    = {169},
+  year      = {2003},
+  doi       = {10.1007/978-0-387-21580-8}
+}
+
+@article{anderson_1955,
+  title   = {The Integral of a Symmetric Unimodal Function over a Symmetric Convex Set and Some Probability Inequalities},
+  author  = {Anderson, Theodore W.},
+  journal = {Proceedings of the American Mathematical Society},
+  volume  = {6},
+  number  = {2},
+  pages   = {170--176},
+  year    = {1955},
+  doi     = {10.1090/S0002-9939-1955-0069229-1}
+}
+
+% University of Washington Department of Statistics Technical Report 126
+% (the T3 note gave the report title but no number). Stable UW page and PDF.
+@techreport{perlman_1988,
+  title       = {Anderson's Theorem on the Integral of a Symmetric Unimodal Function over a Symmetric Convex Set and Its Applications in Probability and Statistics},
+  author      = {Perlman, Michael D.},
+  institution = {Department of Statistics, University of Washington},
+  number      = {Technical Report 126},
+  year        = {1988},
+  url         = {https://stat.uw.edu/research/tech-reports/andersons-theorem-integral-symmetric-unimodal-function-over-symmetric-convex-set-and-its}
+}
+
+% Added so that the T2 "Chernoff-Stein" rate remark has at least one
+% verifiable anchor. The Stein side is a named method without a locator in
+% the notes; see citation_audit.md.
+@article{chernoff_1952,
+  title   = {A Measure of Asymptotic Efficiency for Tests of a Hypothesis Based on the Sum of Observations},
+  author  = {Chernoff, Herman},
+  journal = {The Annals of Mathematical Statistics},
+  volume  = {23},
+  number  = {4},
+  pages   = {493--507},
+  year    = {1952},
+  doi     = {10.1214/aoms/1177729330}
+}
+
+@article{phipson_smyth_2010,
+  title   = {Permutation P-values Should Never Be Zero: Calculating Exact P-values When Permutations Are Randomly Drawn},
+  author  = {Phipson, Belinda and Smyth, Gordon K.},
+  journal = {Statistical Applications in Genetics and Molecular Biology},
+  volume  = {9},
+  number  = {1},
+  pages   = {Article 39},
+  year    = {2010},
+  doi     = {10.2202/1544-6115.1585}
+}
+
+% ----------------------------------------------------------------------------
+% TOPOLOGICAL DATA ANALYSIS: FOUNDATIONS AND COMPETITORS
+% ----------------------------------------------------------------------------
+
+@article{bubenik_jmlr_2015,
+  title   = {Statistical Topological Data Analysis Using Persistence Landscapes},
+  author  = {Bubenik, Peter},
+  journal = {Journal of Machine Learning Research},
+  volume  = {16},
+  number  = {3},
+  pages   = {77--102},
+  year    = {2015},
+  url     = {https://www.jmlr.org/papers/v16/bubenik15a.html},
+  note    = {CORRECTED: the ACM identifier 10.5555/2789272.2789275 carried in VERIFIED.bib does NOT resolve (doi.org returns 404 on 2026-09-10); JMLR assigns no journal DOI. URL only}
+}
+
+% SoCG proceedings DOI resolves. Extended version: JoCG 6(2):140-161 (2015),
+% doi:10.20382/jocg.v6i2a8 (DataCite record confirmed 2026-09-10).
+@inproceedings{chazal_socg_2014,
+  title     = {Stochastic Convergence of Persistence Landscapes and Silhouettes},
+  author    = {Chazal, Fr{\'e}d{\'e}ric and Fasy, Brittany Terese and Lecci, Fabrizio and Rinaldo, Alessandro and Wasserman, Larry},
+  booktitle = {Proceedings of the 30th Annual Symposium on Computational Geometry (SoCG 2014)},
+  pages     = {474--483},
+  year      = {2014},
+  publisher = {ACM},
+  doi       = {10.1145/2582112.2582128},
+  note      = {Extended version: Journal of Computational Geometry 6(2):140--161, 2015, doi:10.20382/jocg.v6i2a8}
+}
+
+% Author order follows the published DataCite record (Divol, Chazal),
+% confirmed 2026-09-10; the arXiv posting lists Chazal, Divol.
+@article{divol_chazal_2020,
+  title   = {The Density of Expected Persistence Diagrams and Its Kernel Based Estimation},
+  author  = {Divol, Vincent and Chazal, Fr{\'e}d{\'e}ric},
+  journal = {Journal of Computational Geometry},
+  volume  = {10},
+  number  = {2},
+  pages   = {127--153},
+  year    = {2020},
+  doi     = {10.20382/jocg.v10i2a7},
+  url     = {https://jocg.org/index.php/jocg/article/view/3090},
+  eprint  = {1802.10457},
+  archivePrefix = {arXiv},
+  note    = {DOI registered with DataCite (not Crossref); resolves via https://doi.org/10.20382/jocg.v10i2a7}
+}
+
+@article{divol_lacombe_2021,
+  title   = {Understanding the Topology and the Geometry of the Space of Persistence Diagrams via Optimal Partial Transport},
+  author  = {Divol, Vincent and Lacombe, Th{\'e}o},
+  journal = {Journal of Applied and Computational Topology},
+  volume  = {5},
+  number  = {1},
+  pages   = {1--53},
+  year    = {2021},
+  doi     = {10.1007/s41468-020-00061-z},
+  eprint  = {1901.03048},
+  archivePrefix = {arXiv},
+  note    = {Online first 2020-10-24; journal volume year 2021}
+}
+
+@article{mileyko_2011,
+  title   = {Probability Measures on the Space of Persistence Diagrams},
+  author  = {Mileyko, Yuriy and Mukherjee, Sayan and Harer, John},
+  journal = {Inverse Problems},
+  volume  = {27},
+  number  = {12},
+  pages   = {124007},
+  year    = {2011},
+  doi     = {10.1088/0266-5611/27/12/124007}
+}
+
+@article{turner_2014,
+  title   = {Fr{\'e}chet Means for Distributions of Persistence Diagrams},
+  author  = {Turner, Katharine and Mileyko, Yuriy and Mukherjee, Sayan and Harer, John},
+  journal = {Discrete \& Computational Geometry},
+  volume  = {52},
+  number  = {1},
+  pages   = {44--70},
+  year    = {2014},
+  doi     = {10.1007/s00454-014-9604-7},
+  eprint  = {1206.2790},
+  archivePrefix = {arXiv}
+}
+
+@article{che_jact_2024,
+  title   = {Metric Geometry of Spaces of Persistence Diagrams},
+  author  = {Che, Mauricio and Galaz-Garc{\'i}a, Fernando and Guijarro, Luis and Membrillo Solis, Ingrid Amaranta},
+  journal = {Journal of Applied and Computational Topology},
+  volume  = {8},
+  number  = {8},
+  pages   = {2197--2246},
+  year    = {2024},
+  doi     = {10.1007/s41468-024-00189-2},
+  eprint  = {2109.14697},
+  archivePrefix = {arXiv}
+}
+
+@article{blumberg_focm_2014,
+  title   = {Robust Statistics, Hypothesis Testing, and Confidence Intervals for Persistent Homology on Metric Measure Spaces},
+  author  = {Blumberg, Andrew J. and Gal, Itamar and Mandell, Michael A. and Pancia, Matthew},
+  journal = {Foundations of Computational Mathematics},
+  volume  = {14},
+  number  = {4},
+  pages   = {745--789},
+  year    = {2014},
+  doi     = {10.1007/s10208-014-9201-4},
+  eprint  = {1206.4581},
+  archivePrefix = {arXiv}
+}
+
+@article{berry_jact_2020,
+  title   = {Functional Summaries of Persistence Diagrams},
+  author  = {Berry, Eric and Chen, Yen-Chi and Cisewski-Kehe, Jessi and Fasy, Brittany Terese},
+  journal = {Journal of Applied and Computational Topology},
+  volume  = {4},
+  number  = {2},
+  pages   = {211--262},
+  year    = {2020},
+  doi     = {10.1007/s41468-020-00048-w},
+  eprint  = {1804.01618},
+  archivePrefix = {arXiv}
+}
+
+% NeurIPS 2015 issues no DOI. Proposition 2 (universality with respect to
+% d_{W,1}) verified in the official proceedings PDF on 2026-09-10. Pages
+% 3070-3078 are per DBLP (the official PDF carries no printed pagination);
+% the nLab page assigns the same range to a different (CVPR 2015) paper and
+% is treated as erroneous.
+@inproceedings{kwitt_neurips_2015,
+  title     = {Statistical Topological Data Analysis -- A Kernel Perspective},
+  author    = {Kwitt, Roland and Huber, Stefan and Niethammer, Marc and Lin, Weili and Bauer, Ulrich},
+  booktitle = {Advances in Neural Information Processing Systems 28 (NeurIPS 2015)},
+  pages     = {3070--3078},
+  year      = {2015},
+  url       = {https://proceedings.neurips.cc/paper/2015/file/74563ba21a90da13dacf2a73e3ddefa7-Paper.pdf},
+  note      = {No DOI (NeurIPS proceedings); pages per DBLP}
+}
+
+@article{robinson_turner_2017,
+  title   = {Hypothesis Testing for Topological Data Analysis},
+  author  = {Robinson, Andrew and Turner, Katharine},
+  journal = {Journal of Applied and Computational Topology},
+  volume  = {1},
+  number  = {2},
+  pages   = {241--261},
+  year    = {2017},
+  doi     = {10.1007/s41468-017-0008-7},
+  eprint  = {1310.7467},
+  archivePrefix = {arXiv},
+  note    = {The permutation p-value algorithm used by the notes is Algorithm 2 in the arXiv text; verified 2026-09-10}
+}
+
+% CORRECTED (title change): v3 (2026-09-09) is titled "A Two-Sample Test for
+% Random Persistence Diagrams Against Alternatives Characterized by
+% Persistence Intensity Differences". The v1 title used in
+% interim_report_p1.tex and VERIFIED.bib ("A Two-Sample Test on Weighted
+% Persistence Intensity Functions in Topological Data Analysis") is
+% superseded. Theorem numbering in T8 was checked against v3.
+@article{han_kim_kim_2026,
+  title   = {A Two-Sample Test for Random Persistence Diagrams Against Alternatives Characterized by Persistence Intensity Differences},
+  author  = {Han, Yeongung and Kim, Ilmun and Kim, Jisu},
+  journal = {arXiv preprint arXiv:2607.20893},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2607.20893},
+  eprint  = {2607.20893},
+  archivePrefix = {arXiv},
+  primaryClass = {stat.ME},
+  note    = {v3, 2026-09-09; v1 title differs (see comment above)}
+}
+
+% arXiv-only preprint; no DOI. "STRAND" does not appear in the title.
+@article{murris_strand_2026,
+  title   = {From Persistence to Survival: Hypothesis Testing, Effect Sizes and Vectorisation for Topological Features},
+  author  = {Murris, Juliette and Stolz, Bernadette and Borgwardt, Karsten},
+  journal = {arXiv preprint arXiv:2606.11911},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2606.11911},
+  eprint  = {2606.11911},
+  archivePrefix = {arXiv},
+  primaryClass = {stat.ME}
+}
+
+@article{moon_lazar_2023,
+  title   = {Hypothesis Testing for Shapes Using Vectorized Persistence Diagrams},
+  author  = {Moon, Chul and Lazar, Nicole A.},
+  journal = {Journal of the Royal Statistical Society Series C: Applied Statistics},
+  volume  = {72},
+  number  = {3},
+  pages   = {628--648},
+  year    = {2023},
+  doi     = {10.1093/jrsssc/qlad024},
+  eprint  = {2006.05466},
+  archivePrefix = {arXiv}
+}
+
+@article{dubey_muller_2019,
+  title   = {Fr{\'e}chet Analysis of Variance for Random Objects},
+  author  = {Dubey, Paromita and M{\"u}ller, Hans-Georg},
+  journal = {Biometrika},
+  volume  = {106},
+  number  = {4},
+  pages   = {803--821},
+  year    = {2019},
+  doi     = {10.1093/biomet/asz052},
+  eprint  = {1710.02761},
+  archivePrefix = {arXiv}
+}
+
+% arXiv-only preprint; no DOI and no journal version found (as of 2026-09-10).
+@article{krebs_rademacher_2024,
+  title   = {Two-Sample Tests for Relevant Differences in Persistence Diagrams},
+  author  = {Krebs, Johannes and Rademacher, Daniel},
+  journal = {arXiv preprint arXiv:2401.10349},
+  year    = {2024},
+  url     = {https://arxiv.org/abs/2401.10349},
+  eprint  = {2401.10349},
+  archivePrefix = {arXiv},
+  primaryClass = {math.ST}
+}
+
+% Published title differs from the arXiv title ("Multiple testing ..." vs
+% "Multiple hypothesis testing ..."). Method/section numbers used in T9
+% (Methods 2, 5, 6; secs. 3.2, 3.3.1, 3.5, 5.1; Thm 3.1) were re-verified
+% against arXiv v4 on 2026-09-10.
+@article{vejdemo_mukherjee_2022,
+  title   = {Multiple Hypothesis Testing with Persistent Homology},
+  author  = {Vejdemo-Johansson, Mikael and Mukherjee, Sayan},
+  journal = {Foundations of Data Science},
+  volume  = {4},
+  number  = {4},
+  pages   = {667--705},
+  year    = {2022},
+  doi     = {10.3934/fods.2022018},
+  eprint  = {1812.06491},
+  archivePrefix = {arXiv}
+}
+
+@article{roycraft_krebs_polonik_2023,
+  title   = {Bootstrapping Persistent Betti Numbers and Other Stabilizing Statistics},
+  author  = {Roycraft, Benjamin and Krebs, Johannes and Polonik, Wolfgang},
+  journal = {The Annals of Statistics},
+  volume  = {51},
+  number  = {4},
+  pages   = {1484--1509},
+  year    = {2023},
+  doi     = {10.1214/23-AOS2277}
+}
+
+@article{petersen_muller_2019,
+  title   = {Fr{\'e}chet Regression for Random Objects with Euclidean Predictors},
+  author  = {Petersen, Alexander and M{\"u}ller, Hans-Georg},
+  journal = {The Annals of Statistics},
+  volume  = {47},
+  number  = {2},
+  pages   = {691--719},
+  year    = {2019},
+  doi     = {10.1214/17-AOS1624},
+  eprint  = {1608.03012},
+  archivePrefix = {arXiv}
+}
+
+@article{cericola_involve_2018,
+  title   = {Extending Hypothesis Testing with Persistent Homology to Three or More Groups},
+  author  = {Cericola, Christopher and Johnson, Inga J. and Kiers, Joshua and Krock, Mitchell and Purdy, Jordan and Torrence, Johanna},
+  journal = {Involve: A Journal of Mathematics},
+  volume  = {11},
+  number  = {1},
+  pages   = {27--51},
+  year    = {2018},
+  doi     = {10.2140/involve.2018.11.27},
+  eprint  = {1602.03760},
+  archivePrefix = {arXiv}
+}
+
+% arXiv-only preprint (v3). No DOI; journal version announced by the authors
+% but not indexed as of 2026-09-10.
+@article{kumar_dhar_2022,
+  title   = {Testing Homological Equivalence Using Betti Numbers},
+  author  = {Kumar, Satish and Dhar, Subhra Sankar},
+  journal = {arXiv preprint arXiv:2211.13959},
+  year    = {2022},
+  url     = {https://arxiv.org/abs/2211.13959},
+  eprint  = {2211.13959},
+  archivePrefix = {arXiv},
+  primaryClass = {math.ST}
+}
+
+% arXiv-only preprint; no DOI.
+@article{nakayama_2025,
+  title   = {Persistence-Based Statistics for Detecting Structural Changes in High-Dimensional Point Clouds},
+  author  = {Nakayama, Toshiyuki},
+  journal = {arXiv preprint arXiv:2511.00938},
+  year    = {2025},
+  url     = {https://arxiv.org/abs/2511.00938},
+  eprint  = {2511.00938},
+  archivePrefix = {arXiv},
+  primaryClass = {math.ST}
+}
+
+@article{islambekov_pathirana_2024,
+  title   = {Vector Summaries of Persistence Diagrams for Permutation-Based Hypothesis Testing},
+  author  = {Islambekov, Umar and Pathirana, Hasani},
+  journal = {Foundations of Data Science},
+  volume  = {6},
+  number  = {1},
+  pages   = {41--61},
+  year    = {2024},
+  doi     = {10.3934/fods.2024002},
+  eprint  = {2306.06257},
+  archivePrefix = {arXiv}
+}
+
+@article{hiraoka_shirai_trinh_2018,
+  title   = {Limit Theorems for Persistence Diagrams},
+  author  = {Hiraoka, Yasuaki and Shirai, Tomoyuki and Trinh, Khanh Duy},
+  journal = {The Annals of Applied Probability},
+  volume  = {28},
+  number  = {5},
+  pages   = {2740--2780},
+  year    = {2018},
+  doi     = {10.1214/17-AAP1371},
+  note    = {Their Theorem 5.2 is the result quoted by VJM Theorem 3.1; verified in the VJM v4 bibliography (2026-09-10)}
+}
+
+% JMLR assigns no journal DOI. Theorem 5 (MMD = 0 iff p = q for a universal
+% kernel) verified in the JMLR PDF on 2026-09-10; this is the result used in
+% WP2/T2 for the kernel-MMD comparator.
+@article{gretton_2012,
+  title   = {A Kernel Two-Sample Test},
+  author  = {Gretton, Arthur and Borgwardt, Karsten M. and Rasch, Malte J. and Sch{\"o}lkopf, Bernhard and Smola, Alexander},
+  journal = {Journal of Machine Learning Research},
+  volume  = {13},
+  pages   = {723--773},
+  year    = {2012},
+  url     = {https://www.jmlr.org/papers/v13/gretton12a.html},
+  note    = {No DOI (JMLR); Theorem 5 verified against the JMLR PDF}
+}
+
+% ----------------------------------------------------------------------------
+% ECOLOGY (deferred track, Phases 11-12 incumbents)
+% ----------------------------------------------------------------------------
+
+@article{warren_2008,
+  title   = {Environmental Niche Equivalency versus Conservatism: Quantitative Approaches to Niche Evolution},
+  author  = {Warren, Dan L. and Glor, Richard E. and Turelli, Michael},
+  journal = {Evolution},
+  volume  = {62},
+  number  = {11},
+  pages   = {2868--2883},
+  year    = {2008},
+  doi     = {10.1111/j.1558-5646.2008.00482.x}
+}
+
+@article{broennimann_2012,
+  title   = {Measuring Ecological Niche Overlap from Occurrence and Spatial Environmental Data},
+  author  = {Broennimann, Olivier and Fitzpatrick, Matthew C. and Pearman, Peter B. and Petitpierre, Blaise and Pellissier, Lo{\"i}c and Yoccoz, Nigel G. and Thuiller, Wilfried and Fortin, Marie-Jos{\'e}e and Randin, Christophe and Zimmermann, Niklaus E. and Graham, Catherine H. and Guisan, Antoine},
+  journal = {Global Ecology and Biogeography},
+  volume  = {21},
+  number  = {4},
+  pages   = {481--497},
+  year    = {2012},
+  doi     = {10.1111/j.1466-8238.2011.00698.x}
+}
+
+@article{blonder_2014,
+  title   = {The n-Dimensional Hypervolume},
+  author  = {Blonder, Benjamin and Lamanna, Christine and Violle, Cyrille and Enquist, Brian J.},
+  journal = {Global Ecology and Biogeography},
+  volume  = {23},
+  number  = {5},
+  pages   = {595--609},
+  year    = {2014},
+  doi     = {10.1111/geb.12146}
+}

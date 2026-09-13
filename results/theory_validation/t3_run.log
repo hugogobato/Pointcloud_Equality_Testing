@@ -1,0 +1,169 @@
+  rep 1/24 done (11:39:18)
+/home/hugo_souto/Stuff/Research/Pointcloud_Equality_Testing/.venv/lib/python3.10/site-packages/numpy/_core/_methods.py:218: RuntimeWarning: Degrees of freedom <= 0 for slice
+  ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+/home/hugo_souto/Stuff/Research/Pointcloud_Equality_Testing/.venv/lib/python3.10/site-packages/numpy/_core/_methods.py:210: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/home/hugo_souto/Stuff/Research/Pointcloud_Equality_Testing/.venv/lib/python3.10/site-packages/numpy/_core/_methods.py:207: RuntimeWarning: invalid value encountered in divide
+  ret = um.true_divide(
+  rep 2/24 done (11:39:18)
+  rep 3/24 done (11:41:53)
+  rep 4/24 done (11:42:03)
+  rep 5/24 done (11:44:03)
+  rep 6/24 done (11:44:05)
+  rep 7/24 done (11:46:04)
+  rep 8/24 done (11:46:09)
+  rep 9/24 done (11:47:35)
+  rep 10/24 done (11:47:52)
+  rep 11/24 done (11:49:09)
+  rep 12/24 done (11:49:40)
+  rep 13/24 done (11:50:50)
+  rep 14/24 done (11:51:07)
+  rep 15/24 done (11:52:15)
+  rep 16/24 done (11:52:40)
+  rep 17/24 done (11:53:41)
+  rep 18/24 done (11:54:11)
+  rep 19/24 done (11:55:26)
+  rep 20/24 done (11:56:00)
+  rep 21/24 done (11:57:17)
+  rep 22/24 done (11:57:54)
+  rep 23/24 done (11:59:13)
+  rep 24/24 done (11:59:43)
+{
+  "PROG0|500": {
+    "directions": {
+      "bump": {
+        "amp_mean": 0.09896097098135521,
+        "amp_sd": 0.06220432889493441,
+        "emp_rate": 0.16666666666666666,
+        "gauss_corr_mean": 0.4346833333333333,
+        "gauss_corr_se": 0.011624105265882756,
+        "gauss_naive_mean": 0.41881666666666667,
+        "gauss_naive_se": 0.00978691793294818,
+        "mc_se_emp": 0.10758287072798381,
+        "pred_drift_sup_mean": 0.014314891827701582,
+        "resid_max_abs_mean": 0.001450248107061296,
+        "resid_max_abs_z": 0.576676942596079,
+        "resid_max_t": 24,
+        "resid_mean_over_t": 6.801838100279715e-16,
+        "resid_mean_z_over_t": 0.0006801838100279715,
+        "resid_se_over_t": 2.0681184104060352e-16
+      },
+      "freq": {
+        "amp_mean": 0.09896097098135521,
+        "amp_sd": 0.06220432889493441,
+        "emp_rate": 0.9166666666666666,
+        "gauss_corr_mean": 0.9265166666666665,
+        "gauss_corr_se": 0.014254658108063409,
+        "gauss_naive_mean": 0.8579666666666665,
+        "gauss_naive_se": 0.011769840330868617,
+        "mc_se_emp": 0.07978559231302819,
+        "pred_drift_sup_mean": 0.07220869369570297,
+        "resid_max_abs_mean": 0.0073154951225649,
+        "resid_max_abs_z": 0.5766769425863781,
+        "resid_max_t": 41,
+        "resid_mean_over_t": 2.878657960151779e-16,
+        "resid_mean_z_over_t": 0.0002878657960151779,
+        "resid_se_over_t": 1.486965588962859e-16
+      },
+      "mean": {
+        "amp_mean": 0.09896097098135521,
+        "amp_sd": 0.06220432889493441,
+        "emp_rate": 0.6666666666666666,
+        "gauss_corr_mean": 0.604925,
+        "gauss_corr_se": 0.012486490426930143,
+        "gauss_naive_mean": 0.60885,
+        "gauss_naive_se": 0.011852147868251945,
+        "mc_se_emp": 0.13608276348795434,
+        "pred_drift_sup_mean": 1.1244153072361769e-17
+      }
+    },
+    "n": 500,
+    "r_g_sup": {
+      "bump": 0.14134210375699385,
+      "freq": 0.7129728117640792,
+      "mean": 1.1102230246251565e-16
+    },
+    "reps": 12,
+    "setting": "PROG0"
+  },
+  "PROG1|500": {
+    "directions": {
+      "bump": {
+        "amp_mean": 0.14168441927998354,
+        "amp_sd": 0.0844166448519314,
+        "emp_rate": 0.08333333333333333,
+        "gauss_corr_mean": 0.31801666666666667,
+        "gauss_corr_se": 0.0194763642044983,
+        "gauss_naive_mean": 0.3033416666666667,
+        "gauss_naive_se": 0.01906660359043392,
+        "mc_se_emp": 0.07978559231302818,
+        "pred_drift_sup_mean": 0.021250401444432177,
+        "resid_max_abs_mean": 0.0007666080773428697,
+        "resid_max_abs_z": 0.35410231503730444,
+        "resid_max_t": 24,
+        "resid_mean_over_t": 4.684996603628496e-16,
+        "resid_mean_z_over_t": 0.00046849966036284957,
+        "resid_se_over_t": 2.4464164259135667e-16
+      },
+      "freq": {
+        "amp_mean": 0.14168441927998354,
+        "amp_sd": 0.0844166448519314,
+        "emp_rate": 0.8333333333333334,
+        "gauss_corr_mean": 0.7765833333333333,
+        "gauss_corr_se": 0.03418455001306817,
+        "gauss_naive_mean": 0.644225,
+        "gauss_naive_se": 0.04338352592827947,
+        "mc_se_emp": 0.1075828707279838,
+        "pred_drift_sup_mean": 0.10719352596449921,
+        "resid_max_abs_mean": 0.0038670056684873295,
+        "resid_max_abs_z": 0.35410231502658124,
+        "resid_max_t": 8,
+        "resid_mean_over_t": 2.4227726306650746e-16,
+        "resid_mean_z_over_t": 0.00024227726306650746,
+        "resid_se_over_t": 1.0317273103224566e-16
+      },
+      "mean": {
+        "amp_mean": 0.14168441927998354,
+        "amp_sd": 0.0844166448519314,
+        "emp_rate": 0.25,
+        "gauss_corr_mean": 0.4612333333333332,
+        "gauss_corr_se": 0.030450101590449363,
+        "gauss_naive_mean": 0.45702500000000007,
+        "gauss_naive_se": 0.028586148704001255,
+        "mc_se_emp": 0.125,
+        "pred_drift_sup_mean": 1.669190166201193e-17
+      }
+    },
+    "n": 500,
+    "r_g_sup": {
+      "bump": 0.14134210375699385,
+      "freq": 0.7129728117640792,
+      "mean": 1.1102230246251565e-16
+    },
+    "reps": 12,
+    "setting": "PROG1"
+  },
+  "_meta": {
+    "alpha": 0.05,
+    "cells": [
+      [
+        "PROG1",
+        500,
+        12
+      ],
+      [
+        "PROG0",
+        500,
+        12
+      ]
+    ],
+    "elapsed_s": 1423.8141717910767,
+    "mode": "run",
+    "n_cal": 1999,
+    "n_pred": 10000,
+    "reps_done": 24,
+    "scale": 0.7,
+    "workers": 2
+  }
+}
+wrote /home/hugo_souto/Stuff/Research/Pointcloud_Equality_Testing/results/theory_validation/t3_local_limit_check.json (1424s)

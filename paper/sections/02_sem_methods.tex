@@ -1,0 +1,290 @@
+% Requires the notation macros of the main manuscript: \E, \Prob, \Law, \Dgm, \norm, \abs.
+
+\section{Setup, estimands, and identification}
+\label{sec:setup}
+
+\subsection{Data, sampling unit, and summaries}
+
+The sample consists of $n$ independent point clouds. Unit $i$ contributes the triple
+$(X_i, A_i, Y_i)$, $i=1,\dots,n$, an i.i.d.\ draw of $(X,A,Y)$ from a law $P$: the covariates
+$X_i \in \mathcal X \subseteq \mathbb R^p$ are measured before the cloud is formed,
+$A_i \in \{0,1\}$ is the group indicator with propensity $e(x) = \Prob(A=1 \mid X=x)$, and
+$Y_i \in \mathcal Y$ is a point cloud taking values in a Polish space. The sampling unit is the
+cloud: every unit contributes exactly one cloud and one summary of it, and no summary, statistic
+or calibration draw is formed by pooling points across clouds. Persistent homology is applied to
+each cloud separately.
+
+Fix a filtration $F$ and a finite set of homology degrees $\mathcal D$, with
+$\mathcal D = \{0,1\}$ the default; the computational study uses an
+alpha-complex filtration computed separately on each cloud.
+Write $D_{i,d} = \Dgm_d(F(Y_i))$ for the degree-$d$ diagram,
+a finite multiset of pairs $p=(a_p,b_p)$ with $0 \le a_p < b_p < \infty$ after essential classes
+are dropped. Diagrams are computed once per cloud and cached, so no persistent homology is
+recomputed inside a calibration loop. For a fixed compact interval $T \subset \mathbb R_+$ and a
+weight power $r>0$, the degree-$d$ power-weighted silhouette is
+\begin{equation}
+\label{eq:silhouette}
+\begin{split}
+Z_{i,d}(t) = \Phi_d(D_{i,d})(t)
+&= \frac{\sum_{p \in D_{i,d}} w_p \Lambda_p(t)}{\sum_{p \in D_{i,d}} w_p},
+\qquad
+w_p = (b_p - a_p)^r,
+\\
+\Lambda_p(t) &= \max\{0, \min(t - a_p,\, b_p - t)\},
+\end{split}
+\end{equation}
+evaluated on a fixed grid $t \in T$; an empty diagram contributes the zero function. The weight
+power is $r=3$ throughout, and the silhouette grid is fixed before any group contrast. As
+vector-valued summaries of the per-cloud diagram law, silhouettes obey a law of large numbers and
+a central limit theorem under integrability and stability conditions
+\cite{bubenik_jmlr_2015,chazal_socg_2014,kim_lee_tce_2026}, which is why they serve as the
+outcome representation below.
+
+\subsection{Potential outcomes and the covariate-standardized targets}
+
+Let $Y_i^a$ be the potential cloud under assignment $a \in \{0,1\}$, with potential diagrams
+$D_{i,d}^a = \Dgm_d(F(Y_i^a))$ and potential silhouettes $Z_{i,d}^a(t) = \Phi_d(D_{i,d}^a)(t)$.
+
+\begin{assumption}[Identification]
+\label{ass:identification}
+\emph{(i) Causal consistency:} $Y_i = Y_i^{A_i}$, so
+$D_{i,d} = D_{i,d}^a$ and $Z_{i,d}(t) = Z_{i,d}^a(t)$ on $\{A_i=a\}$. \emph{(ii) Arm-specific
+conditional exchangeability:} $Y_i^a \perp A_i \mid X_i$ for each $a \in \{0,1\}$. \emph{(iii)
+Strict positivity:} $0 < e(x) < 1$ for $P_X$-almost every $x$. In addition,
+$\E\norm{Z_{i,d}^a}_\infty < \infty$ for each $a$ and $d$.
+\end{assumption}
+
+Define the arm-specific outcome regression $m_{a,d}(t,x) = \E[Z_{i,d}^a(t) \mid X_i = x]$ and the
+covariate-standardized topological effect
+\begin{equation}
+\label{eq:psi}
+\psi_d(t) = \E_X\bigl[m_{1,d}(t,X) - m_{0,d}(t,X)\bigr]
+= \E[Z_{i,d}^1(t)] - \E[Z_{i,d}^0(t)].
+\end{equation}
+Under Assumption~\ref{ass:identification} the g-formula gives $\E[Z_{i,d}^a(t)] = \E[m_{a,d}(t,X)]$, and the inverse
+propensity representation $\E[Z_{i,d}(t)\mathbb 1\{A_i=a\}/e_a(X_i)]$ equals the same quantity,
+with $e_1=e$ and $e_0=1-e$ \cite{souto_diamantis_tcda_2026,kim_lee_tce_2026}. Hence $\psi_d(t)$ is
+identified from the observational law. Only the arm-specific form of exchangeability is used;
+joint exchangeability of $(Y^0,Y^1)$ would be needed only for joint targets that this paper does
+not estimate.
+
+At the distribution level, let $\mu_D = \sum_{p \in D} w_p \delta_{\mathrm{coord}(p)}$ be the
+weighted persistence measure of a diagram, with $\mathrm{coord}(p)$ the chosen diagram
+coordinates, and let $T_{\mathrm{dist}}(P) = \E_P[\mu_{D(F(Y))}]$ be the expected persistence
+measure \cite{divol_chazal_2020,divol_lacombe_2021}. With $Q_a(x,\cdot) = \Law(Y \mid A=a, X=x)$,
+the law-valued g-formula $P^a_Y = \int_{\mathcal X} Q_a(x,\cdot)\,dP_X(x)$ holds under the same
+Assumption~\ref{ass:identification}, so $T_{\mathrm{dist}}(P^a_Y) = \int_{\mathcal X}
+\E[\mu_{D(F(Y))} \mid A=a, X=x]\,dP_X(x)$ \cite{souto_diamantis_tcda_2026}. Two facts about this
+construction are load-bearing. First, the measure is un-normalized and therefore affine in $P$,
+so the covariate mixture commutes with it; the normalized silhouette of \eqref{eq:silhouette} is
+not affine, and persistent homology is in any case applied per cloud before the mixture. Second,
+the expected measure is evaluated through its dual pairing with a fixed separable test class
+rather than as a Bochner integral in total variation, which is not separable; the fixed grid used
+below is exactly such a finite separable class.
+
+The implemented distribution-level target is the projection of $T_{\mathrm{dist}}$ onto one frozen
+grid. The grid has $32 \times 32$ bins on the interval $(0,2)$ in the (birth, midpoint) plane,
+with weight power $r=3$, giving $q = 1024$ coordinates. Let $\Pi_G$ denote the corresponding
+binning map and
+\begin{equation}
+\label{eq:delta}
+\delta = \Pi_G T_{\mathrm{dist}}(P^1_Y) - \Pi_G T_{\mathrm{dist}}(P^0_Y) \in \mathbb R^q.
+\end{equation}
+The shipped tests concern $H_0^{\mathrm{dist,grid}} : \delta = 0$ only. Equality of the
+unprojected measures is not certified without a resolution or injectivity argument for $\Pi_G$,
+and no such claim is made. The same assumption set identifies both levels, with no exchangeability
+or positivity asymmetry between the outcome-level and distribution-level targets. If a reader
+replaces arm-specific conditional exchangeability by conditional topological ignorability alone,
+the unstandardized interventional contrast is not identified and the identified object drops to a
+covariate-standardized within-stratum contrast \cite{saki_faghihi_2026}; under Assumption~\ref{ass:identification} as
+stated, both covariate-standardized targets above are identified.
+
+\subsection{Null hypotheses and their relations}
+
+The paper's tests are indexed by three population nulls, together with one unprojected reference statement. The field's null is the conditional-law null
+\begin{equation}
+H_0^{\mathrm{cond}} : \Law(D_{i,d} \mid A_i=1) = \Law(D_{i,d} \mid A_i=0)
+\quad \text{for every } d \in \mathcal D,
+\end{equation}
+which is testable without a causal model and is the target of the existing topological two-sample
+tests
+\cite{robinson_turner_2017,kwitt_neurips_2015,han_kim_kim_2026,murris_strand_2026,moon_lazar_2023,dubey_muller_2019}.
+The covariate-standardized outcome null and the finite-grid distribution null are
+\begin{equation}
+H_0^{\mathrm{out}} : \psi_d(t) = 0 \ \text{ for all } t \in T \text{ and all } d \in \mathcal D,
+\qquad
+H_0^{\mathrm{dist,grid}} : \delta = 0.
+\end{equation}
+We also write $H_0^{\mathrm{dist}}$ for the unprojected distribution-level statement. Two versions of it appear below: the expected-measure version, equality of $T_{\mathrm{dist}}(P^1_Y)$ and $T_{\mathrm{dist}}(P^0_Y)$, which enters the pairing relation to $H_0^{\mathrm{out}}$ and the exact witnesses, and the law-equality version, $\Law(Y^1)=\Law(Y^0)$, which the characteristic-kernel MMD pairing targets. Neither unprojected statement is certified by the finite-grid test.
+
+The relation between the unprojected $H_0^{\mathrm{dist}}$ and $H_0^{\mathrm{out}}$ is pairing-conditional, not a fact about topology. If the
+outcome-level mean factors through the distribution-level representation, that is, if the mean
+silhouette functional equals $L \circ T_{\mathrm{dist}}$ for some map $L$ and the metric separates
+points, then $H_0^{\mathrm{dist}} \Rightarrow H_0^{\mathrm{out}}$. For the default pairing of this
+paper, the normalized power-weighted silhouette against the expected persistence measure, no such
+factorization exists, because the normalization ratio sits inside the expectation, and neither
+null implies the other. Two exact witnesses establish the logical independence. In W1,
+$D^0 = \{(0,\ell)\}$ and $D^1 = \{(0,\ell),(0,\ell)\}$ for a fixed $\ell>0$: one homology class
+splits into two classes at the same merge scale. The normalized silhouette averages the tents, so
+the mean silhouettes are equal and $H_0^{\mathrm{out}}$ holds, while the expected measures carry
+masses $w_\ell$ and $2w_\ell$ at the same coordinate and are unequal, so
+$H_0^{\mathrm{dist,grid}}$ fails; on the frozen grid the projected contrast is $2.460375$ while
+the mean-silhouette contrast is exactly $0$. In W2$'$, $D^0 = \{(0,1),(0,2)\}$ and $D^1$ equals
+$\{(0,1),(0,1)\}$ or $\{(0,2),(0,2)\}$ with probability $1/2$ each: each location carries expected
+multiplicity one in both arms, so the expected measures agree exactly for every weight power and
+$H_0^{\mathrm{dist,grid}}$ holds, while the two arms weight the two tents by
+$(w_1/(w_1+w_2),\, w_2/(w_1+w_2))$ against $(1/2,1/2)$, with $w_j = j^r$, so the mean silhouettes
+differ and $H_0^{\mathrm{out}}$ fails; the projected measure contrast is exactly $0$ and the
+mean-silhouette contrast is $0.544$. The mechanism in both directions is the non-commutation of
+the normalization ratio with mixing. W1 is a statement about the outcome-level mean only: it does
+not say that an unadjusted test of $H_0^{\mathrm{cond}}$ is blind, since the arm-conditional laws
+differ there.
+
+A secondary distribution-level variant replaces the mean by the squared maximum mean discrepancy
+under the exponentiated Reininghaus persistence scale-space kernel
+$k^U_\sigma = \exp(k_\sigma)$. On the set of diagrams whose birth and death coordinates are
+bounded by a fixed constant and whose total multiplicity is bounded by a fixed constant, this
+kernel is universal with respect to the Wasserstein-1 metric \cite{kwitt_neurips_2015};
+universality implies characteristic, so its mean embedding is injective on laws and its null is
+equality of the interventional diagram laws \cite{gretton_2012}. That null is strictly stronger
+than $H_0^{\mathrm{out}}$, in the sense that it implies $H_0^{\mathrm{out}}$ with a false converse.
+It is reported as a secondary with its nested target flagged, both because it checks whether an
+effect was integrated away by the mean and because its ordering against the outcome null differs
+from the headline pairing; W1 and W2$'$ separate under it with squared discrepancies $1.916989$
+and $0.398762$.
+
+Comparisons of rejection rates across these nulls are not efficiency statements, and the paper
+reports none. Every performance comparison is made within a fixed target, and the failure of the
+unadjusted tests is a target-mismatch result, stated in the theory and experiments sections,
+rather than a power ranking.
+
+\section{Inference methods}
+\label{sec:methods}
+
+\subsection{Outcome-level test}
+
+Let $\hat e$ and $\hat m_{a,d}$ denote cross-fitted nuisance estimates, each unit's prediction
+coming from folds that exclude it, with folds stratified in $A$. The per-unit cross-fitted augmented inverse-probability-weighted (AIPW)
+score in degree $d$ is
+\begin{equation}
+\label{eq:outscore}
+s_{i,d}(t) = \hat m_{1,d}(t,X_i) - \hat m_{0,d}(t,X_i)
++ \frac{A_i}{\hat e(X_i)}\bigl\{Z_{i,d}(t) - \hat m_{1,d}(t,X_i)\bigr\}
+- \frac{1-A_i}{1-\hat e(X_i)}\bigl\{Z_{i,d}(t) - \hat m_{0,d}(t,X_i)\bigr\},
+\end{equation}
+with sample mean $\hat\psi_d(t) = n^{-1}\sum_i s_{i,d}(t)$. The score is the efficient-influence
+function linearization of the contrast and is doubly robust: its expectation is $\psi_d(t)$ if
+either the propensity or the outcome regression is correct, and the remainder is a product of
+nuisance errors \cite{souto_diamantis_tcda_2026,chernozhukov_dml_2018,kennedy_drlearner_2023}. The
+point estimator, the cross-fitting and the per-unit influence process are reused from the
+released implementation accompanying the framework of \cite{souto_diamantis_tcda_2026}; they are
+not reimplemented here, and this paper owns the testing layer, namely the statistic, the null law
+and the p-value.
+The statistic is
+\begin{equation}
+\label{eq:tnout}
+T_n^{\mathrm{out}} = \sqrt n \max_{d \in \mathcal D} \sup_{t \in T} \abs{\hat\psi_d(t)}.
+\end{equation}
+
+The null law is a Gaussian multiplier bootstrap over the centered score process. Draw one
+multiplier $\xi_{i,b} \sim N(0,1)$ per unit, shared across all degrees, and set
+\[
+G_b = \max_{d \in \mathcal D} \sup_{t \in T} \abs{n^{-1/2}\sum_i \xi_{i,b}\bigl(s_{i,d}(t) - \bar
+s_d(t)\bigr)}.
+\]
+The shared streams preserve the dependence across degrees induced by the shared units
+and folds; drawing independent multipliers per degree would replace that dependence with
+independence and inflate the null. The Gaussian multiplier approximation for maxima of sums is the
+one of \cite{cck_2013}, and the p-value applies the Phipson-Smyth correction,
+$(1 + \#\{b : G_b \ge T_n^{\mathrm{out}}\})/(1+B)$. The default implementation uses
+$B=2000$ draws; the reported oracle and cloud batteries use $399$ multiplier draws
+with $199$ frozen stratified permutations, and the distribution-level test uses
+$1999$ draws (Section~\ref{sec:exp:design}) \cite{phipson_smyth_2010}.
+
+As an alternative calibration in an exchangeability regime, the same statistic can be referred to
+the frozen stratified permutation null: labels are permuted within propensity strata while the
+fitted nuisances, the strata and the propensity clipping are held fixed, and the score is
+re-evaluated under the permuted labels without refitting. This is conditionally exact
+randomisation inference when the nuisances and strata are fixed independently of the permuted
+labels, for instance under a sharp conditional null with externally fixed design information; with
+estimated, label-dependent nuisances it is a fast cross-fitted calibration approximation, not a
+finite-sample theorem \cite{chung_romano_2013,janssen_1997}. The paper reports it as an option and
+does not claim exactness in the general estimated-nuisance regime.
+
+\subsection{Distribution-level test}
+
+Let $V_i \in \mathbb R^q$ collect the binned weighted masses of the degree-$d$ persistence measure
+on the frozen grid of \eqref{eq:delta}. Let $\hat m_a$ be the cross-fitted regression of $V$ on
+$X$ within arm $a$, and let $\hat e$ be the cross-fitted propensity. The per-unit AIPW contrast
+score on the fixed grid is
+\begin{equation}
+\label{eq:distscores}
+\varphi_i = \hat m_1(X_i) - \hat m_0(X_i)
++ \frac{A_i}{\hat e(X_i)}\bigl\{V_i - \hat m_1(X_i)\bigr\}
+- \frac{1-A_i}{1-\hat e(X_i)}\bigl\{V_i - \hat m_0(X_i)\bigr\},
+\end{equation}
+with sample mean $\hat\delta = n^{-1}\sum_i \varphi_i$. Its coordinates are the finite-dimensional
+specialization of the Banach-valued doubly robust representation, and the same delegation
+boundary as at the outcome level applies: the nuisances and the influence linearization are
+reused, while the statistic, null law and p-value are this paper's. Coordinatewise variances use
+the $1/n$ normalization,
+$\hat\sigma_j^2 = n^{-1}\sum_i (\varphi_{ij} - \hat\delta_j)^2$, and the statistic is the
+coordinatewise studentized maximum
+\begin{equation}
+\label{eq:tndist}
+T_n^{\mathrm{dist}} = \max_{j \in J} \frac{\sqrt n \, \abs{\hat\delta_j}}{\hat\sigma_j},
+\qquad
+J = \{j : \hat\sigma_j^2 > 10^{-8}\}.
+\end{equation}
+Coordinates with sample variance at or below the floor $10^{-8}$ are dropped from the statistic
+and from the null, and a sample in which every coordinate is dropped raises a deterministic
+failure rather than passing silently. The null uses $B=1999$ Gaussian multiplier draws, with one
+multiplier per unit shared across all coordinates: draw $b$ is
+$\max_{j \in J} \abs{n^{-1/2}\sum_i \xi_{i,b}(\varphi_{ij} - \hat\delta_j)}/\hat\sigma_j$, and the
+p-value again uses the Phipson-Smyth correction \cite{cck_2013,phipson_smyth_2010}. No persistent
+homology or nuisance regression is recomputed inside the calibration loop. As a basic check, with
+balanced arms, a known propensity of one half and in-sample arm-mean nuisances, the statistic
+reduces exactly to the ordinary pooled two-sample $t$ statistic on a single active coordinate, up
+to the factor $\sqrt{n/(n-2)}$.
+
+The scope of this test is exactly $H_0^{\mathrm{dist,grid}} : \delta = 0$, the weak
+expected-measure null, which permits unequal unit-level laws; no sharp-null or law-equality claim
+is attached to it. The target is the projection onto the single frozen grid, so equality of the
+unprojected interventional measures is not certified. In the calibration study the strongest
+tested confounding produces one mildly anti-conservative cell at the smallest sample size
+($0.096$ at $n=200$), while the same design is inside the nominal band at $n=500$ ($0.066$); the
+conservative operating recommendation is therefore $n \ge 500$ under strong confounding, and the
+paper claims no uniform control at smaller sample sizes. Permutation calibration for this null is
+retained only as a diagnostic: under the weak null with imbalance the permuted score mean is
+centered at the observational contrast rather than at zero, so the frozen relabeling law is not
+the weak-null sampling law.
+
+\subsection{Multiplicity across homology degrees}
+
+All degree-level procedures read the same null matrix, so differences among them are differences
+of procedure rather than of calibration draws. For each null draw $b$, one shared multiplier
+vector or one shared label permutation produces a per-degree statistic $X_{d,b}$; the observed
+per-degree statistics are $X_d = \sqrt n \sup_t \abs{\hat\psi_d(t)}$. Three reductions are
+reported. The unstudentized shared maximum uses $T = \max_d X_d$ with null $\max_d X_{d,b}$; it
+preserves cross-degree dependence but lets the loudest degree dominate the family. Bonferroni
+multiplies the smallest per-degree rank p-value by $\abs{\mathcal D}$ and is the transparent
+conservative comparator. The adapted studentized comparator standardizes each degree against its
+own empirical null and then takes the joint maximum; the standardization uses the pooled
+convention, with location and scale constants computed from the observed statistic together with
+the $B$ null replicates, because only that symmetric convention keeps the rank test exact under
+exchangeability. A pairwise Kolmogorov-Smirnov statistic between standardized per-degree null
+samples is reported as a descriptive comparability measure only, since the draws are dependent
+across degrees and a p-value from it would not be valid.
+
+The studentized comparator is an adaptation of the empirical-null multiple-testing construction of
+\cite{vejdemo_mukherjee_2022}, not the original procedure. Three elements are replaced. The source
+null, a uniform point process on an estimated convex body, has no counterpart for a
+covariate-adjusted treatment-effect null; the source simulates each family member independently,
+whereas here the degrees are drawn jointly from one shared multiplier or permutation stream; and
+the source standardizes with null-only constants, whereas here the constants are pooled over the
+observed statistic and the null replicates. The validity of the adaptation rests on exchangeability
+of the null mechanism together with the functional weak convergence of the AIPW process
+\cite{kim_lee_tce_2026}, not on the source's point-process limit theorem. No finite-sample
+exactness is claimed for the studentized comparator; the unstudentized maximum and Bonferroni
+lines are not procedures of the source, and the reported calibration record, including its
+conservative misses, is stated with the experiments.

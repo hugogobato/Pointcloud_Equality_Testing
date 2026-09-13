@@ -516,63 +516,95 @@ def _gate(cells: dict) -> dict:
     return verdict
 
 
-def make_figure() -> str:
-    """Figure 4.5: size curves (panel A) and power curves (panel B)."""
+def make_figure(payload: dict | None = None, out: str | None = None) -> str:
+    """Figure 4.5: weak-null size (A), W1 power vs n (B), local mixture (C)."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    out = aggregate(verbose=False)
-    cells = out["cells"]
-    fig, (axa, axb) = plt.subplots(1, 2, figsize=(11, 4.4))
+    if payload is None:
+        payload = aggregate(verbose=False)
+    cells = payload["cells"]
+    fig, (axa, axb, axc) = plt.subplots(1, 3, figsize=(10.5, 4.0))
     band = (0.03, 0.08)
-    for ax in (axa,):
-        ax.axhspan(band[0], band[1], color="grey", alpha=0.25, lw=0)
-        ax.axhline(ALPHA, color="black", lw=0.8, ls=":")
-    series = [("w2p", "W2'", "o", "tab:blue", "multiplier_p", None),
-              ("confounded", "confounded r=0.0", "s", "tab:green",
+    axa.axhspan(band[0], band[1], color="grey", alpha=0.25, lw=0,
+                label="pre-registered band [0.03, 0.08]")
+    axa.axhline(ALPHA, color="black", lw=0.8, ls=":")
+    series = [("w2p", "W2'", "o", "#0072B2", "multiplier_p", None),
+              ("confounded", "confounded r=0.0", "s", "#009E73",
                "multiplier_p", 0.0),
-              ("confounded", "confounded r=0.5", "s", "tab:olive",
+              ("confounded", "confounded r=0.5", "s", "#E69F00",
                "multiplier_p", 0.5),
-              ("confounded", "confounded r=1.0", "s", "tab:red",
+              ("confounded", "confounded r=1.0", "s", "#D55E00",
                "multiplier_p", 1.0),
-              ("sharp", "sharp mult", "d", "tab:purple", "multiplier_p", 1.0),
-              ("sharp", "sharp perm", "d", "tab:orange", "permutation_p",
+              ("sharp", "sharp multiplier", "d", "#CC79A7", "multiplier_p", 1.0),
+              ("sharp", "sharp permutation", "d", "#56B4E9", "permutation_p",
                1.0)]
+    handles = []
     for design, label, marker, color, key, regime in series:
-        xs, ys = [], []
+        xs, ys, se = [], [], []
         for n in SAMPLE_SIZES:
             cell = cells.get(_cell_key(design, n, regime, None))
             if cell and cell[key]:
-                xs.append(n); ys.append(cell[key]["rate"])
-        axa.plot(xs, ys, marker=marker, color=color, label=label)
-    axa.set_xscale("log"); axa.set_xticks(list(SAMPLE_SIZES))
+                xs.append(n)
+                ys.append(cell[key]["rate"])
+                se.append(cell[key]["mc_se"])
+        h = axa.errorbar(xs, ys, yerr=2 * np.asarray(se), marker=marker,
+                         color=color, label=label, capsize=2,
+                         elinewidth=0.7, ms=4.5)
+        handles.append(h.lines[0])
+    axa.set_xscale("log")
+    axa.minorticks_off()
+    axa.set_xticks(list(SAMPLE_SIZES))
     axa.set_xticklabels([str(x) for x in SAMPLE_SIZES])
-    axa.set_xlabel("sample size n")
-    axa.set_ylabel("rejection rate at alpha = 0.05")
-    axa.set_ylim(0.0, 0.25)
-    axa.legend(fontsize=7, ncol=2)
-    axa.set_title("(a) weak-null size, band [0.03, 0.08]")
+    axa.set_xlabel("sample size $n$")
+    axa.set_ylabel("rejection rate at $\\alpha = 0.05$")
+    axa.set_ylim(0.0, 0.30)
+    axa.set_title("(a) size at weak nulls", fontsize=10.5)
+    axa.grid(alpha=0.25)
 
     axb.axhline(ALPHA, color="black", lw=0.8, ls=":")
-    xs = [n for n in POWER_SAMPLE_SIZES]
-    ys = [cells.get(_cell_key("w1", n, None, None))["multiplier_p"]["rate"]
-          if cells.get(_cell_key("w1", n, None, None)) else None for n in xs]
-    ys = [y for y in ys if y is not None]
-    axb.plot([n for n, y in zip(xs, ys) if y is not None], ys,
-             marker="o", color="tab:blue", label="W1 power vs n")
-    xs = list(P_GRID)
-    ys = [local["multiplier_p"]["rate"] for local in
-          [cells.get(_cell_key("local", 200, None, p)) for p in P_GRID]
-          if local and local["multiplier_p"]]
-    axb.plot(list(P_GRID), ys, marker="s", color="tab:red",
-             label="local mixture power at n=200")
-    axb.set_xlabel("p (mixture weight) / n (W1 line)")
-    axb.set_ylabel("rejection rate")
-    axb.legend(fontsize=7)
-    axb.set_title("(b) power: W1 and the local mixture")
-    fig.tight_layout()
-    path = os.path.join(RESULTS, "phase45_weak_null_figure.png")
-    fig.savefig(path, dpi=150)
+    xs, ys, se = [], [], []
+    for n in POWER_SAMPLE_SIZES:
+        cell = cells.get(_cell_key("w1", n, None, None))
+        if cell and cell["multiplier_p"]:
+            xs.append(n)
+            ys.append(cell["multiplier_p"]["rate"])
+            se.append(cell["multiplier_p"]["mc_se"])
+    axb.errorbar(xs, ys, yerr=2 * np.asarray(se), marker="o", color="#0072B2",
+                 label="stochastic W1", capsize=2, elinewidth=0.7, ms=4.5)
+    axb.set_xscale("log")
+    axb.minorticks_off()
+    axb.set_xticks(list(POWER_SAMPLE_SIZES))
+    axb.set_xticklabels([str(x) for x in POWER_SAMPLE_SIZES])
+    axb.set_xlabel("sample size $n$")
+    axb.set_ylabel("rejection rate at $\\alpha = 0.05$")
+    axb.set_ylim(-0.03, 1.03)
+    axb.legend(fontsize=9, loc="lower right")
+    axb.set_title("(b) power on stochastic W1", fontsize=10.5)
+    axb.grid(alpha=0.25)
+
+    axc.axhline(ALPHA, color="black", lw=0.8, ls=":")
+    p_grid = list(P_GRID)
+    ys, se = [], []
+    for p in p_grid:
+        cell = cells.get(_cell_key("local", 200, None, p))
+        ys.append(cell["multiplier_p"]["rate"])
+        se.append(cell["multiplier_p"]["mc_se"])
+    axc.errorbar(p_grid, ys, yerr=2 * np.asarray(se), marker="s",
+                 color="#D55E00", label="local mixture", capsize=2,
+                 elinewidth=0.7, ms=4.5)
+    axc.set_xlabel("mixture weight $p$ (local alternative)")
+    axc.set_ylabel("rejection rate at $\\alpha = 0.05$")
+    axc.set_ylim(-0.03, 1.03)
+    axc.legend(fontsize=9, loc="upper left")
+    axc.set_title("(c) power on a local mixture", fontsize=10.5)
+    axc.grid(alpha=0.25)
+    fig.legend(handles, [s[1] for s in series], ncol=3, fontsize=9,
+               loc="lower center", bbox_to_anchor=(0.5, -0.01), frameon=False)
+    fig.tight_layout(rect=(0, 0.09, 1, 1))
+    path = out or os.path.join(RESULTS, "phase45_weak_null_figure.png")
+    fig.savefig(path, dpi=200)
+    plt.close(fig)
     return path
 
 

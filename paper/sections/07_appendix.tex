@@ -1,0 +1,438 @@
+\section{Theory package and extended evidence}
+\label{app:theory}
+
+This appendix gives the condensed derivations and the extended evidence behind the main text. Section~\ref{app:proofs} states the assumptions, the main statements, and every labelled gap. Sections~\ref{app:oracle} to~\ref{app:validation-tab} print the extended tables and figures, with every rate carrying its replication count and Monte Carlo standard error and every table naming the null it evaluates. Claims that were marked false, withdrawn, or unproved are reported as such and relied on nowhere.
+
+\subsection{Reader's guide}
+\label{app:guide}
+
+Table~\ref{tab:guide} maps each main-text claim to its derivation here and to the evidence that validates or qualifies it. The targets are $H_0^{\mathrm{cond}}$ (equal arm laws), $H_0^{\mathrm{out}}$ (zero covariate-standardized outcome effect), and $H_0^{\mathrm{dist,grid}}$ (zero frozen finite-grid expected-measure contrast).
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{1.5cm}>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}X@{}}
+\hline
+Claim & Nulls & Derivation & Validation & Status \\
+\hline
+False positives under imbalance & $H_0^{\mathrm{out}}$ true, $H_0^{\mathrm{cond}}$ false & \ref{app:leakage} & Table~\ref{tab:app-oracle}, Table~\ref{tab:weaknull} & Proved; consistency premise imported; one numerical positivity leg \\
+Masking of a fixed effect & $H_0^{\mathrm{cond}}$ true, $H_0^{\mathrm{out}}$ false & \ref{app:leakage} & Table~\ref{tab:weaknull}, masking power $1.000$ & Proved; cloud separation numerical, not proved \\
+Target-relative protocol & all three & \ref{app:target} & Table~\ref{tab:validation} & Proved; two thresholds mis-set and reported \\
+EIF bound and attainment & $H_0^{\mathrm{out}}$, $H_0^{\mathrm{dist,grid}}$ & \ref{app:efficiency} & Table~\ref{tab:validation} & Fixed $q$; four of seven criteria fail; no finite-sample claim \\
+Local limit and drift & $H_0^{\mathrm{out}}$ & \ref{app:local} & Table~\ref{tab:validation} & Proved modulo three gaps; finite-$n$ expansion; pre-registered screen false \\
+ARE among target-matched tests & $H_0^{\mathrm{out}}$ (grid) & \ref{app:are} & Table~\ref{tab:validation}, Table~\ref{tab:bakeoff} & Proved scoped; max-$t$ monotonicity a conjecture; small-$n$ loss reported \\
+Fixed-grid max-$t$ validity & $H_0^{\mathrm{dist,grid}}$ & \ref{app:distgrid} & Table~\ref{tab:weaknull}, Table~\ref{tab:validation} & Proved under (D1)--(D6); uniform DML assumed; $n=200$ exception \\
+Multiplicity FWER & $H_0^{\mathrm{out}}$ (grid) & \ref{app:multiplicity} & Table~\ref{tab:multiplicity}, Table~\ref{tab:validation} & Upper control proved; one conservative miss; no exactness \\
+Minimax boundary & $H_0^{\mathrm{out}}$ & \ref{app:minimax} & Table~\ref{tab:validation} & Le Cam bound and slopes proved; sharp constant a conjecture \\
+Bake-off wins and losses & all listed above & empirical & Table~\ref{tab:bakeoff}, Table~\ref{tab:cost} & Verified; named losses; deferred cells stated \\
+\hline
+\end{tabularx}
+\caption{Reader's guide. No cross-null ranking is implied.}
+\label{tab:guide}
+\end{table}
+
+\subsection{Condensed proofs}
+\label{app:proofs}
+
+\subsubsection{Target-relative protocol and non-dominance}
+\label{app:target}
+
+Data are independent triples $(X_i,A_i,Y_i)$ with one cloud per unit; $Z_{i,d}(t)=\Phi_d(\Dgm_d(F(Y_i)))(t)$; $m_{a,d}(t,x)=\E[Z_{i,d}(t)\mid X_i=x,A_i=a]$; $\psi_d(t)=\E_X[m_{1,d}(t,X)-m_{0,d}(t,X)]$. The standing assumption A1 is causal consistency, arm-specific weak conditional exchangeability $Z^a\perp A\mid X$, strict positivity, and $\E\norm{Z}<\infty$ \cite{souto_diamantis_tcda_2026}; the outcome-level limit theory is \cite{kim_lee_tce_2026}. The target-matched class collects tests with asymptotic level for the declared null, an existing local-power function, and direction-wise consistency; membership is fixed by the null guaranteed, never the estimator. Within a class the currency is relative local power, with the Pitman ARE as its Gaussian-shift summary; across classes no single power ordering exists.
+
+On the imbalance harness ($X\sim N(0,I_3)$, $e_\lambda(x)=\mathrm{expit}(1.5\lambda x^\top\beta)$, $\beta=(-0.5,-0.1,0.6)$, covariate-driven loop count, no group effect), $H_0^{\mathrm{out}}$ and $H_0^{\mathrm{dist,grid}}$ hold exactly for every $\lambda$, while $H_0^{\mathrm{cond}}$ fails for $\lambda>0$ with arm gap $\Delta_K=\mathrm{Cov}(K(D),e_\lambda(X))/(p_1p_0)$ and $\E[K\mid A=1]<\E[K\mid A=0]$. On the masking construction (three strata, propensity $(1/2,1/2,1/4)$, three cloud types, exact rational control mixture), $H_0^{\mathrm{cond}}$ holds because both arm type mixtures equal $(2/5,2/5,1/5)$, while $\psi_d(t)=\frac{8}{45}(m_C(t)-(m_A(t)+m_B(t))/2)\not\equiv0$. Hence a consistent test of $H_0^{\mathrm{cond}}$ rejects almost surely at the harness law, where its rejections are false positives for $H_0^{\mathrm{out}}$, while every level-$\alpha$ $H_0^{\mathrm{cond}}$ test has rejection probability at most $\alpha$ at the masking law, where a consistent $H_0^{\mathrm{out}}$ test rejects almost surely. The witnesses are single laws, so neither dominance direction holds generally and cross-null comparisons are not efficiency statements. For finite covariate support, perturbations with $\sum_x p_1(x)R_1(x,\cdot)=\sum_x p_0(x)R_0(x,\cdot)$ leave arm marginals first-order unchanged while the target moves; this is proved for pooled-data tests. The local projection reading through the marginal tangent space, with residual $\rho_n=n^{1/2}\sum_x(p_1R_1-p_0R_0)$, is a \emph{conjecture}: differentiability in quadratic mean, positive-definite Fisher information, and uniform positivity are not verified. The exact finite-support level statement needs no conjecture.
+
+The witness record reports two pre-registered magnitude misses, not refit: arm gap $0.4675$ against $0.5$ (permutation $p=5.0\times10^{-4}$) and silhouette contrast $\sup_t\abs{\psi_d}=0.4934$ against $0.5$ (batch SE $1.9\times10^{-4}$); the post-hoc population gap is $0.3730$ (SE $0.0009$), so the thresholds, taken from prose, were mis-set while strict inequality, consistency, and exact cancellation stand. The value $0.4934$ supersedes the earlier $1.45$, and the earlier loop-gap reading $1.2$ is superseded by quadrature $0.372664$ and simulation $-0.373810$ (SE $0.001347$).
+
+\subsubsection{False-positive and masking leakage}
+\label{app:leakage}
+
+Assumptions: (A1) conditional arm homogeneity; (A2) non-degenerate imbalance, $p_1\in(0,1)$; (A3) a non-constant, aligned covariate-to-topology map with $\mathrm{Cov}(K(D),e_\lambda(X))\ne0$ for a bounded diagram functional $K$; (A4) positivity $e_\lambda(X)\in(0,1)$ a.s. Under these, at every fixed $\lambda\in(0,1]$ the causal nulls hold exactly, $Q_1^\lambda\ne Q_0^\lambda$, $\mathrm{TV}(Q_1,Q_0)\ge\mathrm{TV}(\mu_1,\mu_0)\ge\abs{\Delta_K}/\mathrm{diam}(K)>0$, and $\mathrm{KL}(Q_1\|Q_0)\ge\mathrm{KL}(\mu_1\|\mu_0)>0$. The harness evaluation proves the sign by the covariance of oppositely monotone functions and gives $\Delta(1)=-0.372664$ by quadrature and $-0.373810$ (SE $0.001347$) by simulation. Strict monotonicity of the divergences is verified on a $1{,}001$-point grid only; the theorem uses only $\Delta\ne0$ at fixed $\lambda$. The alternatives are non-contiguous: the log-likelihood ratio per observation converges to $-\mathrm{KL}(Q_0\|Q_1)$ under the null and to $+\mathrm{KL}(Q_1\|Q_0)$ under the alternative (the direction proved by a direct likelihood-ratio calculation; the extended-valued case is handled), so the products are asymptotically orthogonal.
+
+The leakage theorem covers tests measurable with respect to labels and diagrams, which is the implementation class of the six named competitors; tests that also use covariates are outside. Their fixed-alternative consistency, uniform over arm proportions in compact subintervals of $(0,1)$, is imported from the cited results, not reproved. The sequence version $\lambda_n\to\lambda_*>0$ requires uniform consistency over a total-variation neighbourhood and remains an adaptation. Residual gaps: recovery of the loop count from the diagram is asserted, not proved; finiteness of the divergence for the full diagram laws is not verified.
+
+The masking construction satisfies $H_0^{\mathrm{cond}}$ exactly, so $D$ is independent of $A$ and the labelled sample is exchangeable given arm sizes. The sign of the effect is exact, but the measurable separation of the cloud-type laws, equivalently $\sup_t\abs{\psi_d}>0$, is \emph{numerical and not proved}: the witness is the pipeline measurement $0.4934$ (batch SE $1.9\times10^{-4}$) and the finite-grid contrast $L^1=1.1295$. Every level-$\alpha$ test of $H_0^{\mathrm{cond}}$ has rejection probability at most $\alpha$ at the masking law, with equality only when that law is least favourable, which covers the pooled permutation tests up to grid discretisation; no such test is consistent for $H_0^{\mathrm{out}}$ against a class containing the masking law. An equality clause asserting power exactly $\alpha$ at every sample size is withdrawn; the one-sided bound and no-consistency conclusion stand, and the conservative $0.029$ masking reading is recorded. All seven pre-registered mechanism criteria pass; the unadjusted curves rise from nominal at $\lambda=0$ to $0.980$ to $1.000$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_c1_masking_mechanism.png}
+\caption{Recorded leakage and masking mechanisms. The panels show the conditional-law sweep under the causal null, the exact arm-law divergences, and the masking rates, with the exact mechanism proxy overlaid. The sweep and masking panels concern $H_0^{\mathrm{cond}}$ for the unadjusted columns and $H_0^{\mathrm{out}}$ for the adjusted column; replication counts and Monte Carlo standard errors are given in the text.}
+\label{fig:app-masking}
+\end{figure}
+
+\subsubsection{Local limit under Pitman shifts and the drift identity}
+\label{app:local}
+
+Assumptions: (B1) repeated clouds, location-shift array, uniformly bounded second moments; (B2) causal consistency and arm-specific exchangeability; (B3) positivity $\kappa\le e(x)\le1-\kappa$, maintained for the true and fitted propensity; (B4) a correct finite-basis span with parametric regression rate, an $L^2$-consistent propensity, the product rate, and a possibly nonzero direction residual $r_g=g-P_Mg$; (B5) entropy and Donsker conditions; (B6) fixed-fold cross-fitting; (B7) shared Gaussian multipliers with moment and variance conditions; (B8) a fixed nonzero direction with a well-defined standardized drift $h$. A correction to (B3) is part of the statement: the implementation clips only exact $0$ and $1$, interior fitted propensities can fall below $10^{-2}$, and $\kappa$ is a maintained assumption, not an enforced floor; the strongly confounded prognostic design has $\E[e^{-2}]=\infty$, so (B3) is not verified there.
+
+The exact pointwise shift identity is false as stated: for a treated unit the score difference is $n^{-1/2}g_d(t)(1-A/e(X))$, not $n^{-1/2}g_d(t)$, and a direct calculation exhibits the failure for any $e\in(0,1)$. What is true and used is the exact mean identity $\E_{P_n}[\varphi_d(t,\cdot;\eta_0)]=\E_{P_n}[\varphi_d(t,\cdot;\eta_n)]=\psi_{d,n}(t)$; the regular limit survives with an added $O_P(n^{-1/2})$ empirical-process term replacing the invalid cancellation. Under (B1) to (B8) with $h\equiv0$, $\sqrt n(\hat\psi_d-\psi_{d,n})\Rightarrow G$ in $\ell^\infty(T)^D$ with the oracle efficient-influence covariance, and $T_n^{\mathrm{out}}\Rightarrow\max_d\sup_t\abs{G_d(t)+g_d(t)}$. Completeness is modulo gap G1 (cross-fitting linearization, cited from \cite{chernozhukov_dml_2018,new_robins_2018}), gap G2 (uniformity of the triangular Donsker condition, assumed), and gap G3 (multiplier quantile under the local sequence, cited from \cite{cck_2013} and adapted by contiguity). The local power is $\pi(g)=\Prob(\max_d\sup_t\abs{G_d(t)+g_d(t)}>c_{1-\alpha})$ with $\pi(0)=\alpha$ and strict power for nonzero directions with non-degenerate restricted covariance. The strictness step invokes \cite{anderson_1955,perlman_1988}; it is asserted rather than fully proved for the infinite-dimensional case, with no counterexample found. The detection boundary is the $n^{-1/2}$ scale with marginal constant $\tau\approx\sigma_0(c_{1-\alpha}+z_\beta)/\abs{h}$. The non-central branch $G+g+h$ is an adaptation; the explicit drift formulas carry a missing $\sqrt n$ factor and a sign correction and are not restated as proved.
+
+The exact drift identity is: with $u_i=1-e_i/\hat e_i$, $w_i=1-(1-e_i)/(1-\hat e_i)$, regression error $e_{a,i}$, and residual $r_{a,d}$,
+\[
+\E[\hat\varphi_i(t)\mid X_i,\hat\eta]=\mu^{(n)}_{1,i}-\mu_{0,i}-u_i\big(r_{1,d}(t,X_i)+n^{-1/2}r_{g,d}(t)\big)+w_ir_{0,d}(t,X_i)+u_ie_{1,i}(t)-w_ie_{0,i}(t),
+\]
+so $\sqrt n(\hat\psi_d-\psi_{d,n})=G_n\varphi_d(\cdot;\eta_0)+\mathrm{amp}_nr_{g,d}+R_n$ with $\mathrm{amp}_n=n^{-1}\sum_i(e(X_i)/\hat e_i-1)=-n^{-1}\sum_iu_i$ and conditionally centred $R_n$; the drift is $O_P(\delta_n)$, $\delta_n=\norm{1-e/\hat e}$, not $n^{-1/2}$. Under the fitted nuisances the effective shift is $g_{\mathrm{eff},n}=g+\kappa_n(g-P_Kg)$ with $\kappa_n=\E[e/\hat e_n]-1$. This is a finite-$n$ expansion, not a local limit: a consistent propensity gives $\kappa_n\to0$ and the correction vanishes. An asymptotic version would need a mean-ratio consistency rate for the propensity learner; that rate is neither assumed by \cite{kim_lee_tce_2026} nor proved here, and the exact finite-sample statement is the drift classification $\mathrm{amp}_nr_g=O_P(\delta_n)$. Under randomisation with $e=1/2$, $\kappa_n\ge0$ is proved by Jensen.
+
+The projection residuals are $1.1\times10^{-16}$ (mean), $0.1413$ (bump), $0.7130$ (frequency). The paired drift identity holds at machine precision in the $t$ average and within $0.58$ MC SE at the worst grid point. For the frequency cell under the strongly confounded prognostic design at $n=500$, the pre-registered screen is false: empirical $0.730$ against naive $0.628$, gap $+0.102$ (MC SE $0.026$). The corrected point prediction is $0.783$, gap $-0.053$; under common random numbers about $-0.041$, with the $\kappa_n\pm1$ SE band $[-0.071,-0.034]$ crossing the $0.06$ tolerance at one standard error. Raising the outcome basis from five to seven functions removes the out-of-span fraction and returns the projection to its oracle value ($5.0103$ against $4.9930$); the pre-registered basis comparison is underpowered (gap $+0.0624$, MC SE $0.068$), so the projection certificate is the mechanism evidence. The correction resolves only the $n=500$ DR Gaussian-shift comparison at a post-hoc corrected point prediction. The pre-registered screen and the full-fleet validation remain false for the uncorrected prediction ($51$ scored rows, $9$ over tolerance, $17$ beyond two standard errors); the bump direction is inside noise and not claimed; the completed exact-design record shows DR below the unadjusted test at $n=200$ and $n=500$ in every direction (mean gaps $0.14$ to $0.19$), so asymptotic equality is not translated into finite-$n$ power equality.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_t3_local_limit.png}
+\caption{Local limit at reduced replication count: local-power bars against the shifted-signal prediction, the $300$-replication empirical overlay, the raw drift residual, and the standardized drift statistic (limit four standard errors). Setting codes denote the nuisance design and assignment regime: PROG0 and PROG1 are prognostic outcomes under randomised and confounded assignment respectively, and NONPROG0 and NONPROG1 are the X-independent-outcome analogues. Null tested: $H_0^{\mathrm{out}}$; bars are two Monte Carlo standard errors where the cell has $12$ replications.}
+\label{fig:app-t3-local}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_t7_mismatch.png}
+\caption{The finite-sample mismatch and its correction: predicted versus empirical power before and after the truncation correction, and the per-cell local-bias gap. Setting codes follow Figure~\ref{fig:app-t3-local}. Null tested: $H_0^{\mathrm{out}}$. The correction is a finite-$n$ expansion, and the mean-ratio rate it uses is not proved.}
+\label{fig:app-t7-mismatch}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_t10_full_fleet.png}
+\caption{The complete local-power fleet across settings, directions, and sample sizes, with Monte Carlo standard errors and Gaussian-shift predictions, including the null-size panels. Setting codes follow Figure~\ref{fig:app-t3-local}. Null tested: $H_0^{\mathrm{out}}$ for the adjusted statistic and the corresponding unadjusted null for the baseline; the pre-registered screen remains false for the uncorrected prediction.}
+\label{fig:app-local-fleet}
+\end{figure}
+
+\subsubsection{Semiparametric bound, attainment, and the minimax boundary}
+\label{app:efficiency}
+
+Assumptions: (E1) independent clouds; (E2) causal consistency and arm-specific exchangeability; (E3) strict positivity and eventual fitted positivity; (E4) finite second moments of $\norm{Z}$; (E5) a locally nonparametric model; (E6) for attainment, fixed-fold cross-fitting with $L^2$ consistency, the product rate, and eventual positivity. The $Z$-reduction shows the rest of the cloud is ancillary for the summary functional. Under (E1) to (E5), the score $\varphi_d(t,O;\eta)$ displayed in the main text is the efficient influence function of $\psi_d(t)$, with variance $\mathrm{Var}(\tau_d(t,X))+\E[\mathrm{Var}(Z_d(t)\mid X,A=1)/e(X)]+\E[\mathrm{Var}(Z_d(t)\mid X,A=0)/(1-e(X))]$ and the analogous covariance kernel. A known propensity leaves the bound unchanged \cite{hahn_1998,hirano_imbens_ridder_2003}. On a fixed grid the bound is the projected matrix, the coarsened-observation submodel costs no efficiency, and the bound does not depend on $q$ beyond the retained coordinates. Cross-fitted AIPW attains the bound at fixed $q$ under the product rate, via a mean-zero leading process, a cross-fitted empirical-process term, and a von Mises remainder bounded by $\kappa^{-1}\norm{\hat e-e}_{L^2}(\norm{\hat m_1-m_1}_{L^2}+\norm{\hat m_0-m_0}_{L^2})=o_P(n^{-1/2})$. Functional attainment is an adaptation with the uniform-in-nuisance equicontinuity gap declared; the infinite-dimensional operator bound is cited and adapted, and its convolution theorem was not verified end to end. Scope: fixed $q$; no increasing or data-dependent grid; no efficiency of the sup-norm or max-$t$ procedure; no finite-sample efficiency.
+
+Numerically, the oracle identity, propensity orthogonality, and same-sample parametric criterion pass. Four of seven pre-registered criteria fail: cross-fitted ratio $+0.1502$ at $n=1000$ and $+0.0334$ at $n=4000$; known-versus-estimated spread $0.1124$; subgrid projection inheriting the inflation; coordinate-averaged overfit bias $+0.0289$ against a $3$-SE bound of $0.0507$ (the per-coordinate bias changes sign). All four are consistent with the asymptotic statement and locate a finite-$n$ propensity variance inflation of roughly $90$ to $100$ over $n$ in the surrogate design, not derived and not extrapolated; this channel must not be added to the mean-ratio drift of Section~\ref{app:local}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_t4_efficiency.png}
+\caption{Efficiency checks: per-coordinate variance ratios against the exact bound with two Monte Carlo standard errors, and the same-sample versus cross-fitted $1$-nearest-neighbour bias paths. Null tested: $H_0^{\mathrm{out}}$ at fixed grid dimension. Four of seven pre-registered criteria miss, so no finite-sample efficiency is claimed.}
+\label{fig:app-t4-eff}
+\end{figure}
+
+\subsubsection{Minimax boundary and regime comparison}
+\label{app:minimax}
+
+The lower bound is proved on a Gaussian submodel: $q$ fixed, $A_i\sim\mathrm{Bern}(1/2)$ independent of $X_i$ and the outcomes, $Z_i\mid A_i=a\sim N(\mu_a,\sigma^2I_q)$, $\mu_0=-\psi/2$, $\mu_1=\psi/2$. The sufficient statistic $S=\sum_i(2A_i-1)Z_i$ has the assignment-invariant law $N(n\psi/2,n\sigma^2I_q)$; the log-likelihood ratio is a Gaussian shift with $z=n\norm{\psi}^2/(4\sigma^2)$. Le Cam's two-point method \cite{le_cam_1986} with the chi-square identity gives: any test of level at most $\alpha$ and type-II error at most $\beta$ needs L2 separation at least $2\sigma\sqrt{L_{\alpha,\beta}/n}$, $L_{\alpha,\beta}=\log(1+4(1-\alpha-\beta)^2)$, equal to $2.1713\,\sigma n^{-1/2}$ at $\alpha=0.05$, $\beta=0.20$. The constant is not claimed sharp. The smooth-class adaptation gives the classical exponent $n^{-2\beta/(4\beta+1)}$, numerically slope $-0.4147$ against $-0.4$; no self-contained Fano or Assouad proof is supplied. Replacing $\lambda_{\max}(\Sigma)$ by $\lambda_{\max}(\Sigma_{\mathrm{DR}})$ is a \emph{conjecture}; the sharp semiparametric minimax constant is not claimed. At randomisation the baseline is target-matched with $\Sigma_{\mathrm{base}}-\Sigma_{\mathrm{DR}}=\mathrm{Cov}(m_1+m_0)\succeq0$, giving $\mathrm{ARE}(\mathrm{DR}:\mathrm{base})=1.1125$ (prognostic) and $1.0000$ (non-prognostic); under confounding its limit is $1.0590$ against $\psi=0$ and it is invalid for $H_0^{\mathrm{out}}$. No dominance over \cite{han_kim_kim_2026} is claimed: their null is strictly stronger at randomisation and their bounded-density condition is not verified on the harness.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_t8_minimax.png}
+\caption{Minimax checks: the two-point inequality against the Le Cam bound, the fixed-grid rate with the $-1/2$ reference slope, and the smooth-ball exponent. Null tested: $H_0^{\mathrm{out}}$. The sharp minimax constant remains a conjecture; only the bound and the rate slope are proved.}
+\label{fig:app-t8-minimax}
+\end{figure}
+
+\subsubsection{ARE among target-matched tests}
+\label{app:are}
+
+Assumptions: A1 identification with strict positivity and finite second moments; A2 nuisance limits with the cross-fitted remainder $o_P(n^{-1/2})$ under the product rate; A3 fixed-fold cross-fitting; A4 the local limit and calibration imported from Section~\ref{app:local} with its three gaps. The exact algebra gives $\mathrm{Var}(S_D)=\mathrm{Var}(w'(m_1-m_0))+\E[w'\sigma_1w/e_0+w'\sigma_0w/(1-e_0)]$ and
+\[
+\mathrm{Var}(S_I)-\mathrm{Var}(S_D)=\E\Big[\big(\sqrt{(1-e_0)/e_0}\,w'm_1+\sqrt{e_0/(1-e_0)}\,w'm_0\big)^2\Big]\ge0 .
+\]
+In the empty cocoon ($e_0=1/2$, $m_1=m_0=c$ a.s.) the DR score, estimated-propensity IPW, correctly specified arm-constant outcome regression, and unadjusted contrast share the influence function $2(2A-1)w'(Z-c)$, so the ARE is one among them; the known-propensity IPW score is the exception. Outside the location-shift cocoon the unadjusted and Robinson-Turner tests target a different null and no superiority over them may be claimed. For $\lambda>0$ the covariance order $\mathrm{Cov}(S_I)\succeq\mathrm{Cov}(S_D)$ holds with the displayed gap; misspecified IPW or outcome-regression procedures are size-broken and excluded from the class, so no size-adjusted power comparison exists for them and the earlier size-adjusted dominance reading is withdrawn. The frozen stratified permutation is valid only in the exchangeability regime; outside it the permutation law centres at the observational contrast and the test is not level-$\alpha$ (recorded weak-null rates $0.20$ to $0.25$; a confounded bake-off reading $0.36$ against $0.76$). The studentized max-$t$ power monotonicity under the Loewner order is a \emph{conjecture}, supported in $200$ of $200$ random probe configurations. The small-$n$ counterexample is part of the record: at $n=50$ under randomisation the DR multiplier rejects the mean shift at $0.110$ against $0.800$ for Robinson-Turner and $1.000$ for the other unadjusted tests; the surrogate variance ratio is $1.344$ and the calibrated power drop $0.0590\pm0.0095$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_t5_are.png}
+\caption{Target-matched relative efficiency: overlap, the first-order inverse-probability tax, the exact lower bound, the projected efficiency ratio, and the finite-sample variance-ratio counterexample. Null tested: $H_0^{\mathrm{out}}$ within the target-matched class of Definition~\ref{def:class}; max-$t$ power monotonicity remains a conjecture.}
+\label{fig:app-t5-are}
+\end{figure}
+
+\subsubsection{Fixed-grid max-\texorpdfstring{$t$}{t} validity and local power}
+\label{app:distgrid}
+
+Assumptions: (D1) identification for the finite-grid vector; (D2) positivity; (D3) bounded features and scores; (D4) fixed folds with double machine learning nuisance rates, parametric for the frozen learners; (D5) a fixed active set with uniformly positive score variances and an eventually correct sample active set; (D6) Gaussian multipliers independent of the data. The local and growing-grid results add (D4-u) uniform DML along the local sequence and (D5-u) uniform separation; both remain assumptions. Under (D1) to (D6) the cross-fitted linearization is an adaptation with untracked constant, studentisation costs $O_P(\log(qn)/\sqrt n)$, and the Gaussian and multiplier approximations of \cite{cck_2013} apply to the active subvector with $\log(qn)$ substituting conservatively for $\log(\abs{J}n)$. The size error is of order $B\,n^{-1/8}\log^{7/8}(n)$ up to untracked constants, and the frozen-learner remainder is dominated at the parametric rate. Uniformity over the nominal level holds; uniform-in-$n$ validity is not claimed and the $n=200$ confounded cell is the counterexample. A growing grid remains valid under $\log(q_nn)=o(n^{1/7})$, with the sharper modern bound weakening this to $o(n^{1/5})$; only the conservative form is cited.
+
+Along $\delta^{(n)}=n^{-1/2}h$, the studentized statistic converges to $\max_{j\in J}\abs{Z_j+h_j/\sigma_j}$, $Z\sim N(0,R)$, so the power function is explicit and the boundary lies at the $n^{-1/2}$ scale. That this scale is also a lower bound for arbitrary tests is not proved here; only the fixed-grid Le Cam bound of Section~\ref{app:minimax} is available. The null critical value grows with the active multiplicity, bounded above by the union bound and below by the single-coordinate quantile. Finite-grid control certifies only the projected expected measure: the projection has a non-trivial kernel, witnessed by two one-atom diagrams with identical projected vectors and distinct measures (unnormalised total variation $0.093312$), against which the test has asymptotic power $\alpha$. In the strong-confounding decomposition the oracle score law has excess kurtosis $+0.56$; at $n=200$ the oracle arm rejects at $0.070$ and the estimated arm at $0.096$ (paired gap $+0.026$, SE $0.007$), and both are in band at $n=500$ ($0.058$ and $0.066$). The pre-registered mechanism rule returns neither hypothesis and the grid-size sanity criterion fails as recorded; fitted restoring sizes are $173$ to $369$, all below $500$. No positivity failure is claimed (operative margin $1/4$) and no rate-condition violation is claimed; the binding channel is the finite-$n$ multiplier approximation with estimated scores.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_t6_distgrid_local.png}
+\caption{Fixed-grid local power at $n=200$ and $n=500$, empirical versus Gaussian-shift prediction. Null tested: $H_0^{\mathrm{dist,grid}}$; the target is the projection onto the frozen grid, not the unprojected expected measure.}
+\label{fig:app-t6-distgrid}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_distribution_explainer.png}
+\caption{Schematic of the distribution-level target: one point cloud per unit, its persistence diagram, and the expected weighted persistence measure on the frozen grid. The figure is a schematic and carries no empirical result.}
+\label{fig:app-explainer}
+\end{figure}
+
+\subsubsection{Multiplicity FWER}
+\label{app:multiplicity}
+
+Assumptions: (A1) independent units with fixed finite degree and grid sets; (A2) the outcome null; (A3) cross-fitted linearization with $2+\delta$ moments, the cross-fitting extension labelled as an adaptation; (A4) the moment and variance conditions of \cite{cck_2013}; (A5) estimated-score consistency in mean square; (A6) a continuous strictly increasing maximum cdf at the quantile and integer $\alpha(B+1)$; (A7) the joint per-degree coupling for the studentized comparator, stated rather than derived. The proof reduces the studentized statistic to the oracle maximum, applies the Gaussian and multiplier approximations to the shared-multiplier construction, replaces estimated scores at $o_P(1)$, and closes by rank monotonicity: the conditional rejection function is nonincreasing, so
+\[
+\Prob(p_n^{\mathrm{unstud}}\le\alpha)\le\frac{\lfloor\alpha(B+1)\rfloor}{B+1}+\varepsilon_n\le\alpha+\varepsilon_n .
+\]
+The pooled-studentized comparator is exactly symmetric in the $B+1$ augmented values and exactly scale invariant; under (A7) its level is at most $\alpha$, and the source convention is only asymptotically valid as $B$ grows. The unstudentized maximum collapses to its null level when a null degree's scale diverges while the studentized decision is exactly constant; the recorded fleet realizes the contrast ($0.7025\to0.0525$ against $0.7142\to0.7092$). The frozen permutation is finite-sample exact only in the exchangeability regime, and outside it the confounded weak-null rates are $0.198$ to $0.248$. The one recorded miss is reported strictly: shared rate $0.0364$ (MC SE $0.0037$), $3.63$ standard errors below $\alpha$, with seed-stability pooled rate $0.0312$ (SE $0.0017$, zero of four seeds in band) against Gaussian $0.0465$ (SE $0.0021$, four of four). This falsifies finite-sample equality of size, not upper control. No finite-sample exactness, no literal continuum-sup result, and no general stochastic-order statement is claimed; the dependence-preservation order remains a \emph{conjecture}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{appendix_t9_multiplicity.png}
+\caption{Power versus degree-$0$ scale heterogeneity for the unstudentized shared maximum and the pooled-studentized comparator. Null tested: $H_0^{\mathrm{out}}$ over the degree family; the studentized decision is exactly scale invariant, while the unstudentized maximum collapses when one degree's scale dominates.}
+\label{fig:app-t9-mult}
+\end{figure}
+
+\subsection{Oracle fleet detail}
+\label{app:oracle}
+
+Table~\ref{tab:app-oracle} prints all $24$ cells of the oracle calibration fleet ($500$ replications per cell, MC SE $0.0071$ to $0.0109$). Null tested: $H_0^{\mathrm{out}}$; the alternative is the fixed oracle shift. Alternative rates are $0.990$ to $1.000$ (multiplier) and $0.944$ to $1.000$ (permutation). Two null cells at $0.026$ sit below the pre-registered $0.03$ edge (multiplier at $n=500$, $\lambda=1.0$; permutation at $n=200$, $\lambda=0.5$) and remain open calibration items; no band was retuned.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}rrcccc@{}}
+\hline
+$n$ & $\lambda$ & null mult. & null perm. & alt. mult. & alt. perm. \\
+\hline
+50 & 0.0 & 0.064 & 0.040 & 0.992 & 0.972 \\
+50 & 0.5 & 0.042 & 0.034 & 0.996 & 0.970 \\
+50 & 1.0 & 0.044 & 0.046 & 0.990 & 0.944 \\
+100 & 0.0 & 0.056 & 0.038 & 1.000 & 0.994 \\
+100 & 0.5 & 0.056 & 0.034 & 1.000 & 0.994 \\
+100 & 1.0 & 0.048 & 0.052 & 1.000 & 0.974 \\
+200 & 0.0 & 0.036 & 0.030 & 1.000 & 1.000 \\
+200 & 0.5 & 0.038 & \underline{0.026} & 1.000 & 0.998 \\
+200 & 1.0 & 0.034 & 0.030 & 1.000 & 0.984 \\
+500 & 0.0 & 0.040 & 0.046 & 1.000 & 1.000 \\
+500 & 0.5 & 0.034 & 0.030 & 1.000 & 1.000 \\
+500 & 1.0 & \underline{0.026} & 0.038 & 1.000 & 0.990 \\
+\hline
+\end{tabular}
+\caption{Oracle calibration fleet, $500$ replications per cell ($24$ null/alternative cell pairs). Null tested: $H_0^{\mathrm{out}}$; the alternative is the fixed oracle shift. MC SE $0.0071$ to $0.0109$. Underlined cells are below the pre-registered $0.03$ lower edge.}
+\label{tab:app-oracle}
+\end{table}
+
+\subsection{Point-cloud, learner, and stress batteries}
+\label{app:batteries}
+
+Table~\ref{tab:batteries} prints the smaller batteries. Null tested: $H_0^{\mathrm{out}}$. Point-cloud cells: $n=100$, $\lambda=1.0$, $200$ replications, alternative the covariate-driven cloud shift. Learner and stress cells: $n=100$, $\lambda=1.0$, $100$ replications, MC SE $0.017$ to $0.024$. All learner and stress null rates lie in $[0.00,0.06]$; the stress battery is a null battery only, the both-misspecified case is uninformative, and the neural-learner flag ($0.09$ to $0.10$ at $n=200$, $100$ replications, MC SE about $0.029$) is a robustness item.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llccccc@{}}
+\hline
+Battery & Cell & reps & null mult. & null perm. & alt. mult. & alt. perm. \\
+\hline
+Point clouds & alternative & 200 & 0.035 (0.013) & 0.025 (0.011) & 0.415 (0.035) & 0.485 (0.035) \\
+Learner & gradient boosting & 100 & 0.03 & 0.04 & -- & -- \\
+Learner & logistic & 100 & 0.05 & 0.03 & -- & -- \\
+Learner & neural & 100 & 0.06 & 0.04 & -- & -- \\
+Learner & random forest & 100 & 0.03 & 0.03 & -- & -- \\
+Stress & both correct & 100 & 0.02 & 0.03 & -- & -- \\
+Stress & both misspecified & 100 & 0.00 & 0.00 & -- & -- \\
+Stress & outcome misspecified & 100 & 0.00 & 0.03 & -- & -- \\
+Stress & propensity misspecified & 100 & 0.05 & 0.02 & -- & -- \\
+\hline
+\end{tabular}
+\caption{Point-cloud, learner, and stress batteries. Null tested: $H_0^{\mathrm{out}}$. MC SE in parentheses for point clouds; $0.017$ to $0.024$ for learner and stress cells.}
+\label{tab:batteries}
+\end{table}
+
+\subsection{Multiplicity FWER and power}
+\label{app:multiplicity-tab}
+
+Table~\ref{tab:multiplicity} reports the multiplicity screen on the Gaussian-limit idealization ($K=2$ degrees, $r=25$ grid points, $B=399$ shared draws, $2500$ replications per FWER cell, $1500$ per power cell). The comparator is the adapted studentized procedure, not the original source procedure. The one conservative miss is the small-$n$ chi-square cell; the larger-$n$ cell of the same law is $0.0476$, and the seed-stability pooled rate is $0.0312$ ($0.0017$) with zero of four seeds in band against Gaussian $0.0465$ ($0.0021$) with four of four. The unstudentized maximum collapses at large scale while the pooled comparator is exactly constant. Real-pipeline anchors: pooled FWER $0.0392$ (frozen permutation) and $0.0448$ (shared multiplier) over $6000$ replications each, comparator in band in $23$ of $24$ cell-mechanism combinations; the single pipeline miss is $0.028$ at $n=200$, confounding $0.5$, permutation mechanism.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}lccccc@{}}
+\hline
+FWER cell (2500 reps) & $n$ & scores & $\rho_{\deg}$ & shared & independent \\
+\hline
+1 & 100 & Gaussian & 0.9 & 0.0456 (0.0042) & 0.0332 (0.0036) \\
+2 & 100 & std. $\chi^2_1$ & 0.9 & 0.0364 (0.0037) & 0.0252 (0.0031) \\
+3 & 400 & Gaussian & 0.9 & 0.0560 (0.0046) & 0.0444 (0.0041) \\
+4 & 400 & std. $\chi^2_1$ & 0.9 & 0.0476 (0.0043) & 0.0372 (0.0038) \\
+5 & 200 & Gaussian & 0.0 & 0.0504 (0.0044) & 0.0476 (0.0043) \\
+\hline
+\multicolumn{6}{@{}>{\raggedright\arraybackslash}p{15.2cm}@{}}{\emph{Power, unstud./pooled: $n=200$, scale $1$: $0.6773$/$0.6693$; scale $64$: $0.0480$/$0.6693$.}}\\
+\multicolumn{6}{@{}>{\raggedright\arraybackslash}p{15.2cm}@{}}{\emph{Power, unstud./pooled: $n=500$, scale $1$: $0.6527$/$0.6560$; scale $64$: $0.0480$/$0.6560$.}}\\
+\multicolumn{6}{@{}>{\raggedright\arraybackslash}p{15.2cm}@{}}{\emph{Pooled/source (12000 reps): $B=19$: $0.0493$/$0.0662$; $39$: $0.0493$/$0.0569$; $99$: $0.0480$/$0.0509$; $199$: $0.0474$/$0.0513$; $399$: $0.0484$/$0.0534$; target $0.0500$.}}\\
+\multicolumn{6}{@{}>{\raggedright\arraybackslash}p{15.2cm}@{}}{\emph{Real pipeline (6000 reps): pooled FWER $0.0392$/$0.0448$; power scale $1$/$8$: unstud.\ $0.7025$/$0.0525$, pooled $0.7142$/$0.7092$.}}\\
+\hline
+\end{tabularx}
+\caption{Degree-family multiplicity: FWER under $H_0^{\mathrm{out}}$ on the fixed grid, power allocation, pooled versus source standardization, and real-pipeline anchors. MC SE in parentheses. Cell 2 is the recorded conservative miss.}
+\label{tab:multiplicity}
+\end{table}
+
+\subsection{Weak-null size detail}
+\label{app:weaknull-tab}
+
+Table~\ref{tab:weaknull} prints the weak-null calibration fleet for the frozen $32\times32$ grid ($500$ replications per size cell, $300$ per local-power cell, MC SE up to $0.016$ and $0.028$). Null tested: $H_0^{\mathrm{dist,grid}}$. The strict gate requires multiplier size in $[0.03,0.08]$ for every gating cell with $n\ge200$; the single failure is the strongest-confounding cell at $n=200$, rate $0.096$ (SE $0.013$, about $1.2$ standard errors above the upper edge), while the same design reads $0.066$ at $n=500$. The frozen relabeling diagnostics at strongest confounding reject at $0.198$ to $0.248$, so they are diagnostics, not the production calibration. Under the conditional sharp null the permutation and multiplier agree and are in band for $n\ge100$. The supported operating recommendation is $n\ge500$; no uniform small-$n$ control and no finite-sample exactness is claimed.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llccc@{}}
+\hline
+Design & $n$ & multiplier & frozen perm. & stratified perm. \\
+\hline
+W2$'$ & 50 & 0.056 (0.010) & -- & 0.070 (0.011) \\
+W2$'$ & 100 & 0.058 (0.010) & -- & 0.036 (0.008) \\
+W2$'$ & 200 & 0.070 (0.011) & -- & 0.056 (0.010) \\
+W2$'$ & 500 & 0.042 (0.009) & -- & 0.032 (0.008) \\
+Confounded, $r=0.0$ & 50 & 0.076 (0.012) & 0.068 (0.011) & 0.062 (0.011) \\
+Confounded, $r=0.0$ & 100 & 0.046 (0.009) & 0.046 (0.009) & 0.046 (0.009) \\
+Confounded, $r=0.0$ & 200 & 0.054 (0.010) & 0.036 (0.008) & 0.046 (0.009) \\
+Confounded, $r=0.0$ & 500 & 0.058 (0.010) & 0.066 (0.011) & 0.062 (0.011) \\
+Confounded, $r=0.5$ & 50 & 0.094 (0.013) & 0.104 (0.014) & 0.118 (0.014) \\
+Confounded, $r=0.5$ & 100 & 0.058 (0.010) & 0.092 (0.013) & 0.096 (0.013) \\
+Confounded, $r=0.5$ & 200 & 0.050 (0.010) & 0.096 (0.013) & 0.102 (0.014) \\
+Confounded, $r=0.5$ & 500 & 0.050 (0.010) & 0.086 (0.013) & 0.086 (0.013) \\
+Confounded, $r=1.0$ & 50 & 0.154 (0.016) & 0.198 (0.018) & 0.228 (0.019) \\
+Confounded, $r=1.0$ & 100 & 0.090 (0.013) & 0.208 (0.018) & 0.244 (0.019) \\
+Confounded, $r=1.0$ & 200 & \underline{0.096 (0.013)} & 0.220 (0.019) & 0.214 (0.018) \\
+Confounded, $r=1.0$ & 500 & 0.066 (0.011) & 0.228 (0.019) & 0.248 (0.019) \\
+Sharp, $r=1.0$ & 50 & 0.118 (0.014) & 0.054 (0.010) & 0.044 (0.009) \\
+Sharp, $r=1.0$ & 100 & 0.056 (0.010) & 0.038 (0.009) & 0.042 (0.009) \\
+Sharp, $r=1.0$ & 200 & 0.072 (0.012) & 0.056 (0.010) & 0.058 (0.010) \\
+Sharp, $r=1.0$ & 500 & 0.058 (0.010) & 0.056 (0.010) & 0.056 (0.010) \\
+\hline
+\multicolumn{5}{@{}l}{\emph{Stochastic W1 multiplier power $0.996$/$1.000$/$1.000$ at $n=50/100/200$ (MC SE $0.003/0.000/0.000$).}}\\
+\multicolumn{5}{@{}l}{\emph{Local mixture at $n=200$, weight $0/0.25/0.5/0.75/1.0$: $0.033$/$0.380$/$0.997$/$1.000$/$1.000$ (MC SE $0.010/0.028/0.003/0.000/0.000$).}}\\
+\hline
+\end{tabular}}
+\caption{Weak-null size detail on the frozen finite grid, $500$ reps per size cell ($300$ per local-power cell), per-cell binomial Monte Carlo standard errors in parentheses. Null tested: $H_0^{\mathrm{dist,grid}}$. Underlined $0.096$ is the strict-gate exception at $n=200$, $r=1.0$; the same design reads $0.066$ at $n=500$. Permutation columns are diagnostics.}
+\label{tab:weaknull}
+\end{table}
+
+\subsection{Bake-off full stage, size, and robustness}
+\label{app:bakeoff-tab}
+
+Table~\ref{tab:bakeoff} prints the $500$-replication full stage (four cells) and the robustness panel ($100$ replications, $n=100$, randomised unless noted). Nulls are labelled per column: the first six columns test $H_0^{\mathrm{cond}}$, the DR multiplier and DR permutation columns test $H_0^{\mathrm{out}}$, the distribution-level max-$t$ tests $H_0^{\mathrm{dist,grid}}$, and the distribution-level MMD tests the kernel $H_0^{\mathrm{dist}}$. Under strong confounding the DR multiplier reads $0.212$ and $0.332$ at $n=50$ and $n=100$ against $0.900$ and $0.996$ for the best unadjusted column, while the distribution-level max-$t$ reads $0.908$ to $0.998$. The mean/strong $n=200$ full cell and coarse $n=500$ loops-cloud coverage are deferred on measured cost; the only $n=500$ bake-off evidence is the deterministic-witness pilot. Robustness: size holds under outliers and heavy tails; confounded cloud cardinality rejects at $1.000$ in every column (a design failure no test survives); the both-misspecified control is uninformative at $0.08$/$0.09$. The strong-imbalance $n=200$ size panel ($100$ replications) reads $0.840$, $0.950$, $0.950$, $0.940$, $0.700$, $0.430$ for the unadjusted columns and $0.030$, $0.000$, $0.060$, $0.020$ for the DR and distribution columns; competitor rates under confounding mix signal with size distortion and are not comparable.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.7cm}rrrrrrrrrr@{}}
+\hline
+Cell & RT & MMD & Han & STRAND & Moon & Fr\'echet & DR mult. & DR perm. & dist max-$t$ & dist MMD \\
+\hline
+mean/strong $n=50$ & 0.366 & 0.806 & 0.802 & 0.900 & 0.518 & 0.498 & 0.212 & 0.120 & 0.908 & 0.382 \\
+mean/strong $n=100$ & 0.752 & 0.986 & 0.992 & 0.996 & 0.868 & 0.818 & 0.332 & 0.144 & 0.994 & 0.546 \\
+split/strong $n=100$ & 1.000 & 1.000 & 1.000 & 1.000 & 0.974 & 1.000 & 0.926 & 0.692 & 0.978 & 0.994 \\
+split/strong $n=200$ & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 0.972 & 0.746 & 0.998 & 1.000 \\
+R1 outliers & 0.060 & 0.090 & 0.050 & 0.050 & 0.040 & 0.060 & 0.090 & 0.040 & 0.020 & 0.040 \\
+R2 card. confounded & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 \\
+R3 heavy tails & 0.020 & 0.020 & 0.030 & 0.020 & 0.020 & 0.030 & 0.030 & 0.030 & 0.000 & 0.010 \\
+R4 both misspec. & 0.510 & 0.650 & 0.640 & 0.680 & 0.380 & 0.270 & 0.080 & 0.090 & 0.050 & 0.060 \\
+\hline
+\end{tabular}}
+\caption{Bake-off full stage (500 reps; MC SE $0.002$ to $0.022$) and robustness (100 reps, $n=100$; MC SE $0.010$ to $0.050$; R3 randomised, R4 null, others as labelled). Nulls as named in the text; cross-null rankings are not admissible. Every entry is a per-cell rejection rate at the stated replication count, and each rate carries a binomial Monte Carlo standard error inside the stated range. Internal artifact keys for the columns are \texttt{rt}, \texttt{mmd}, \texttt{han}, \texttt{strand}, \texttt{moon}, \texttt{frechet}, \texttt{dr\_mult}, \texttt{dr\_perm}, \texttt{dist\_maxt}, and \texttt{dist\_mmd}.}
+\label{tab:bakeoff}
+\end{table}
+
+\subsection{Cost}
+\label{app:cost-tab}
+
+Table~\ref{tab:cost} reports per-replication wall time at matched $n$ (in-worker timers, sixteen-worker fleet) and the single-replication probe at $n=200$. Calibrations are milliseconds after a one-time fit; the DR cross-fit is about eleven seconds and flat over $n=50$ to $200$; the diagram-level and kernel columns dominate at $n=200$. Peak resident memory is $1548$ MB and the probe wall time is $48.95$ s. These timings motivate the deferred $n=500$ loops-cloud coverage and carry no sampling-error claim.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\hline
+Timer (s per rep) & $n=50$ & $n=100$ & $n=200$ & probe $n=200$ \\
+\hline
+diagrams (once) & 0.29 & 0.59 & 1.09 & 0.45 \\
+rt ($H_0^{\mathrm{cond}}$) & 0.79 & 2.97 & 10.86 & 4.51 \\
+mmd ($H_0^{\mathrm{cond}}$) & 0.87 & 2.21 & 5.94 & 3.61 \\
+han ($H_0^{\mathrm{cond}}$) & 1.00 & 3.48 & 17.54 & 11.07 \\
+strand ($H_0^{\mathrm{cond}}$) & 1.04 & 1.78 & 2.94 & 1.02 \\
+moon ($H_0^{\mathrm{cond}}$) & 0.11 & 0.20 & 0.39 & 0.12 \\
+frechet ($H_0^{\mathrm{cond}}$) & 0.37 & 0.50 & 0.75 & 0.19 \\
+krebs ($H_0^{\mathrm{disp}}$) & 1.87 & 6.47 & 24.16 & -- \\
+dr fit (once) & 11.48 & 11.69 & 11.22 & 5.31 \\
+dr multiplier ($H_0^{\mathrm{out}}$) & 0.02 & 0.03 & 0.04 & 0.01 \\
+dr permutation ($H_0^{\mathrm{out}}$) & 0.04 & 0.04 & 0.06 & 0.02 \\
+dist fit (once) & 0.27 & 0.46 & 0.68 & 0.23 \\
+dist max-$t$ ($H_0^{\mathrm{dist,grid}}$) & 0.28 & 0.34 & 0.66 & 0.02 \\
+dist mmd ($H_0^{\mathrm{dist}}$) & 2.52 & 8.62 & 48.56 & 7.38 \\
+\hline
+\end{tabular}
+\caption{Cost at matched $n$ and single-replication probe. Nulls per column as labelled. Timings only; no Monte Carlo error claimed. Peak RSS $1548$ MB, probe wall time $48.95$ s.}
+\label{tab:cost}
+\end{table}
+
+\subsection{Theory-validation record}
+\label{app:validation-tab}
+
+Tables~\ref{tab:theory-claim-status} and~\ref{tab:efficiency-claim-status} collect the theoretical claims, their status, and their numerical anchors. Table~\ref{tab:validation} prints the recorded numerical misses, corrections, and labelled gaps. Every value is a recorded value with its own uncertainty; no threshold was lowered and no result was refit. Rows marked conjecture or adaptation are not used for a main-text claim.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Theoretical claims, status, and synthetic numerical anchors. The null column names the population statement each claim concerns. Statuses are proved, adapt (proved modulo a cited or labelled step), conjecture, or open; anchors carry Monte Carlo standard errors where the comparison is statistical.}
+\label{tab:theory-claim-status}
+\begin{tabular}{p{3.1cm} p{1.8cm} p{4.6cm} p{4.6cm}}
+\hline
+Claim & Status & Null, assumptions, scope & Numerical anchor \\
+\hline
+Non-dominance across targets (Thm.~\ref{thm:non-dominance}) & proved & Targets differ; two fixed witnesses; level and consistency of the compared tests & Unadjusted $0.98$ to $1.00$ at the imbalance witness; $0.029$ to $0.054$ at the masking witness; adjusted at $\le0.015$ and $1.000$ \\
+False-positive leakage (Thm.~\ref{thm:leakage}) & proved & $H_0^{\mathrm{cond}}$; (C1)--(C4); labelled-diagram tests; competitor consistency imported \citep{robinson_turner_2017,gretton_2012,han_kim_kim_2026,murris_strand_2026,moon_lazar_2023,dubey_muller_2019} & Arm-law gap $\abs{0.373}$ (quadrature $0.3727$; simulation $-0.3738\pm0.0013$); TV $0.186$, KL $0.150$ at $\lambda=1$ \\
+Non-contiguity (Lem.~\ref{lem:noncontiguity}) & proved & $H_0^{\mathrm{cond}}$; distinct pair with positive finite KL; arm proportions in $(0,1)$ & Total variation to one; Chernoff--Stein proxy exponent $0.0089$ to $0.1498$ \citep{chernoff_1952} \\
+Masking (Thm.~\ref{thm:masking}) & proved; positivity leg numerical & $H_0^{\mathrm{cond}}$; exact mixture; equality only under least favourability & $\sup_t\abs{\psi_d}=0.4934$ (batch SE $2\times10^{-4}$); finite-grid $L^1=1.1295$; unadjusted $0.029$ to $0.054$; adjusted $1.000$ \\
+Compensation family (Lem.~\ref{lem:compensation}) & proved finite support; projection reading conjecture & $H_0^{\mathrm{cond}}$; finite covariate support; pooled-data tests for constancy & Exact marginal equality at $\varepsilon\in\{0,1/5,1/3\}$; target shifts $\pm4/225$ and $\pm4/135$ \\
+Regular local limit (Thm.~\ref{thm:local-limit}) & proved modulo labelled gaps & $H_0^{\mathrm{out}}$; (A1)--(A6), $h\equiv0$; finite grid & Drift residual average $\le4\times10^{-17}$; maximum standardized deviation $0.58$ MC SE \\
+Local power (Thm.~\ref{thm:local-power}) & adapt for infinite-dimensional strictness & $H_0^{\mathrm{out}}$; nondegenerate covariance on the support of $g$; $\pi(0)=\alpha$ & Prediction minus recorded rate $+0.047$ in-span ($1.13$ combined SE) and $+0.047$ oscillatory ($1.09$ combined SE) \\
+Finite-$n$ drift correction \eqref{eq:geff} & adapt; mean-ratio rate open & $H_0^{\mathrm{out}}$; finite-basis projection; $\kappa_n$ measured, not bounded; no fresh-seed validation & Observed $0.730$ vs naive $0.628$ (gap $+0.102$, MC SE $0.026$, \texttt{confirmed=false}); corrected prediction $0.783$, gap $-0.053$ (CRN $-0.041$); fleet 51 rows, 9 over tolerance, 17 beyond 2 SE, \texttt{passed=false} \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Status of the efficiency, finite-grid, minimax, and multiplicity claims. The null column names the population statement each claim concerns; statuses are proved, adapt (proved modulo a stated step), conjecture, or open. Rates and their Monte Carlo standard errors are in the text.}
+\label{tab:efficiency-claim-status}
+\begin{tabular}{p{2.2cm} p{6.2cm} p{6.0cm}}
+\hline
+Null & Claim and status & Recorded anchor \\
+\hline
+$H_0^{\mathrm{out}}$, $H_0^{\mathrm{dist,grid}}$ & Efficient influence function and bound; cross-fitted AIPW attainment at fixed $q$ (proved; curve adaptation labelled) & Four of seven criteria miss; inflation about $100/n$; no finite-sample efficiency \\
+$H_0^{\mathrm{out}}$, $H_0^{\mathrm{dist,grid}}$ & Relative efficiency in the target-matched class (projections proved; max-$t$ monotonicity conjecture) & Projected ARE $3.12$ to $4.53$; $200$ of $200$ probe support; $50$-unit loss $0.110$ against $0.800$ and $1.000$ \\
+$H_0^{\mathrm{dist,grid}}$ & Fixed-grid validity, local limit, boundary, projection scope (proved and adapted under (D1)--(D6); uniform DML assumed) & Size $0.096$ at $200$ units and $0.066$ at $500$; restoring sample size $173$ to $369$ \\
+$H_0^{\mathrm{out}}$ & Le Cam bound and rate slope, smooth-ball exponent, non-conflation baseline (bound and slope proved; exponent adapted; sharp constant conjecture) & Constant $2.1713$ against oracle $5.6032$; slopes $-0.500000$ and $-0.4147$; baseline ARE $1.1125$ \\
+$H_0^{\mathrm{out}}$ & Shared-multiplier FWER, comparator validity, power allocation, permutation exactness (proved and adapted; dependence-preservation proof open) & Familywise rates $0.0392$ and $0.0448$; power $0.7025$ to $0.0525$ against $0.7142$ to $0.7092$; conservative miss $0.0364$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{5.2cm}>{\raggedright\arraybackslash}X@{}}
+\hline
+Record & Value & Status \\
+\hline
+Target-relative witness B2 & arm gap $0.4675$ vs threshold $0.5$; permutation $p=5.0\times10^{-4}$ & Miss on a mis-set threshold; substantive criterion passes; post-hoc population $0.3730$ (SE $0.0009$) \\
+Target-relative witness C2 & silhouette contrast $0.4934$ vs threshold $0.5$; batch SE $1.9\times10^{-4}$ & Miss on a mis-set threshold; batch suprema in $[0.4923,0.4942]$; exact grid contrast $L^1=1.1295$ \\
+Leakage mechanism rule & all seven criteria pass; $1{,}001$-point monotonicity pass & PASS; analytic monotonicity not proved; cloud separation numerical, not proved \\
+Local-limit drift identity & paired residual machine-zero in the $t$ average, at most $0.58$ MC SE at the worst grid point & PASS; gaps G1 cross-fitting linearization, G2 triangular Donsker, G3 multiplier under the local sequence; positivity maintained, not verified \\
+Local-limit pointwise shift & false as stated; treated-unit difference $n^{-1/2}g(1-A/e)$ & Repaired; mean identity and regular limit survive with an added $O_P(n^{-1/2})$ term; explicit non-central formulas carry recorded corrections \\
+Efficiency criteria & C2, C3, C5, C6 fail; C1, C4, C7 pass & Four of seven recorded failures; finite-$n$ propensity inflation about $90$ to $100$ over $n$, not derived; no finite-sample efficiency \\
+Minimax checks & Le Cam no violation; fixed-grid slope $-0.500$; smooth-ball slope $-0.4147$; ARE(DR:base) $1.1125$/$1.0000$; confounded baseline limit $1.0590$ & Checks pass; sharp constant $\lambda_{\max}(\Sigma_{\mathrm{DR}})$ is a conjecture; no self-contained Fano proof; no dominance over Han et al. \\
+Multiplicity conservative cell & shared $0.0364$ (SE $0.0037$, $3.63$ SE below $\alpha$); seed stability $0.0312$ (SE $0.0017$, $0/4$ in band); Gaussian $0.0465$ (SE $0.0021$, $4/4$) & Falsifies finite-sample equality of size, not upper control; literal continuum-sup and permutation exactness open \\
+Local-power headline & empirical $0.730$ vs naive $0.628$, gap $+0.102$ (MC SE $0.026$) & Pre-registered screen false; corrected point prediction $0.783$, gap $-0.053$ (common random numbers about $-0.041$); resolves only the $n=500$ DR Gaussian-shift comparison; mean-ratio rate not proved \\
+Distribution-level counterexample & strongest confounding $n=200$: $0.096$ (SE $0.013$); $n=500$: $0.066$ & Strict-gate failure; restoring sizes $173$ to $369$; pre-registered mechanism rule neither; grid-size sanity criterion fails \\
+Full-fleet validator & $51$ scored rows, $9$ over tolerance, $17$ beyond $2$ SE, max gap $0.275$ & False for the naive prediction; completed fleet $34$ cells, $300$ replications, zero failures \\
+Completed exact-design record & DR below unadjusted at $n=200/500$ in every direction; mean gaps $0.14$ to $0.19$ & Asymptotic equality does not translate to finite-$n$ power equality; not claimed as numerically confirmed \\
+\hline
+\end{tabularx}
+\caption{Theory-validation record: recorded misses, corrections, and labelled gaps. Values are recorded values with their own uncertainty; no threshold was lowered and no result was refit. \footnotesize The rate remark uses the Chernoff exponential bound, which is the verified half of the Chernoff--Stein pair.}
+\label{tab:validation}
+\end{table}

@@ -1,0 +1,62 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage[numbers]{natbib}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{figures/}}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Law}{\mathcal{L}}
+\newcommand{\Dgm}{\mathrm{Dgm}}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\abs}[1]{\lvert #1\rvert}
+
+\title{Covariate-Adjusted Topological Two-Sample Testing for Replicated Point Clouds}
+\author{Hugo Gobato Souto\\ Dell\\ \texttt{hugo.souto@dell.com}}
+\date{2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Topological two-sample tests usually target the conditional law of a diagram given group membership. When covariates drive both group assignment and topology, that null is wrong: it can reject on covariate composition and miss a real covariate-adjusted difference. We recast it as a covariate-standardized contrast under causal consistency, conditional exchangeability, and positivity, estimated with cross-fitted augmented inverse-probability-weighted scores. We build two tests: an outcome-level max-over-scale sup-statistic on power-weighted silhouettes, and a distribution-level studentized max-$t$ statistic on the expected persistence measure projected to a fixed grid. The theory gives a target-relative protocol ruling out cross-null power comparisons as efficiency statements, false-positive and masking leakage theorems, a local limit under Pitman drift, a semiparametric efficiency bound asymptotically invariant to propensity estimation, a target-matched asymptotic relative efficiency of one at zero imbalance with dominance under stated conditions (a finite-sample record leaves the adjusted test 0.14 to 0.19 below the unadjusted test at $n=200$ to $500$), finite-grid validity, and shared-multiplier familywise error control. In synthetic replicated-cloud experiments, unadjusted tests climb from nominal size to 0.65 to 1.00 as imbalance grows while the adjusted prototype stays conservative, and the adjusted test rejects 1.000 on a masking design against 0.029 to 0.054. Under strong imbalance at $n=200$, unadjusted columns read 0.43 to 0.95 while the adjusted and distribution-level columns hold 0.00 to 0.06, with named small-sample losses. Distribution-level size is in $[0.03,0.08]$ for $n \ge 500$ but 0.096 at $n=200$ under the strongest confounding. The pre-registered local-power screen was not confirmed (gap $+0.102$, standard error $0.026$); a finite-$n$ correction moves the headline gap to $-0.053$ under an unproved mean-ratio rate. Evidence is synthetic and finite-grid; the sampling unit is one replicated cloud per subject, so the single-cloud two-sample regime is out of scope; power optimality is not claimed.
+\end{abstract}
+
+\input{sections/01_intro}
+\input{sections/02_sem_methods}
+\input{sections/03_theory_leakage}
+\input{sections/04_theory_efficiency}
+\input{sections/05_experiments}
+\input{sections/06_discussion}
+
+\appendix
+\input{sections/07_appendix}
+
+\bibliographystyle{plainnat}
+{\sloppy
+\bibliography{refs_verified}
+}
+
+\end{document}

@@ -1,0 +1,3 @@
+[phase8] 1/2 cell_mean_strong_n50_500reps_full.parquet: 500 reps, 0 failed, 2401s
+[phase8] 2/2 cell_mean_strong_n100_500reps_full.parquet: 500 reps, 0 failed, 4465s
+[phase8] all cells done in 6866s

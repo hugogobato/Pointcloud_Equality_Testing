@@ -1,0 +1,51 @@
+[phase8] exists, skipping /home/hugo_souto/Stuff/Research/Pointcloud_Equality_Testing/experiments/../results/phase8_shards/cell_null_randomized_n50_100reps_coarse.parquet
+[phase8] exists, skipping /home/hugo_souto/Stuff/Research/Pointcloud_Equality_Testing/experiments/../results/phase8_shards/cell_null_randomized_n100_100reps_coarse.parquet
+[phase8] exists, skipping /home/hugo_souto/Stuff/Research/Pointcloud_Equality_Testing/experiments/../results/phase8_shards/cell_null_randomized_n200_100reps_coarse.parquet
+[phase8] 1/45 cell_null_mild_n50_100reps_coarse.parquet: 100 reps, 0 failed, 275s
+[phase8] 2/45 cell_null_mild_n100_100reps_coarse.parquet: 100 reps, 0 failed, 457s
+[phase8] 3/45 cell_null_mild_n200_100reps_coarse.parquet: 100 reps, 0 failed, 1480s
+[phase8] 4/45 cell_null_strong_n50_100reps_coarse.parquet: 100 reps, 0 failed, 284s
+[phase8] 5/45 cell_null_strong_n100_100reps_coarse.parquet: 100 reps, 0 failed, 531s
+[phase8] 6/45 cell_null_strong_n200_100reps_coarse.parquet: 100 reps, 0 failed, 1679s
+[phase8] 7/45 cell_mean_randomized_n50_100reps_coarse.parquet: 100 reps, 0 failed, 247s
+[phase8] 8/45 cell_mean_randomized_n100_100reps_coarse.parquet: 100 reps, 0 failed, 485s
+[phase8] 9/45 cell_mean_randomized_n200_100reps_coarse.parquet: 100 reps, 0 failed, 1744s
+[phase8] 10/45 cell_mean_mild_n50_100reps_coarse.parquet: 100 reps, 0 failed, 260s
+[phase8] 11/45 cell_mean_mild_n100_100reps_coarse.parquet: 100 reps, 0 failed, 490s
+[phase8] 12/45 cell_mean_mild_n200_100reps_coarse.parquet: 100 reps, 0 failed, 1772s
+[phase8] 13/45 cell_mean_strong_n50_100reps_coarse.parquet: 100 reps, 0 failed, 263s
+[phase8] 14/45 cell_mean_strong_n100_100reps_coarse.parquet: 100 reps, 0 failed, 522s
+[phase8] 15/45 cell_mean_strong_n200_100reps_coarse.parquet: 100 reps, 0 failed, 1825s
+[phase8] 16/45 cell_dispersion_randomized_n50_100reps_coarse.parquet: 100 reps, 0 failed, 268s
+[phase8] 17/45 cell_dispersion_randomized_n100_100reps_coarse.parquet: 100 reps, 0 failed, 525s
+[phase8] 18/45 cell_dispersion_randomized_n200_100reps_coarse.parquet: 100 reps, 0 failed, 1098s
+[phase8] 19/45 cell_dispersion_mild_n50_100reps_coarse.parquet: 100 reps, 0 failed, 150s
+[phase8] 20/45 cell_dispersion_mild_n100_100reps_coarse.parquet: 100 reps, 0 failed, 306s
+[phase8] 21/45 cell_dispersion_mild_n200_100reps_coarse.parquet: 100 reps, 0 failed, 843s
+[phase8] 22/45 cell_dispersion_strong_n50_100reps_coarse.parquet: 100 reps, 0 failed, 128s
+[phase8] 23/45 cell_dispersion_strong_n100_100reps_coarse.parquet: 100 reps, 0 failed, 250s
+[phase8] 24/45 cell_dispersion_strong_n200_100reps_coarse.parquet: 100 reps, 0 failed, 808s
+[phase8] 25/45 cell_w1split_randomized_n50_100reps_coarse.parquet: 100 reps, 0 failed, 45s
+[phase8] 26/45 cell_w1split_randomized_n100_100reps_coarse.parquet: 100 reps, 0 failed, 62s
+[phase8] 27/45 cell_w1split_randomized_n200_100reps_coarse.parquet: 100 reps, 0 failed, 118s
+[phase8] 28/45 cell_w1split_mild_n50_100reps_coarse.parquet: 100 reps, 0 failed, 44s
+[phase8] 29/45 cell_w1split_mild_n100_100reps_coarse.parquet: 100 reps, 0 failed, 60s
+[phase8] 30/45 cell_w1split_mild_n200_100reps_coarse.parquet: 100 reps, 0 failed, 115s
+[phase8] 31/45 cell_w1split_strong_n50_100reps_coarse.parquet: 100 reps, 0 failed, 43s
+[phase8] 32/45 cell_w1split_strong_n100_100reps_coarse.parquet: 100 reps, 0 failed, 64s
+[phase8] 33/45 cell_w1split_strong_n200_100reps_coarse.parquet: 100 reps, 0 failed, 169s
+[phase8] 34/45 cell_rare_randomized_n50_100reps_coarse.parquet: 100 reps, 0 failed, 217s
+[phase8] 35/45 cell_rare_randomized_n100_100reps_coarse.parquet: 100 reps, 0 failed, 359s
+[phase8] 36/45 cell_rare_randomized_n200_100reps_coarse.parquet: 100 reps, 0 failed, 1122s
+[phase8] 37/45 cell_rare_mild_n50_100reps_coarse.parquet: 100 reps, 0 failed, 199s
+[phase8] 38/45 cell_rare_mild_n100_100reps_coarse.parquet: 100 reps, 0 failed, 330s
+[phase8] 39/45 cell_rare_mild_n200_100reps_coarse.parquet: 100 reps, 0 failed, 718s
+[phase8] 40/45 cell_rare_strong_n50_100reps_coarse.parquet: 100 reps, 0 failed, 124s
+[phase8] 41/45 cell_rare_strong_n100_100reps_coarse.parquet: 100 reps, 0 failed, 207s
+[phase8] 42/45 cell_rare_strong_n200_100reps_coarse.parquet: 100 reps, 0 failed, 858s
+[phase8] all cells done in 21542s
+[phase8] 1/4 cell_robust-outliers_n100_100reps_robust.parquet: 100 reps, 0 failed, 444s
+[phase8] 2/4 cell_robust-unequal_size_n100_100reps_robust.parquet: 100 reps, 0 failed, 316s
+[phase8] 3/4 cell_robust-heavy_tail_n100_100reps_robust.parquet: 100 reps, 0 failed, 587s
+[phase8] 4/4 cell_robust-nuisance_misspec_n100_100reps_robust.parquet: 100 reps, 0 failed, 383s
+[phase8] all cells done in 1730s

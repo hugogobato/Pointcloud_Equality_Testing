@@ -1,0 +1,182 @@
+\section{Efficiency, relative efficiency, finite-grid validity, and multiplicity}
+\label{sec:theory-efficiency}
+
+This section develops the efficiency, finite-grid, minimax, and multiplicity theory for the adjusted tests. Efficiency is estimator-level at fixed grid dimension and does not imply optimal local power of a maximum statistic; distribution-level claims concern one frozen finite grid, never the unprojected expected persistence measure; and all comparisons lie in the target-matched class of Definition~\ref{def:class}, so no cross-null ranking appears. The quoted rates are synthetic.
+
+\subsection{Semiparametric efficiency for the adjusted targets}
+\label{subsec:eff}
+
+Write $O_i=(X_i,A_i,Z_{i,d})$, with $Z_{i,d}=\Phi_d(\Dgm_d(F(Y_i)))$ the power-weighted silhouette on the fixed grid $T$; to lighten notation we fix a degree $d$ and write $Z_i$ for $Z_{i,d}$ in this subsection. Write $m_a(t,x)=\E[Z_i(t)\mid A_i=a,X_i=x]$, $e(x)=\Prob(A_i=1\mid X_i=x)$, $\psi(t)=\E_X[m_1(t,X)-m_0(t,X)]$, and finite-grid target $\psi_q=\pi_q\psi\in\mathbb R^q$.
+
+\begin{assumption}[Summary model and estimation regimes]
+\label{ass:eff-model}
+(E1) the units are independent clouds, one cloud per unit; (E2) causal consistency and arm-specific conditional exchangeability, $Z^a\perp A\mid X$ \cite{souto_diamantis_tcda_2026,kim_lee_tce_2026}; (E3) positivity, $\kappa\le e(x)\le1-\kappa$ for some $\kappa\in(0,1/2]$ and $P_X$-a.e.\ $x$; (E4) $\E\norm{Z}^2<\infty$; and (E5) the conditional laws of $Z$ given $(X,A)$ are unrestricted in a Hellinger neighbourhood of the truth, so the tangent space is all of $L^2_0(P)$. The propensity may be known or estimated, and nuisances may be cross-fitted or fitted on the same sample.
+\end{assumption}
+
+Because the conditional law of $Y$ given $(X,A)$ is locally nonparametric, directions with $\E[h\mid X,A,Z]=0$ are orthogonal to the summary model and leave the conditional law of $Z$ fixed to first order; the efficient influence function of a functional of $(X,A,Z)$ is therefore the same in the cloud and summary models.
+
+\begin{theorem}[Efficient influence function and bound]
+\label{thm:eff-eif}
+Under Assumption~\ref{ass:eff-model}, define
+\begin{equation}
+\rho(t,O;\eta)=m_1(t,X)-m_0(t,X)+\frac{A}{e(X)}\bigl(Z(t)-m_1(t,X)\bigr)-\frac{1-A}{1-e(X)}\bigl(Z(t)-m_0(t,X)\bigr),
+\label{eq:eff-rho}
+\end{equation}
+and $\phi(t,O;\eta)=\rho(t,O;\eta)-\psi(t)$. Then $\phi$ is the efficient influence function of $\psi(t)$, with
+\begin{equation}
+\operatorname{Var}\{\phi(t)\}
+=\operatorname{Var}\{\tau(t,X)\}
++\E\Bigl[\frac{\operatorname{Var}\{Z(t)\mid X,A=1\}}{e(X)}\Bigr]
++\E\Bigl[\frac{\operatorname{Var}\{Z(t)\mid X,A=0\}}{1-e(X)}\Bigr],
+\label{eq:eff-bound}
+\end{equation}
+where $\tau=m_1-m_0$; cross-scale covariances replace variances. On the finite grid, $\phi_q=(\phi(t_1),\dots,\phi(t_q))'$ is the efficient influence function of $\psi_q$ and $\Sigma_q=\E[\phi_q\phi_q']$ is the bound operator: every regular $\hat\psi_q$ has $\sqrt n(\hat\psi_q-\psi_q)\Rightarrow N(0,S)$ with $S-\Sigma_q$ positive semidefinite.
+\end{theorem}
+The verification is a standard tangent-space computation: each component of \eqref{eq:eff-rho} reproduces the derivative of $\psi$, the nonparametric gradient is unique, and the variance follows from the conditional centering of the inverse-probability terms; the grid bound is the convolution theorem \cite{vdv_wellner_1996,bickel_klaassen_ritov_wellner_1993}.
+
+The bound is invariant to propensity knowledge: \eqref{eq:eff-rho} is orthogonal to the propensity tangent space, so \eqref{eq:eff-bound} is unchanged when $e$ is known \cite{hahn_1998}, and estimated-propensity weighting attains the same first-order limit \cite{hirano_imbens_ridder_2003}. For the curve, the covariance kernel $K(s,t)=\operatorname{Cov}\{\phi(s),\phi(t)\}$ is the Loewner bound for $L^2(T)$-valued estimators \cite{vdv_1991,vdv_2002}, and the grid bound is its projection, $\Sigma_q=\pi_q\Sigma\pi_q'$; a model recording only $\pi_qZ$ has the same bound for $\psi_q$, so discarding off-grid coordinates costs no efficiency. Only the null law of a maximum depends on $q$; a growing or data-dependent grid changes the target with $n$ and lies outside the fixed-grid theory.
+
+\begin{theorem}[Attainment of the finite-grid bound]
+\label{thm:eff-attainment}
+Assume (E1)--(E5), $K$ fixed folds, $L^2$ consistency of the fold-wise nuisances, and the product rate $\sup_k\norm{\hat e_k-e}\bigl(\sup_k\norm{\hat m_{0,k}-m_0}+\sup_k\norm{\hat m_{1,k}-m_1}\bigr)=o_P(n^{-1/2})$. The cross-fitted AIPW estimator $\hat\psi_q=n^{-1}\sum_k\sum_{i\in I_k}\rho_q(O_i;\hat\eta_k)$ satisfies
+\[
+\sqrt n(\hat\psi_q-\psi_q)=\frac{1}{\sqrt n}\sum_{i=1}^n\phi_q(O_i;\eta)+o_P(1)\ \Rightarrow\ N(0,\Sigma_q),
+\]
+so it attains the bound. If $e$ is known, the product rate is needed only for the outcome regressions.
+\end{theorem}
+The proof splits $\hat\psi_q-\psi_q$ into the oracle average (covariance $\Sigma_q$), a conditionally centered cross-fitted remainder whose variance vanishes under consistency, and a von Mises remainder equal to products of propensity and outcome errors, each $o_P(n^{-1/2})$ by the product rate; this is finite-grid double machine learning \cite{chernozhukov_dml_2018,new_robins_2018}. For the curve, attainment is an adaptation: the functional limit needs the uniform product rate and a Donsker score class, and the single-split theorem licenses cross-fitting without reproving uniform equicontinuity, so that step is a labelled gap \cite{kim_lee_tce_2026,kennedy_review_2022}.
+
+We do not claim finite-sample efficiency. In the pre-registered linear-Gaussian surrogate ($q=8$; $n=1000$ with $4000$ replications, $n=4000$ with $1000$), the oracle and known-propensity cells attain the bound within Monte Carlo error, while the estimated-propensity cell is inflated by about $0.10$ at $n=1000$ and $0.02$ at $n=4000$, of order $100/n$. Four of the seven pre-registered criteria miss: attainment (mean ratio $+0.1502$, standard error $0.027$, at $n=1000$; $+0.0334$ at $n=4000$), propensity invariance (spread $0.1124$), the aggregate bias screen (an aggregate that averaged a sign-changing bias), and the subgrid projection, which inherited the inflation. The first, second, and fourth share one propensity-weight mechanism, and the projection identity itself is deterministic. This bound-relative inflation is a separate channel from the mean-ratio drift of Section~\ref{sec:theory-leakage}.
+
+\subsection{Relative efficiency inside the target-matched class}
+\label{subsec:are}
+
+Definition~\ref{def:are} fixes the currency: for a scalar projection $w$ and procedures $Q,R$ with limiting scores $S_Q,S_R$, $e(Q,R;w)=\operatorname{Var}(S_R)/\operatorname{Var}(S_Q)>1$ means $Q$ needs fewer observations for the same local power. It is defined inside Definition~\ref{def:class}, and without a fixed direction no scalar relative efficiency exists for a maximum statistic, so the statements below are projections and the maximum transfer is flagged separately.
+
+\begin{theorem}[Zero imbalance and the honest relabelling]
+\label{thm:are-zero}
+In the empty cocoon (the constant-design case $e(x)=1/2$ and $m_1(x)=m_0(x)=c$ for a constant vector $c$), the cross-fitted AIPW score, the estimated-propensity IPW score, a correctly specified arm-constant outcome-regression score, and the unadjusted two-sample contrast share the influence function $S_0(w)=2(2A-1)w'(Z-c)$, so $e(Q,R;w)=1$ for every pair and $w$. Under randomization $H_0^{\mathrm{cond}}$ implies $H_0^{\mathrm{out}}$ and $H_0^{\mathrm{dist,grid}}$; in the location-shift cocoon, $\Law(Z\mid A=a)=\Law(\theta_a+U)$ with $\E U=0$ and the grid mean identifying the location, the reverse implication holds at the marginal feature-law level. The known-propensity IPW score is the exception: its variance exceeds that of the efficient score by $4(w'c)^2$ whenever $w'c\ne0$.
+\end{theorem}
+The collapse to $2(2A-1)(Z-c)$ at $e=1/2$, $m_1=m_0=c$ shows the equality; the relabelling uses the tower property forward and location identification in reverse, and persistence summaries are translation invariant.
+
+In the location-shift cocoon the bottleneck permutation test and the unadjusted difference test the same statement as the adjusted test and are exact under randomization, so they are not strawmen and no efficiency superiority is claimed there; outside the cocoon their null is strictly stronger and comparisons are cross-null statements excluded by Definition~\ref{def:class}.
+
+\begin{theorem}[Strict variance dominance over design-based weighting]
+\label{thm:are-dominance}
+Under Assumption~\ref{ass:eff-model}, for every $w$,
+\[
+\operatorname{Cov}(S_I)-\operatorname{Cov}(S_D)=\E[rr'],
+\qquad
+r=\sqrt{\frac{1-e(X)}{e(X)}}\,w'm_1(X)+\sqrt{\frac{e(X)}{1-e(X)}}\,w'm_0(X),
+\]
+so the efficient score has no larger variance than the design-based known-propensity IPW score, with strict inequality when $e$ is nonconstant and $r$ is not a.s.\ zero. In the imbalance anchor with $m_1=m_0=m$, the exact gap is $\E[m^2/\{e_\lambda(1-e_\lambda)\}]$, the overlap functional is $O_\lambda=\E[1/\{e_\lambda(1-e_\lambda)\}]=2(1+\exp(s_\lambda^2/2))$ with $s_\lambda=1.5\lambda\norm{\beta}$, and the gap is at least $4\E[m^2]+16\E[m^2]\operatorname{Var}(e_\lambda)$ whenever $m^2$ and $(e_\lambda-1/2)^2$ are nonnegatively associated.
+\end{theorem}
+Conditional centering cancels the dispersion terms and leaves the displayed square, which is nonnegative and vanishes only in the stated degenerate case; the anchor uses $\E[\cosh(sZ)]=e^{s^2/2}$ and Chebyshev's association inequality.
+
+The known-propensity score is the design-based comparator, not the implementation's IPW arm: with an estimated propensity under correct specification the IPW-only score is first-order equivalent to the efficient score \cite{hirano_imbens_ridder_2003}, so the gain above is the price of not estimating the propensity. Exact quadrature over the imbalance sweep gives $\operatorname{Var}(e_\lambda)$ from $0.000$ to $0.0546$, $O_\lambda$ from $4.000$ to $6.017$, the IPW gap from $8.480$ to $21.250$, and $e(\mathrm{DR},\mathrm{IPW}_{\mathrm{known}};w)$ from $3.12$ to $4.53$ as $\lambda$ runs from $0$ to $1$; the adjusted variance inflates by $O_\lambda/4$ from $1.000$ to $1.504$, and the association bound holds with slack. A misspecified competitor with a fixed nonzero bias fails the level requirement of Definition~\ref{def:class}(a) and is excluded on size grounds, so no same-size power comparison with it is defined; the earlier reading that a minimal bias correction would yield a power-$\alpha$ comparison is withdrawn.
+
+The asymptotic identity does not translate into finite-sample power equality. Under randomization with a mean shift at $50$ units, the adjusted outcome test rejects at $0.110$ (standard error $0.031$) against $0.800$ ($0.040$) for the bottleneck permutation test and $1.000$ ($0.000$) for the survival, kernel, and intensity tests, with sizes $0.020$ to $0.040$ at $100$ replications \cite{robinson_turner_2017,murris_strand_2026,kwitt_neurips_2015,gretton_2012,han_kim_kim_2026}. The unadjusted tests are exactly valid at randomization, so the loss is a finite-sample estimation tax, not a target mismatch. In the completed exact-imbalance record the adjusted test sits below the unadjusted test at $200$ and $500$ units in every direction, with mean power gaps of $0.14$ to $0.19$ ($300$ replications per cell; standard errors $0.028$ to $0.029$). No finite-sample dominance is claimed.
+
+One transfer remains unproved: monotonicity of the studentized maximum's power under the Loewner ordering of Theorem~\ref{thm:are-dominance} is a conjecture, supported by a probe with no violation in $200$ of $200$ random covariance configurations ($q=5$, mean shift at signal-to-noise ratio $1.5$, $20{,}000$ draws each; mean power difference $0.064$, minimum $0.016$).
+\subsection{Finite-grid distribution theory}
+\label{subsec:distgrid}
+
+The distribution-level target is the expected persistence measure of the interventional diagram law projected onto one frozen grid $G$ of $q=32\times32$ cells: $V_i=\Pi_G\mu_{D(F(Y_i))}$, $m_a(x)=\E[V_i\mid A_i=a,X_i=x]$, and $H_0^{\mathrm{dist,grid}}:\delta=\E[m_1(X)-m_0(X)]=0$. The statistic is $T_n^{\mathrm{dist}}=\max_{j\in J}\sqrt n|\hat\delta_j|/\hat\sigma_j$, with $J$ the active coordinates above a fixed variance floor, $\hat\delta$ the cross-fitted AIPW average, and one Gaussian multiplier per unit shared across coordinates.
+
+\begin{assumption}[Frozen-grid contract]
+\label{ass:dist-model}
+(D1) finite-grid identification as in Assumption~\ref{ass:eff-model}; (D2) positivity with margin $\underline e>0$; (D3) bounded features and scores; (D4) a fixed number of cross-fitting folds with Neyman-orthogonal scores and nuisance errors $o_P(n^{-1/4})$ in $L^2(P)$, parametric for the frozen learners; (D5) a fixed active set separated from the floor; and (D6) i.i.d.\ Gaussian multipliers with a diverging number of draws.
+\end{assumption}
+
+\begin{theorem}[Fixed-grid validity]
+\label{thm:dist-validity}
+Under (D1)--(D6), on $H_0^{\mathrm{dist,grid}}$,
+\[
+\lim_{n\to\infty}\ \sup_{\alpha\in(0,1)}\bigl|\Prob\bigl(T_n^{\mathrm{dist}}>c_n^*(1-\alpha)\bigr)-\alpha\bigr|=0,
+\]
+where $c_n^*(1-\alpha)$ is the conditional multiplier quantile. The error is the Gaussian and multiplier bound of \citet{cck_2013} applied to the active subvector, with leading term $B\,n^{-1/8}\log^{7/8}(qn)$ up to untracked constants; for the frozen parametric learners the cross-fitted remainder is dominated. Uniform double-machine-learning and separation conditions remain assumptions.
+\end{theorem}
+Studentization perturbs the statistic by $O_P(\log(qn)/\sqrt n)$ and cross-fitting replaces the oracle scores at $o_P(1)$; the CCK comparison, with uniform anti-concentration, then bounds the rejection event uniformly in the nominal level \cite{chernozhukov_dml_2018,new_robins_2018}.
+
+\begin{theorem}[Local limit and coordinatewise boundary]
+\label{thm:dist-local}
+Along $\delta^{(n)}=n^{-1/2}h$ with $h\in\mathbb R^q$ fixed, $q$ frozen, and uniform versions of (D1)--(D6),
+\[
+T_n^{\mathrm{dist}}\ \Rightarrow\ \max_{j\in J}\Bigl|Z_j+\frac{h_j}{\sigma_j}\Bigr|,\qquad Z\sim N(0,R),
+\]
+with $R$ the score correlation, and the multiplier critical value converges to the corresponding Gaussian quantile; the power is $\pi(h)=\Prob(\max_{j\in J}|Z_j+h_j/\sigma_j|>c_{1-\alpha}(R))$. For $h=b\,e_j$, $\pi\ge1-\Phi(c-b/\sigma_j)+\Phi(-c-b/\sigma_j)$, so the power-$1-\beta$ boundary is approximately $\sigma_j(c+z_\beta)$. As $\tau_n\to0$ and $\tau_n\to\infty$ in $\delta^{(n)}_j=n^{-1/2}\tau_nh_j$, power tends to $\alpha$ and to one: $n^{-1/2}$ is the coordinatewise detection scale. The matching lower bound is proved in the fixed-grid Gaussian submodel of Theorem~\ref{thm:minimax-lecam}, not claimed here at full generality.
+\end{theorem}
+The conditional score mean is exactly $h_j$, so the centered array satisfies a Lindeberg theorem; uniform separation handles studentization, and the trichotomy is continuity and strict monotonicity of the limit.
+
+The null critical value grows with the number of coordinates (union bound $c_{1-\alpha}(R)\le\Phi^{-1}(1-\alpha/(2q))$, with the heuristic scale $\sqrt{2\log q}$ under weak dependence), while the operative multiplicity is the active count, two in the strong-confounding record with score correlation $-0.6$. For a growing grid the sufficient condition inherited from \citet{cck_2013} is $\log(q_nn)=o(n^{1/7})$; the sharper approximation of \citet{cckk_improved_2022} weakens it to $\log(q_nn)=o(n^{1/5})$. The paper's grid is fixed.
+
+\begin{lemma}[Finite grid does not certify the full measure]
+\label{lem:dist-witness}
+The one-point diagrams $\{(0.10,0.46)\}$ and $\{(0.12,0.48)\}$ project to the same grid cell, so their projected vectors are equal, while the unnormalised total-variation distance between the measures is $0.093312$. The test therefore has power $\alpha$ against alternatives in the projection kernel even when the unprojected measures differ, and a non-rejection certifies nothing about them.
+\end{lemma}
+Both diagrams have persistence $0.36$ and mass $0.046656$; a kernel alternative has projected contrast zero.
+
+The recorded strong-confounding boundary is the finite-n episode the asymptotic statement does not cover. There the covariate is binary, the propensity margins are $1/4$ and $3/4$, and two coordinates are active. With $500$ paired replications the studentized multiplier test rejects at $0.096$ (standard error $0.013$) at $200$ units, outside the pre-registered $[0.03,0.08]$ band around $0.05$, and at $0.066$ ($0.011$) at $500$ units. The paired decomposition attributes the excess to the finite-n accuracy of the Gaussian-multiplier approximation to the studentized maximum of the estimated scores: the oracle-nuisance arm alone rejects at $0.070$ ($0.011$), the outcome-estimation increment is $+0.014$ ($0.007$), the propensity increment is $0.000$ ($0.005$), the interaction is $+0.012$ ($0.007$), and the paired gap at $500$ units is $+0.008$ ($0.006$). Overlap and the nuisance rate are not the failure, so the binding object is the approximation with estimated scores. A two-term fit of the recorded sizes places the restoring sample size between $173$ and $369$, below $500$; we recommend at least $500$ units under strong confounding and claim no uniform small-sample control. The pre-registered mechanism rule returned neither hypothesis; the synthetic grid-growth check missed its Gaussian sanity criterion at the smallest grid, so the q-growth findings are descriptive.
+\subsection{Minimax comparison and the non-conflation baseline}
+\label{subsec:minimax}
+
+The lower bound is proved in a Gaussian submodel, which suffices because a bound over a submodel transfers.
+
+\begin{theorem}[Le Cam bound at the fixed grid]
+\label{thm:minimax-lecam}
+Let $A\sim\mathrm{Bernoulli}(1/2)$ independent of the outcome and $Z\mid A=a\sim N(\mu_a,\sigma^2I_q)$ with $\mu_0=-\psi/2$, $\mu_1=\psi/2$, so $H_0^{\mathrm{out}}$ is $\psi=0$. For a unit direction $u$ and $\psi=\rho u$, any test with level at most $\alpha$ and type-II error at most $\beta$ at that alternative satisfies
+\[
+\rho\ \ge\ 2\sigma\sqrt{L_{\alpha,\beta}/n},\qquad L_{\alpha,\beta}=\log\bigl(1+4(1-\alpha-\beta)^2\bigr).
+\]
+At $\alpha=0.05$, $\beta=0.20$ the constant is $2.1713$; in the sup-norm version $\sigma^2$ becomes $\lambda_{\max}(\Sigma)$ and the sup norm of $u$ enters.
+\end{theorem}
+The sufficient statistic $S=\sum_i(2A_i-1)Z_i$ has an assignment-free $N(n\psi/2,n\sigma^2I_q)$ law; the log likelihood ratio is a Gaussian shift with $z=n\rho^2/(4\sigma^2)$ and chi-square divergence $e^z-1$, and Le Cam's two-point inequality \cite{le_cam_1986} yields the radius bound. Since the constant-nuisance, constant-propensity submodel lies in the summary model, the bound applies to every procedure under comparison. It is not sharp (the oracle test reaches power $0.80$ at $5.6032\,\sigma n^{-1/2}$), and it is confirmed numerically: the exact-power slope over $n\in\{100,400,1600,6400\}$ is $-0.500000$, and $400{,}000$ draws per level over twelve levels produced no violation. The sharp composite-model constant with $\lambda_{\max}(\Sigma)$ replaced by $\lambda_{\max}(\Sigma_{\mathrm{DR}})$ is a conjecture; only the bound and the rate slope are proved.
+
+Over a fixed smoothness class, the classical minimax separation rate is $\rho_n\asymp n^{-2\beta/(4\beta+1)}$ in one dimension \cite{ingster_1993,ingster_suslina_2003,tsybakov_2009}, a cited adaptation rather than a self-contained Fano proof; an exact Gaussian sequence check with $\beta=1$ gives slope $-0.4147$ against the target $-0.4$ over $n\in\{400,1600,6400,25600\}$. Hence $n^{-1/2}$ detection cannot be uniform over a fixed finite-smoothness ball, and the adjusted guarantee is pointwise in a fixed direction.
+
+The non-conflation baseline is the arm-mean contrast, which at zero imbalance shares the target $\psi$. Its variance decomposition is exact,
+\[
+\sigma^2_{\mathrm{base}}(t)-\sigma^2_{\mathrm{DR}}(t)=\operatorname{Var}\{m_1(t,X)+m_0(t,X)\}\ge0,\qquad
+\Sigma_{\mathrm{base}}-\Sigma_{\mathrm{DR}}=\operatorname{Cov}\{m_1(X)+m_0(X)\}\succeq0,
+\]
+so its directional relative efficiency is
+\[
+e(\mathrm{DR},\mathrm{base};w)=\frac{w'\Sigma_{\mathrm{base}}w}{w'\Sigma_{\mathrm{DR}}w}
+=\Bigl(1-\frac{w'\operatorname{Cov}\{m_1+m_0\}w}{w'\Sigma_{\mathrm{base}}w}\Bigr)^{-1}\ \ge\ 1,
+\]
+with equality exactly in the non-prognostic sub-design, in which the outcome regressions do not depend on the covariates. The oracle run with $4{,}000{,}000$ coordinate draws gives $e(\mathrm{DR},\mathrm{base})=1.1125$ (prognostic) and $1.0000$ (non-prognostic), the analogue of \citet{lin_2013}. At positive imbalance the baseline's limit is the observational contrast, not $\psi$, so it is not a valid test of $H_0^{\mathrm{out}}$ and no relative efficiency is defined; the positive-semidefinite order also does not imply stochastic dominance of the maximum statistic, so no uniform dominance is claimed.
+
+The intensity-based comparator of \citet{han_kim_kim_2026} is placed by an assumption check rather than a ranking. Its point-cloud and filtration conditions, bounded deaths (maximum $1.685$ against a bound of $2$), bounded cardinality (maxima $59$ and $16$ against $120$), and polynomial weight hold or match on the sample examined here; its bounded-density condition is not verified, and its independent-samples formulation fails because our units are i.i.d.\ triples. Its null, equality of the two observational diagram laws, implies $H_0^{\mathrm{out}}$ at randomization but not conversely, can be false under confounding while $H_0^{\mathrm{out}}$ holds, and lives in anisotropic Sobolev intensity classes rather than on our fixed grid. No dominance over it, or over any other procedure, is claimed in either direction.
+
+\subsection{Multiplicity over degrees and grid coordinates}
+\label{subsec:multiplicity}
+
+The outcome-level family has one statistic per tested degree, $X_{n,d}=\sqrt n\sup_{t\in T}|\hat\psi_d(t)|$ for $d\in\mathcal D$ with $|\mathcal D|$ fixed, and rejects when the maximum exceeds the shared-multiplier critical value: one Gaussian multiplier per unit is used for every degree and grid point, preserving cross-degree dependence.
+
+\begin{theorem}[Familywise error control]
+\label{thm:mult-fwer}
+Assume i.i.d.\ units, $H_0^{\mathrm{out}}$, a cross-fitted linearization with a bounded moment envelope, consistent estimated scores, and nondegenerate score variances. Under the shared Gaussian multiplier calibration, $\limsup_n\Prob(p_n\le\alpha)\le\alpha$ for every $\alpha\in(0,1)$; with the usual continuity and rank-exactness conditions the limit is exactly $\alpha$.
+\end{theorem}
+Cross-fitting and the CCK comparison reduce the studentized maximum to a Gaussian maximum, with estimated scores replacing oracle scores at $o_P(1)$, and a monotone-rank argument over the exchangeable draws gives the bound. Read degree by degree, the same event controls at least one rejection of a true null degree.
+
+\begin{theorem}[Validity and inheritance of the studentized comparator]
+\label{thm:mult-comparator}
+Pooled studentization is an exact symmetric function of the augmented values, so under exact exchangeability its rank test has exact level at every sample size and number of draws. Under the explicit joint coupling of the per-degree sampling and multiplier arrays, the comparator is asymptotically valid for $H_0^{\mathrm{out}}$, and its decision is exactly invariant under degree-wise rescaling. The null-only standardization is not symmetric at finite draws and is only asymptotically valid. The construction adapts the multiplicity architecture of \citet{vejdemo_mukherjee_2022}: only the idea of one shared calibration across a topological family transfers; the source's point-process null, independent draws, comparability premise, and FDR construction do not, and validity does not require location-scale comparability.
+\end{theorem}
+Pooled centering and scaling are permutation invariant, so exchangeability and the rank argument give exactness; the joint coupling controls the passage to the sampling array, and rescaling invariance follows from one-homogeneity with AIPW linearity. The shared draw reproduces the empirical cross-coordinate covariance; independent per-degree draws target a different law, and that positive association makes them conservative is a conjecture supported by the probe above.
+
+\begin{theorem}[Power allocation under degree-wise scale heterogeneity]
+\label{thm:mult-power}
+With per-degree scales $a_d$, a null degree $d_0$ with $a_{d_0}\to\infty$ absorbs the unstudentized shared maximum: its rejection probability tends to $\alpha$ while a fixed signal elsewhere becomes undetectable. The pooled-studentized decision is exactly scale invariant.
+\end{theorem}
+The recorded allocation realizes the contrast: over the recorded alternative cells at $200$ replications, the unstudentized maximum moves from $0.7025$ to $0.0525$ at eightfold scale while the pooled comparator moves from $0.7142$ to $0.7092$ (standard errors $0.013$ to $0.035$); the Gaussian-limit check reproduces it ($0.677$ to $0.048$; $0.669$ constant; $1500$ replications), with zero numerical mismatches.
+
+\begin{theorem}[Permutation exactness regime]
+\label{thm:mult-permutation}
+If the nuisances and propensity strata are fixed independently of the permuted labels and the unit-level score vectors are exchangeable within strata under the null, the frozen stratified permutation p-value is finite-sample valid at every sample size and number of permutations, for both statistics; the regime is the one in which studentized permutation theory applies \cite{chung_romano_2013,janssen_1997}. Outside it the p-value carries no finite-sample guarantee.
+\end{theorem}
+Frozen nuisances make the statistic a fixed function of the labels, and within-stratum exchangeability makes the observed labels and their permutations equidistributed; a confounded design with $H_0^{\mathrm{out}}$ true but label-dependent score laws breaks exchangeability and loses control.
+
+The frozen permutation is retained as a secondary calibration and sharp-null diagnostic. The recorded familywise rates are $0.0392$ (permutation) and $0.0448$ (shared multiplier) over $6000$ replications each, with one inherited conservative miss at $0.028$. One finite-sample screen miss is not hidden: at $100$ units under skewed scores the shared-multiplier size is $0.0364$ (standard error $0.0037$, $3.63$ Monte Carlo standard errors below nominal), with a pooled seed-stability rate of $0.0312$ ($0.0017$) and none of four seeds inside the two-sided screen, against $0.0465$ ($0.0021$) and all four inside for Gaussian scores; at $400$ units the design is inside the band. The miss falsifies finite-sample equality of size, not asymptotic upper control.
+
+Every result is for one frozen finite grid or a fixed finite degree family; the growing-grid conditions are sufficient conditions, not phase transitions, and the evidence is synthetic.

@@ -1,0 +1,190 @@
+\section{Target-relative comparison, leakage, and the local limit}
+\label{sec:theory-leakage}
+
+We observe independent units $O_i=(X_i,A_i,Y_i)$, one point cloud per unit, summarised by the power-weighted silhouette $Z_{i,d}(t)=\Phi_d(\Dgm_d(F(Y_i)))(t)$ on a fixed grid $t\in T$ for the tested degrees $d\in\mathcal D$, with conditional means $m_{a,d}(t,x)=\E[Z_{i,d}(t)\mid X_i=x,A_i=a]$ and covariate-standardized effect $\psi_d(t)=\E_X[m_{1,d}(t,X)-m_{0,d}(t,X)]$. Three population statements are in play,
+\begin{align}
+H_0^{\mathrm{cond}} &: \Law(D\mid A=1)=\Law(D\mid A=0), \label{eq:h0cond}\\
+H_0^{\mathrm{out}} &: \psi_d(t)=0 \quad \text{for all } t\in T \text{ and tested } d, \label{eq:h0out}\\
+H_0^{\mathrm{dist,grid}} &: \delta=0, \label{eq:h0dist}
+\end{align}
+where $\delta$ is the expected-persistence-measure contrast of \citet{divol_chazal_2020} and \citet{divol_lacombe_2021} projected onto one fixed grid of dimension $q$. The finite-grid equality in \eqref{eq:h0dist} is a projection and does not certify equality of the unprojected measures, so all implemented distribution-level statements in this paper are finite-grid statements; the unprojected null $H_0^{\mathrm{dist}}$ and its two versions are defined in Section~\ref{sec:setup}. The targets are not nested: there are populations in $H_0^{\mathrm{out}}$ outside $H_0^{\mathrm{cond}}$ and populations in $H_0^{\mathrm{cond}}$ outside $H_0^{\mathrm{out}}$. Every number quoted in this section is synthetic, and no real-data application is claimed.
+
+\subsection{The comparison protocol and the target-matched class}
+\label{sec:protocol}
+
+Let $\Theta=\Theta_0\cup\Theta_1$ be a model, $P_{n,\theta}$ its $n$-fold product experiment, and a test sequence a sequence $\varphi=\{\varphi_n\}$ of $[0,1]$-valued statistics, so that $\E_{P}[\varphi_n]$ is its rejection probability at $P$.
+
+\begin{definition}[Asymptotic level and consistency]
+\label{def:level}
+$\varphi$ has asymptotic level $\alpha$ for $\Theta_0$ if
+\[
+\limsup_n\sup_{\theta\in\Theta_0}\E_{P_{n,\theta}}[\varphi_n]\le\alpha.
+\]
+It is consistent against $\Theta_1$ if $\E_{P_{n,\theta}}[\varphi_n]\to1$ for every fixed $\theta\in\Theta_1$, and uniformly consistent against $K\subseteq\Theta_1$ if $\inf_{\theta\in K}\E_{P_{n,\theta}}[\varphi_n]\to1$.
+\end{definition}
+
+\begin{definition}[Local alternatives and local power]
+\label{def:localpower}
+A local alternative for $H_0^{\mathrm{out}}$ is a sequence $\{P_n\}$ with $\psi_d^{(n)}(t)=n^{-1/2}g_d(t)$ for a fixed bounded direction $g=(g_d)$ in the class $\mathcal G=\ell^\infty(T)^{\abs{\mathcal D}}$; for $H_0^{\mathrm{dist,grid}}$ the analogous sequence has $\delta^{(n)}=n^{-1/2}h$ with $h\in\mathbb R^q$. The local power of $\varphi$ at $g$ is $\pi_\varphi(g)=\limsup_n\E_{P_n}[\varphi_n]$.
+\end{definition}
+
+\begin{definition}[Pitman ARE]
+\label{def:are}
+For two tests with Gaussian-shift local limits at a scalar direction $g$, with limiting standard deviations $\sigma_\varphi(g)$ and $\sigma_{\varphi'}(g)$ around the same shift, the Pitman asymptotic relative efficiency is the limiting ratio of sample sizes that equalizes the two local powers, equivalently the ratio of limiting non-centralities, $e(\varphi,\varphi';g)=\sigma^2_{\varphi'}(g)/\sigma^2_\varphi(g)$.
+\end{definition}
+
+The ARE is the within-class currency. It is asymptotic: an ARE of one does not imply finite-sample power equality, and the efficiency statements built on it are estimator-level at fixed $q$, with no power optimality over all tests claimed.
+
+\begin{definition}[Target-matched comparison class]
+\label{def:class}
+Fix $H_0\in\{H_0^{\mathrm{out}},H_0^{\mathrm{dist,grid}}\}$. The class $\mathcal C(H_0,\alpha)$ contains the test sequences $\varphi$ such that (a) $\varphi$ has asymptotic level $\alpha$ for $H_0$; (b) its local power exists for every direction in $\mathcal G=\ell^\infty(T)^{\abs{\mathcal D}}$ when $H_0=H_0^{\mathrm{out}}$, and for every $h\in\mathbb R^q$ when $H_0=H_0^{\mathrm{dist,grid}}$; and (c) $\pi_\varphi(cg)\to1$ as $c\to\infty$ for every fixed $g\ne0$. Membership is decided by the null a test guarantees, not by its estimator, so regression, inverse-probability, plug-in, and augmented estimators are admissible when (a)--(c) hold.
+\end{definition}
+
+A rejection is a rejection of a named population statement, and two tests with different targets produce different rejection events on the same data. A raw comparison of rejection rates across targets is therefore not an efficiency statement, and this paper prints no cross-null ranking: all power comparisons are within one class $\mathcal C(H_0,\alpha)$ and use Definition~\ref{def:are}. The restriction is not cosmetic, because neither target's tests dominate the other's.
+
+\begin{theorem}[Non-dominance across targets]
+\label{thm:non-dominance}
+Let $\varphi$ be asymptotically level $\alpha$ for $H_0^{\mathrm{cond}}$ and consistent on the imbalance family of Section~\ref{sec:leakage}, and let $\psi$ be asymptotically level $\alpha$ for $H_0^{\mathrm{out}}$ and consistent on the masking family of Section~\ref{sec:masking}. Then (i) $\psi$ does not dominate $\varphi$: at the imbalance witness $\varphi$ rejects with probability tending to one while $\limsup_n\E[\psi_n]\le\alpha$; (ii) $\varphi$ does not dominate $\psi$: at the masking witness $\E[\varphi_n]\le\alpha$ for every $n$ while $\psi$ rejects with probability tending to one; and (iii) if both tests are required valid for both nulls, no nontrivial pair qualifies.
+\end{theorem}
+
+\begin{proof}
+The imbalance witness has $H_0^{\mathrm{out}}$ and $H_0^{\mathrm{dist,grid}}$ exactly true and belongs to the fixed alternatives of $H_0^{\mathrm{cond}}$, so the level of $\psi$ and the consistency of $\varphi$ give (i). The masking witness satisfies $H_0^{\mathrm{cond}}$ exactly and is a fixed alternative for $H_0^{\mathrm{out}}$, so level control bounds $\varphi$ and consistency of $\psi$ gives (ii). Part (iii) is their conjunction; both use the fixed-alternative mechanism of Theorem~\ref{thm:leakage} and Theorem~\ref{thm:masking}.
+\end{proof}
+
+At the imbalance witness the exact arm-law gap is $\abs{0.373}$ (quadrature $0.3727$, simulation $-0.3738\pm0.0013$) and five of six unadjusted tests reject at $0.98$ to $1.00$; at the masking witness their rates are $0.029$ to $0.054$ while the adjusted test rejects at $1.000$. The exploratory adjusted prototype was deliberately uncalibrated, and its null rates of $0.005$ to $0.015$ fell outside the pre-registered band $[0.03,0.08]$; that gate is recorded as inconclusive rather than passed, and the prototype was superseded by the cross-fitted test analysed below.
+
+\subsection{False-positive leakage under covariate imbalance}
+\label{sec:leakage}
+
+Consider the covariate-shift family $P_\lambda$: $X\sim N(0,I)$, $A\mid X\sim\mathrm{Bernoulli}(e_\lambda(X))$ with $e_\lambda(x)=\mathrm{expit}(s\lambda x^\top\beta)$, and $Y\mid X$ independent of $A$ with a fixed conditional cloud law whose topology moves with $X$.
+
+\begin{theorem}[False-positive leakage]
+\label{thm:leakage}
+Assume (C1) conditional arm homogeneity, so $Y$ is conditionally independent of $A$ given $X$ with the same conditional cloud law in both arms; (C2) non-degenerate imbalance, so $e_\lambda$ is not a.s.\ constant and $p_1=\Prob(A=1)\in(0,1)$; (C3) the covariate-to-diagram map is not a.s.\ constant and there is a bounded diagram functional $K$ with $\mathrm{Cov}(K(D),e_\lambda(X))\ne0$; and (C4) positivity, $e_\lambda(X)\in(0,1)$ a.s. Fix $\lambda\in(0,1]$. Then:
+(a) $\psi_d\equiv0$ and $\delta=0$, so $H_0^{\mathrm{out}}$ and $H_0^{\mathrm{dist,grid}}$ hold exactly;
+(b) $H_0^{\mathrm{cond}}$ fails, with
+\begin{equation}
+\Delta_K=\E[K\mid A=1]-\E[K\mid A=0]=\frac{\mathrm{Cov}(K(D),e_\lambda(X))}{p_1p_0}\ne0,
+\label{eq:leakage-gap}
+\end{equation}
+and with $\mathrm{TV}(Q_1,Q_0)\ge\mathrm{TV}(\mu_1,\mu_0)\ge\abs{\Delta_K}/\mathrm{diam}(K)>0$ and $\mathrm{KL}(Q_1\|Q_0)\ge\mathrm{KL}(\mu_1\|\mu_0)>0$, where $Q_a$ and $\mu_a$ are the arm-conditional diagram and coarsened kernel laws;
+(c) every test of $H_0^{\mathrm{cond}}$ that is a function of the labelled diagram sample $\{(A_i,D_i)\}_{i\le n}$ and is consistent against every fixed pair $Q_0\ne Q_1$, uniformly over arm proportions in compact subintervals of $(0,1)$, rejects under $P_\lambda^{\otimes n}$ with probability tending to one.
+\end{theorem}
+
+\begin{proof}
+Part (a) is immediate from (C1): the conditional mean functions coincide pointwise, hence so do their covariate-standardized averages, at every grid coordinate. For (b), Bayes' rule gives $\E[K\mid A=1]=\E[Ke_\lambda]/p_1$ and $\E[K\mid A=0]=\E[K(1-e_\lambda)]/p_0$, and expanding around $\E[K]$ yields \eqref{eq:leakage-gap}. By (C3) the gap is nonzero, so $Q_1\ne Q_0$. For (c), condition on the labels alone: the diagrams are independent with $D_i\mid A_i=a\sim Q_a$, so a labelled-diagram test faces exactly the fixed-pair two-sample experiment, and the arm proportions are eventually in every compact subinterval of $(0,1)$ almost surely. The uniform consistency premise gives a conditional rejection probability tending to one along that full-probability event, and dominated convergence removes the conditioning.
+\end{proof}
+
+Two scope statements are part of the theorem. The class in (c) is labelled-diagram tests; a test using the covariates is outside the statement, because consistency at the marginal pair does not control the covariate-conditional experiment, and would need a covariate-uniform consistency premise. The fixed-alternative consistency of the six named unadjusted tests is imported from the literature \citep{robinson_turner_2017,gretton_2012,han_kim_kim_2026,murris_strand_2026,moon_lazar_2023,dubey_muller_2019}, not reproved here; the theorem converts that fixed-sample property into divergence along the confounded law.
+
+The mechanism behind part (c) is non-contiguity, not a Pitman expansion.
+
+\begin{lemma}[Non-contiguity of fixed alternatives]
+\label{lem:noncontiguity}
+Let $Q_1\ne Q_0$ with $0<\mathrm{KL}(Q_1\|Q_0)<\infty$, and let the arm sizes satisfy $N_a\to\infty$ with $N_a/n\to p_a\in(0,1)$. Then the alternative product law $Q_1^{N_1}\otimes Q_0^{N_0}$ and the matched null product law are asymptotically orthogonal (total variation tending to one), and the alternative sequence is not contiguous to the null sequence.
+\end{lemma}
+
+\begin{proof}
+The strong law gives $N_1^{-1}\log(\mathrm dQ_1^{N_1}/\mathrm dQ_0^{N_1})\to\mathrm{KL}(Q_1\|Q_0)>0$ under the alternative and $\to-\mathrm{KL}(Q_0\|Q_1)\le0$ under the null. The event on which the log ratio is below half of $\mathrm{KL}(Q_1\|Q_0)$ has probability tending to zero under the alternative and to one under the null, so the product measures separate in total variation; non-contiguity is the contrapositive of Le Cam's first lemma \citep{le_cam_1986}.
+\end{proof}
+
+For local alternatives with $\lambda_n=cn^{-1/2}$ the arm-law gap vanishes at the contiguity scale and rejection can remain in $(\alpha,1)$; for fixed $\lambda>0$ the likelihood ratio diverges exponentially and rejection is forced. A coarsened version of the mechanism gives the optimal rate for the oracle loop count: the three-atom arm laws have Chernoff--Stein type-II exponent $\exp(-N_1\mathrm{KL}(\mu_1\|\mu_0)+o(N_1))$ \citep{chernoff_1952}, with per-observation $\mathrm{KL}$ equal to $0.0089$, $0.0333$, $0.0683$, $0.1085$, and $0.1498$ at $\lambda=0.2,0.4,0.6,0.8,1.0$. At $\lambda=1$ the exact divergence functionals are $\abs{\Delta}=0.373$, $\mathrm{TV}=0.186$, and $\mathrm{KL}=0.150$.
+
+\subsection{Masking of a fixed adjusted effect}
+\label{sec:masking}
+
+The second leakage direction is complementary: the arm marginals can coincide exactly while the covariate-standardized effect is a fixed nonzero functional.
+
+\begin{theorem}[Masking]
+\label{thm:masking}
+There is a repeated-cloud law $P^\ast$ on $(X,A,Y)$ with the following properties.
+(a) $H_0^{\mathrm{cond}}$ holds exactly, so $D$ is independent of $A$ and the labelled diagram sample is exchangeable given its arm sizes.
+(b) $H_0^{\mathrm{out}}$ and $H_0^{\mathrm{dist,grid}}$ are false with fixed effects,
+\begin{equation}
+\psi_d(t)=\frac{8}{45}\Bigl(m_C(t)-\frac{m_A(t)+m_B(t)}{2}\Bigr),
+\label{eq:masking-effect}
+\end{equation}
+where $m_A,m_B,m_C$ are the conditional mean silhouettes of three cloud types in the construction; on the implemented pipeline $\sup_t\abs{\psi_d}=0.4934$ with batch standard error $2\times10^{-4}$, and the finite-grid expected-measure contrast has $L^1$ norm $1.1295$.
+(c) Every test of $H_0^{\mathrm{cond}}$ with level $\alpha$ satisfies $\E_{P^\ast}[\varphi_n]\le\alpha$ for every $n$. Equality holds exactly when $P^\ast$ is a least-favourable null point at that sample size, which is the case in particular for tests whose rejection probability is constant over $H_0^{\mathrm{cond}}$, such as pooled permutation tests computed from the diagrams alone, up to the permutation-grid discretisation. Consequently no sequence of level-$\alpha$ tests of $H_0^{\mathrm{cond}}$ is consistent for $H_0^{\mathrm{out}}$ against a class of alternatives containing $P^\ast$.
+\end{theorem}
+
+\begin{proof}
+The construction has three covariate strata, with stratum propensities $e=(1/2,1/2,1/4)$, and three cloud types whose conditional laws are arranged so that the two arm type-mixture vectors coincide; Bayes' rule gives the exact cancellation, and equality of the arm-conditional laws for a binary group label implies independence of $D$ from $A$, hence exchangeability of the labelled sample given the arm sizes. The effect \eqref{eq:masking-effect} is the stratum-two contrast averaged over the uniform covariates. For (c), $P^\ast$ satisfies $H_0^{\mathrm{cond}}$ by (a) and belongs to the null of any test of $H_0^{\mathrm{cond}}$, so evaluating the level condition at $P^\ast$ gives the bound; equality is precisely the statement that the level supremum is attained there, and a sequence consistent for $H_0^{\mathrm{out}}$ would have to reject with probability tending to one at a point of its own null, a contradiction.
+\end{proof}
+
+The equality clause is the repaired form: exact size alone does not force equality at $P^\ast$, because the level supremum may be attained at another null law or a conservative test may sit below $\alpha$, and the one-sided bound carries the no-consistency conclusion. The exact mechanism is the non-trivial kernel of the map from covariate-conditional laws to arm-marginal laws. In the finite-support design, let $p_a(x)$ be the arm-conditional covariate mass and $Q_a(x,\cdot)$ the conditional diagram kernel, so that $H_0^{\mathrm{cond}}$ is $\sum_x p_1(x)Q_1(x,\cdot)=\sum_x p_0(x)Q_0(x,\cdot)$.
+
+\begin{lemma}[Divergence-silent compensation family]
+\label{lem:compensation}
+Perturb the masking design by $Q_1^\varepsilon(2,\cdot)=L_C+\varepsilon R$ and $Q_0^\varepsilon(2,\cdot)=q^\ast+\tfrac{7}{15}\varepsilon R$, with all other conditional components fixed and $q^\ast=\tfrac{4}{15}L_A+\tfrac{4}{15}L_B+\tfrac{7}{15}L_C$. Then $H_0^{\mathrm{cond}}$ holds exactly for every $\varepsilon$ for which both perturbed laws are probability measures, while the adjusted target shifts linearly, $\psi^\varepsilon-\psi=\tfrac{8}{45}\varepsilon\int z\,R(\mathrm dz)$, and the arm-conditional Kullback--Leibler divergence is zero identically. A test whose rejection event depends only on the arm-marginal laws has constant rejection probability along this family, so its pointwise level bound propagates to every member: power stays at or below level while the adjusted target moves.
+\end{lemma}
+
+\begin{proof}
+The compensation weights satisfy $p_1(2)/p_0(2)=(1/5)/(3/7)=7/15$, so the perturbation of each arm marginal is $(7/15)\varepsilon R$ on stratum two and the two marginals remain equal; the target receives the finite-support average $\tfrac13(1-\tfrac{7}{15})\varepsilon R=\tfrac{8}{45}\varepsilon R$ through the linear functional $\int z\,R(\mathrm dz)$. Divergence is exactly zero because the arm marginals coincide, and constancy of rejection probability over pooled-data tests is the definition of the class.
+\end{proof}
+
+The finite-support statements in Lemma~\ref{lem:compensation} are exact. The general local reading is weaker: the tangent space of $H_0^{\mathrm{cond}}$ is $\{(R_1,R_0):\sum_x p_1(x)R_1(x,\cdot)=\sum_x p_0(x)R_0(x,\cdot)\}$, the pointwise family above is a proper sub-family, and the claim that the maximal local power of a level-$\alpha$ test depends only on the projection of the local score onto the orthogonal complement, hence on the marginal residual $n^{1/2}\sum_x(p_1R_1-p_0R_0)$, remains a conjecture on which nothing below relies. The positivity leg of the masking effect is numerical: a measurable separation of the three cloud-type diagram laws is not proved, and the quoted values are measured pipeline quantities. The bound applies to tests of $H_0^{\mathrm{cond}}$ at level $\alpha$; transferring the leakage statement to a class of consistent tests requires the labelled-diagram conditioning of Theorem~\ref{thm:leakage}(c) or a covariate-uniform consistency premise.
+
+\subsection{Local limit of the adjusted sup-statistic}
+\label{sec:locallimit}
+
+Let $\widehat\varphi_i(t)$ be the cross-fitted AIPW score of unit $i$, so that $\widehat\psi_d(t)=n^{-1}\sum_i\widehat\varphi_i(t)$ and
+\begin{equation}
+T_n^{\mathrm{out}}=\max_{d}\sup_{t}\abs{\sqrt n\,\widehat\psi_d(t)}
+\end{equation}
+is the outcome-level max-over-degrees sup-statistic. The AIPW representation and its identification are those of \citet{souto_diamantis_tcda_2026}, with functional limit theory for the silhouette process from \citet{kim_lee_tce_2026}. The Pitman regime for $H_0^{\mathrm{out}}$ is the triangular array
+\begin{equation}
+m^{(n)}_{1,d}(t,x)=m_{1,d}(t,x)+n^{-1/2}g_d(t),\qquad
+m^{(n)}_{0,d}(t,x)=m_{0,d}(t,x),
+\label{eq:pittman}
+\end{equation}
+for fixed bounded $g$, with the residual law and the marginal law of $(X,A)$ unchanged, so $\psi^{(n)}_{d}=\psi_d+n^{-1/2}g_d$.
+
+\noindent\textbf{Assumption (A1)--(A6) (regular local sequence).} Along \eqref{eq:pittman}: (A1) for each $n$ the units are i.i.d.\ $P_n$ with $\sup_n\E_{P_n}\norm{Z}^2<\infty$; (A2) causal consistency and arm-specific conditional exchangeability, $Z^a\perp A\mid X$ \citep{souto_diamantis_tcda_2026}; (A3) positivity on the true propensity, $\kappa\le e(x)\le1-\kappa$ for some $\kappa\in(0,1/2]$ and $P_X$-a.e.\ $x$; (A4) the outcome regression uses a fixed finite-dimensional span $M$ containing the base conditional means, with $O_P(n^{-1/2})$ conditionally centred regression error and propensity error $\norm{\hat e-e}_{L^2(P_X)}=O_P(n^{-\alpha})$ for some $\alpha>0$, so the product rate is $o_P(n^{-1/2})$, the direction residual $r_g=g-P_Mg$ may be nonzero, and the standardized drift $h_d(t)=\lim_n\sqrt n(\E_{P_n}[\widehat\psi_d(t)]-\psi^{(n)}_d(t))$ exists, with $h\equiv0$ in the regular case; (A5) the score class is Donsker with a square-integrable envelope, uniformly along the arrays, for which the silhouette Lipschitz and bracketing-entropy bounds of \citet{kim_lee_tce_2026} are a primitive sufficient condition and the finite grid is automatic; (A6) a fixed number of balanced cross-fitting folds with nuisance fits computed out of fold \citep{chernozhukov_dml_2018,new_robins_2018}, and i.i.d.\ multipliers shared across coordinates with mean zero, unit variance, and finite $2+\delta$ moments \citep{cck_2013}.
+
+\begin{theorem}[Regular local limit of the AIPW process]
+\label{thm:local-limit}
+Assume (A1)--(A6) and $h\equiv0$. Then, as random elements of $\ell^\infty(T)^{\abs{\mathcal D}}$, $\sqrt n(\widehat\psi_d(t)-\psi^{(n)}_d(t))\Rightarrow G_d(t)$, where $G=(G_d)$ is a tight mean-zero Gaussian process with covariance $\mathrm{cov}\{G_d(s),G_{d'}(t)\}=\mathrm{cov}_{P_0}\{\phi_d(s,O;\eta_0),\phi_{d'}(t,O;\eta_0)\}$ and $\phi_d$ is the influence function of $\psi_d(t)$ at the oracle nuisance $\eta_0$. Consequently $T_n^{\mathrm{out}}\Rightarrow\max_d\sup_t\abs{G_d(t)+g_d(t)}$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Decompose the AIPW estimator into an oracle empirical-process term, a remainder for the fitted nuisances, and a von Mises remainder. The oracle term converges weakly by (A5) and the limit theorem of \citet{kim_lee_tce_2026}; the empirical-process remainder is $o_P(1)$ by the Donsker property and the maximal inequality of \citet{kennedy_balakrishnan_gsell_2020}; the von Mises remainder is $o_P(1)$ by the product rate in (A4). The continuous mapping theorem applied to the $1$-Lipschitz map $f\mapsto\max_d\sup_t\abs{f_d(t)+g_d(t)}$ gives the statistic limit. The oracle scores satisfy the corrected local shift identity $\phi_d(t,o;\eta_n)=\phi_d(t,o;\eta_0)+n^{-1/2}g_d(t)(1-A/e(X))$, whose expectation is exactly $\psi^{(n)}_d$ and whose induced empirical-process term is $o_P(1)$ under (A3); the theorem does not use the pointwise form without the $A$-dependent factor.
+\end{proof}
+
+\begin{theorem}[Local power]
+\label{thm:local-power}
+Let $c_{1-\alpha}$ be the $(1-\alpha)$-quantile of $\max_d\sup_t\abs{G_d(t)}$ and $\pi(g)=\Prob(\max_d\sup_t\abs{G_d(t)+g_d(t)}>c_{1-\alpha})$. Under (A1)--(A6) and $h\equiv0$, the rejection probability of the multiplier-calibrated statistic \eqref{eq:tnout} along \eqref{eq:pittman} converges to $\pi(g)$, and $\pi(0)=\alpha$. For every fixed $g\ne0$ whose covariance restricted to the support of $g$ is non-degenerate, $\pi(g)>\alpha$; along each fixed ray $\tau\mapsto\pi(\tau h)$ is nondecreasing, tends to one as $\tau\to\infty$, and takes values in $(\alpha,1)$ for every finite $\tau>0$, so the Pitman trichotomy holds: $\tau_n\to\tau\in(0,\infty)$ gives $\pi(\tau h)$, $\tau_n\to0$ gives $\alpha$, and $\tau_n\to\infty$ gives one.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The multiplier critical value satisfies $\hat c_{1-\alpha}\to c_{1-\alpha}$ in probability by the Gaussian comparison and multiplier bootstrap of \citet{cck_2013}, and Theorem~\ref{thm:local-limit} gives the weak limit of the statistic; the Gaussian supremum has no atoms, so the rejection event converges. Strictness and ray monotonicity follow from Anderson's translation inequality for the centred Gaussian measure on the symmetric convex sup-ball \citep{anderson_1955,perlman_1988}; on the implemented finite grid this is the finite-dimensional theorem.
+\end{proof}
+
+Four labelled gaps accompany these results. The cross-fitted linearization is cited from the double machine learning literature and not reproved \citep{chernozhukov_dml_2018,new_robins_2018}; the triangular Donsker uniformity is stated as (A5), with primitive entropy verification imported and the finite grid automatic; the multiplier conditional quantile under the local sequence is adapted from the cited bootstrap \citep{cck_2013} rather than reproved line by line; and (A3) concerns the true propensity, which the recorded strongest-confounding design does not bound away from zero, so that design lies outside the population scope of the theorem even though the finite-grid implementation remains well defined with endpoint clipping. The finite-basis outcome regression has the parametric rate in (A4), while the propensity error enters through the assumed $O_P(n^{-\alpha})$ rate; no convergence-rate theorem for the propensity learner is invoked, and none is needed for the stated limit. The explicit non-central branch with nonzero base residual is not claimed in the form of the earlier exploratory draft; the drift identity for that case is stated only when the base projection residuals vanish, which is the design evaluated here. The strictness step in the infinite-dimensional limit is a proof sketch, while the finite-dimensional Anderson theorem covers the implemented grid. No finite-sample exactness and no uniform-over-directions power statement is claimed.
+
+The recorded paired validation confirms the drift identity to machine precision: after subtracting the predicted drift, the residual has grid average at most $4\times10^{-17}$ and maximum standardized deviation $0.58$ Monte Carlo standard errors, with an observed drift factor of $0.14$ under strong confounding and $0.10$ under randomization at $n=500$; this factor is measured, not bounded, and is not claimed to vanish at the parametric rate.
+
+\subsection{The finite-n local-power mismatch and its correction}
+\label{sec:mismatch}
+
+The pre-registered local-power screen compares the empirical multiplier rejection rate of \eqref{eq:tnout} with the Gaussian-shift prediction $\Prob(\max_d\sup_t\abs{G_d+g_d}>c_{1-\alpha})$, with covariance pooled over replications. At $n=500$, in the strongest confounding setting and the out-of-span oscillatory direction, the recorded screen reads $0.730$ observed against a prediction of $0.628$, a gap of $+0.102$ with Monte Carlo standard error $0.026$; the pre-registered verdict is \texttt{confirmed=false}. The completed fleet contains 34 cells and 51 scored rows; 9 rows exceed the pre-registered $0.06$ tolerance and 17 lie beyond two standard errors, with maximum absolute gap $0.275$, and the full-fleet validator returns \texttt{passed=false}. The miss is direction-specific: the oscillatory cells, in which the direction is nearly orthogonal to the fitted regression span, are the only consistently positive gaps.
+
+The mechanism is a finite-sample mean-ratio drift, not a failure of the limit law. For a fixed nuisance triple $\eta$, the population score-mean identity is exact,
+\begin{equation}
+\E_{P_n}[\phi(Z;\eta)]-\psi_n
+=\E\Bigl[\Bigl(\frac{e(X)}{\pi(X)}-1\Bigr)(m_1^\ast(X)-\mu_1(X))\Bigr]
+-\E\Bigl[\Bigl(\frac{1-e(X)}{1-\pi(X)}-1\Bigr)(m_0(X)-\mu_0(X))\Bigr].
+\label{eq:score-mean}
+\end{equation}
+With an outcome regression whose probability limit is the projection $P_K$ onto a basis of dimension $K$, the treated fitted mean is $m_1+n^{-1/2}P_Kg$, and \eqref{eq:score-mean} specialises to
+\begin{equation}
+\E[\phi(Z;\hat\eta_n^\ast)]=\psi+n^{-1/2}\bigl(g+\kappa_n(g-P_Kg)\bigr),
+\qquad
+\kappa_n=\E[e(X)/\hat e_n(X)]-1,
+\label{eq:geff}
+\end{equation}
+so the effective local shift is $g_{\mathrm{eff}}=g+\kappa_n(g-P_Kg)$. This is a finite-$n$ expansion centred on the exact finite-sample drift: $\kappa_n$ vanishes in the limit for any consistent propensity but is measured, not bounded. In the recorded design $\kappa_n\approx0.138$ at $n=500$ (SE $0.021$), decaying from $0.206$ at $n=100$ through $0.174$ at $n=200$, and the out-of-span sup-norm residual is $0$, $0.141$, and $0.713$ for the in-span, intermediate, and oscillatory directions. Feeding $g_{\mathrm{eff}}$ into the same pooled covariance moves the headline prediction from $0.628$ to $0.783$, so the corrected gap is $-0.053$ at the stored seed pair, about $-0.041$ under common random numbers, and the $\kappa_n\pm1$ standard-error band $[-0.071,-0.034]$ crosses the $0.06$ tolerance at one standard error. Raising the regression basis past the direction's highest harmonic removes the out-of-span fraction and returns the fitted projection to the oracle value ($5.01$ against $4.99$); the pre-registered threshold for that probe is underpowered at the recorded budget and is not claimed. No consistency rate for the mean ratio is available here, and the expansion is therefore reported as a finite-sample explanation rather than an asymptotic theorem.
+
+The scope is fixed by the criterion under which the correction is evaluated. The correction resolves the adjusted Gaussian-shift comparison at $n=500$ under the post-hoc corrected point prediction and the $0.06$ tolerance; the pre-registered screen remains \texttt{confirmed=false}; the full-fleet validator remains \texttt{passed=false}; the same point prediction is still flagged under the validator's two-standard-error convention without drift uncertainty; and the unadjusted comparator, the asymptotic-ARE row, the cells absent from the recorded fleet, and the $n\le200$ rows are untouched. The mean-ratio rate that would turn \eqref{eq:geff} from a finite-sample expansion into an asymptotic theorem is not proved, and the corrected curve has not been validated on a fresh seed bank. The comparison is therefore an explanation of the recorded mismatch under a named criterion, not a passing gate.
+
+Two coverage limits close the section. The completed exact-null ARE record is not a confirmation of the asymptotic efficiency statement: the adjusted test's power sits below the unadjusted test at $n=200$ and $n=500$ in every direction, with mean gaps between $0.14$ and $0.19$, while the efficiency result is asymptotic at fixed grid dimension, so no finite-sample power equality and no power optimality is claimed. And the entire evidence base is synthetic: the local-power program is reported with its recorded mismatch, its criterion, and its unproved rate, and not overclaimed.

@@ -1,0 +1,106 @@
+{
+ "arms": [
+  "est_est",
+  "oracle_oracle",
+  "oracle_est_m",
+  "est_oracle_m"
+ ],
+ "cells": {
+  "n=200": {
+   "reps": 500,
+   "est_est": {
+    "rate": {
+     "reps": 500,
+     "rate": 0.096,
+     "mc_se": 0.013174520864152897,
+     "mean_p": 0.481071
+    },
+    "crit_mean": 2.197920017271791,
+    "stat_mean": 1.1413184423714382,
+    "stat_q95": 2.538696648471632,
+    "mean_abs_bias_stat_units": 0.858894694875625,
+    "mean_skew": 0.01733427072972269,
+    "mean_abs_skew": 0.3803429129937537,
+    "mean_excess_kurtosis": 1.3678272321446827
+   },
+   "oracle_oracle": {
+    "rate": {
+     "reps": 500,
+     "rate": 0.07,
+     "mc_se": 0.011410521460476731,
+     "mean_p": 0.5041610000000001
+    },
+    "crit_mean": 2.1951866282557195,
+    "stat_mean": 1.0731577355381194,
+    "stat_q95": 2.3070103198026746,
+    "mean_abs_bias_stat_units": 0.8018956191644925,
+    "mean_skew": -0.010842281714127957,
+    "mean_abs_skew": 0.12136525770067967,
+    "mean_excess_kurtosis": 0.5501323814295529
+   },
+   "oracle_est_m": {
+    "rate": {
+     "reps": 500,
+     "rate": 0.084,
+     "mc_se": 0.012405160216619535,
+     "mean_p": 0.501142
+    },
+    "crit_mean": 2.191628168946214,
+    "stat_mean": 1.0913651885052422,
+    "stat_q95": 2.4236771713278205,
+    "mean_abs_bias_stat_units": 0.8195175981002049,
+    "mean_skew": -0.008985673503945336,
+    "mean_abs_skew": 0.34187224533032395,
+    "mean_excess_kurtosis": 1.0647144464376466
+   },
+   "est_oracle_m": {
+    "rate": {
+     "reps": 500,
+     "rate": 0.07,
+     "mc_se": 0.011410521460476731,
+     "mean_p": 0.500691
+    },
+    "crit_mean": 2.1993826164525245,
+    "stat_mean": 1.0875312940474158,
+    "stat_q95": 2.304026062057049,
+    "mean_abs_bias_stat_units": 0.8085288423325041,
+    "mean_skew": 0.01230413136944971,
+    "mean_abs_skew": 0.12262655880975713,
+    "mean_excess_kurtosis": 0.7399074429326538
+   }
+  },
+  "n=500": {
+   "reps": 500,
+   "est_est": {
+    "rate": {
+     "reps": 500,
+     "rate": 0.066,
+     "mc_se": 0.011103512957618413,
+     "mean_p": 0.460242
+    },
+    "crit_mean": 2.1980749924558065,
+    "stat_mean": 1.1585377553001113,
+    "stat_q95": 2.3923896176451844,
+    "mean_abs_bias_stat_units": 0.8538665253877835,
+    "mean_skew": 0.0008250331745635109,
+    "mean_abs_skew": 0.22635970117646126,
+    "mean_excess_kurtosis": 0.838915411935652
+   },
+   "oracle_oracle": {
+    "rate": {
+     "reps": 500,
+     "rate": 0.058,
+     "mc_se": 0.010453324829928513,
+     "mean_p": 0.47044600000000003
+    },
+    "crit_mean": 2.195461804048869,
+    "stat_mean": 1.1294563034081424,
+    "stat_q95": 2.340940676094856,
+    "mean_abs_bias_stat_units": 0.8310548971408971,
+    "mean_skew": -0.004003187641756256,
+    "mean_abs_skew": 0.07755006222478422,
+    "mean_excess_kurtosis": 0.5545183242770543
+   }
+  }
+ }
+}

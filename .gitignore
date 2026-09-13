@@ -27,6 +27,10 @@ results/*.csv
 !results/*_reps500.json
 # ...and Figure 1's data, which is the Phase 2 gate's evidence (theory/WP2_covariate_shift.md section 6.1)
 !results/phase2_figure1.json
+# ...and the Phase-7/T10 theory-validation inputs (T10 audit repair; experiment
+# results are never gitignored)
+!results/phase7_local_power.json
+!results/phase7_checkpoint.json
 
 # Windows alternate-data-stream markers, created when Colab output is
 # downloaded through a browser onto the WSL mount.
@@ -42,3 +46,7 @@ interim_report/
 # Phase 5 single-pointcloud benchmark — archived to its own repo (copy-then-verify-then-delete)
 # Will be moved to \\wsl.localhost\Ubuntu\home\hugo_souto\Stuff\Research\single_pointcloud_testing
 single_pointcloud_testing/
+
+docs/paper/
+docs/theory_audit/
+theory/

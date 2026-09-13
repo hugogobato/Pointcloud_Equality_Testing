@@ -1,0 +1,718 @@
+{
+  "chunk": 10,
+  "elapsed_seconds": 5682.232944965363,
+  "ended": "2026-09-10 12:38:08",
+  "failures": [],
+  "first_task_mtime": "2026-09-10 10:45:10",
+  "invocations": [
+    {
+      "invocation": 1,
+      "last_shard_mtime": "2026-09-10 10:45:10",
+      "recorded_in_tasks": false,
+      "shard_seconds_sum": 292.7076323032379,
+      "task_ids": [
+        "NONPROG1|500|190-200"
+      ],
+      "tasks_total": 1,
+      "window_note": "start not recorded; only the completion mtime of the single shard (and its in-file seconds) is known, hence the wall time is not reconstructible"
+    },
+    {
+      "elapsed_seconds": 5682.232944965363,
+      "ended": "2026-09-10 12:38:08",
+      "invocation": 2,
+      "recorded_in_tasks": true,
+      "started": "2026-09-10 11:03:26",
+      "tasks_total": 70,
+      "wall_minutes": 94.70388241608937,
+      "workers": 16
+    }
+  ],
+  "n_calibration": 399,
+  "reps": 300,
+  "scale": 0.7,
+  "started": "2026-09-10 11:03:26",
+  "tasks": [
+    {
+      "keys": [
+        "NONPROG1|bump|500|240-250",
+        "NONPROG1|freq|500|240-250",
+        "NONPROG1|mean|500|240-250"
+      ],
+      "seconds": 1499.0700063705444,
+      "task_id": "NONPROG1|500|240-250"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|270-280",
+        "NONPROG1|freq|500|270-280",
+        "NONPROG1|mean|500|270-280"
+      ],
+      "seconds": 1529.000538110733,
+      "task_id": "NONPROG1|500|270-280"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|200-210",
+        "NONPROG1|freq|500|200-210",
+        "NONPROG1|mean|500|200-210"
+      ],
+      "seconds": 1533.5822060108185,
+      "task_id": "NONPROG1|500|200-210"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|250-260",
+        "NONPROG1|freq|500|250-260",
+        "NONPROG1|mean|500|250-260"
+      ],
+      "seconds": 1554.3013334274292,
+      "task_id": "NONPROG1|500|250-260"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|230-240",
+        "NONPROG1|freq|500|230-240",
+        "NONPROG1|mean|500|230-240"
+      ],
+      "seconds": 1555.5493726730347,
+      "task_id": "NONPROG1|500|230-240"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|280-290",
+        "NONPROG1|freq|500|280-290",
+        "NONPROG1|mean|500|280-290"
+      ],
+      "seconds": 1564.933620929718,
+      "task_id": "NONPROG1|500|280-290"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|210-220",
+        "NONPROG1|freq|500|210-220",
+        "NONPROG1|mean|500|210-220"
+      ],
+      "seconds": 1567.8211426734924,
+      "task_id": "NONPROG1|500|210-220"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|220-230",
+        "NONPROG1|freq|500|220-230",
+        "NONPROG1|mean|500|220-230"
+      ],
+      "seconds": 1573.2342746257782,
+      "task_id": "NONPROG1|500|220-230"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|290-300",
+        "NONPROG1|freq|500|290-300",
+        "NONPROG1|mean|500|290-300"
+      ],
+      "seconds": 1578.1574323177338,
+      "task_id": "NONPROG1|500|290-300"
+    },
+    {
+      "keys": [
+        "NONPROG1|bump|500|260-270",
+        "NONPROG1|freq|500|260-270",
+        "NONPROG1|mean|500|260-270"
+      ],
+      "seconds": 1582.0530726909637,
+      "task_id": "NONPROG1|500|260-270"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|0-10",
+        "NONPROG0|bump|200|0-10",
+        "NONPROG0|freq|200|0-10",
+        "NONPROG0|mean|200|0-10"
+      ],
+      "seconds": 1972.7730991840363,
+      "task_id": "NONPROG0|200|0-10"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|10-20",
+        "NONPROG0|bump|200|10-20",
+        "NONPROG0|freq|200|10-20",
+        "NONPROG0|mean|200|10-20"
+      ],
+      "seconds": 1973.2965323925018,
+      "task_id": "NONPROG0|200|10-20"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|40-50",
+        "NONPROG0|bump|200|40-50",
+        "NONPROG0|freq|200|40-50",
+        "NONPROG0|mean|200|40-50"
+      ],
+      "seconds": 1983.2560300827026,
+      "task_id": "NONPROG0|200|40-50"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|20-30",
+        "NONPROG0|bump|200|20-30",
+        "NONPROG0|freq|200|20-30",
+        "NONPROG0|mean|200|20-30"
+      ],
+      "seconds": 1984.3506186008453,
+      "task_id": "NONPROG0|200|20-30"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|50-60",
+        "NONPROG0|bump|200|50-60",
+        "NONPROG0|freq|200|50-60",
+        "NONPROG0|mean|200|50-60"
+      ],
+      "seconds": 1997.403359413147,
+      "task_id": "NONPROG0|200|50-60"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|30-40",
+        "NONPROG0|bump|200|30-40",
+        "NONPROG0|freq|200|30-40",
+        "NONPROG0|mean|200|30-40"
+      ],
+      "seconds": 2018.6171967983246,
+      "task_id": "NONPROG0|200|30-40"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|60-70",
+        "NONPROG0|bump|200|60-70",
+        "NONPROG0|freq|200|60-70",
+        "NONPROG0|mean|200|60-70"
+      ],
+      "seconds": 1581.9473929405212,
+      "task_id": "NONPROG0|200|60-70"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|70-80",
+        "NONPROG0|bump|200|70-80",
+        "NONPROG0|freq|200|70-80",
+        "NONPROG0|mean|200|70-80"
+      ],
+      "seconds": 1563.0841813087463,
+      "task_id": "NONPROG0|200|70-80"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|80-90",
+        "NONPROG0|bump|200|80-90",
+        "NONPROG0|freq|200|80-90",
+        "NONPROG0|mean|200|80-90"
+      ],
+      "seconds": 1559.785583972931,
+      "task_id": "NONPROG0|200|80-90"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|150-160",
+        "NONPROG0|bump|200|150-160",
+        "NONPROG0|freq|200|150-160",
+        "NONPROG0|mean|200|150-160"
+      ],
+      "seconds": 1552.0812044143677,
+      "task_id": "NONPROG0|200|150-160"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|90-100",
+        "NONPROG0|bump|200|90-100",
+        "NONPROG0|freq|200|90-100",
+        "NONPROG0|mean|200|90-100"
+      ],
+      "seconds": 1598.3026480674744,
+      "task_id": "NONPROG0|200|90-100"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|110-120",
+        "NONPROG0|bump|200|110-120",
+        "NONPROG0|freq|200|110-120",
+        "NONPROG0|mean|200|110-120"
+      ],
+      "seconds": 1588.82510471344,
+      "task_id": "NONPROG0|200|110-120"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|130-140",
+        "NONPROG0|bump|200|130-140",
+        "NONPROG0|freq|200|130-140",
+        "NONPROG0|mean|200|130-140"
+      ],
+      "seconds": 1585.6904408931732,
+      "task_id": "NONPROG0|200|130-140"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|120-130",
+        "NONPROG0|bump|200|120-130",
+        "NONPROG0|freq|200|120-130",
+        "NONPROG0|mean|200|120-130"
+      ],
+      "seconds": 1591.271877527237,
+      "task_id": "NONPROG0|200|120-130"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|140-150",
+        "NONPROG0|bump|200|140-150",
+        "NONPROG0|freq|200|140-150",
+        "NONPROG0|mean|200|140-150"
+      ],
+      "seconds": 1583.483404159546,
+      "task_id": "NONPROG0|200|140-150"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|100-110",
+        "NONPROG0|bump|200|100-110",
+        "NONPROG0|freq|200|100-110",
+        "NONPROG0|mean|200|100-110"
+      ],
+      "seconds": 1606.7400677204132,
+      "task_id": "NONPROG0|200|100-110"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|200-210",
+        "NONPROG0|bump|200|200-210",
+        "NONPROG0|freq|200|200-210",
+        "NONPROG0|mean|200|200-210"
+      ],
+      "seconds": 1353.6594743728638,
+      "task_id": "NONPROG0|200|200-210"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|170-180",
+        "NONPROG0|bump|200|170-180",
+        "NONPROG0|freq|200|170-180",
+        "NONPROG0|mean|200|170-180"
+      ],
+      "seconds": 1384.5217502117157,
+      "task_id": "NONPROG0|200|170-180"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|180-190",
+        "NONPROG0|bump|200|180-190",
+        "NONPROG0|freq|200|180-190",
+        "NONPROG0|mean|200|180-190"
+      ],
+      "seconds": 1408.1615159511566,
+      "task_id": "NONPROG0|200|180-190"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|190-200",
+        "NONPROG0|bump|200|190-200",
+        "NONPROG0|freq|200|190-200",
+        "NONPROG0|mean|200|190-200"
+      ],
+      "seconds": 1414.4991521835327,
+      "task_id": "NONPROG0|200|190-200"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|160-170",
+        "NONPROG0|bump|200|160-170",
+        "NONPROG0|freq|200|160-170",
+        "NONPROG0|mean|200|160-170"
+      ],
+      "seconds": 1443.1153988838196,
+      "task_id": "NONPROG0|200|160-170"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|210-220",
+        "NONPROG0|bump|200|210-220",
+        "NONPROG0|freq|200|210-220",
+        "NONPROG0|mean|200|210-220"
+      ],
+      "seconds": 1409.7299048900604,
+      "task_id": "NONPROG0|200|210-220"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|10-20",
+        "NONPROG0|freq|500|10-20",
+        "NONPROG0|mean|500|10-20"
+      ],
+      "seconds": 940.0022342205048,
+      "task_id": "NONPROG0|500|10-20"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|0-10",
+        "NONPROG0|freq|500|0-10",
+        "NONPROG0|mean|500|0-10"
+      ],
+      "seconds": 968.9421696662903,
+      "task_id": "NONPROG0|500|0-10"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|30-40",
+        "NONPROG0|freq|500|30-40",
+        "NONPROG0|mean|500|30-40"
+      ],
+      "seconds": 916.0471949577332,
+      "task_id": "NONPROG0|500|30-40"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|20-30",
+        "NONPROG0|freq|500|20-30",
+        "NONPROG0|mean|500|20-30"
+      ],
+      "seconds": 934.4490106105804,
+      "task_id": "NONPROG0|500|20-30"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|220-230",
+        "NONPROG0|bump|200|220-230",
+        "NONPROG0|freq|200|220-230",
+        "NONPROG0|mean|200|220-230"
+      ],
+      "seconds": 1227.4252235889435,
+      "task_id": "NONPROG0|200|220-230"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|230-240",
+        "NONPROG0|bump|200|230-240",
+        "NONPROG0|freq|200|230-240",
+        "NONPROG0|mean|200|230-240"
+      ],
+      "seconds": 1222.2087037563324,
+      "task_id": "NONPROG0|200|230-240"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|240-250",
+        "NONPROG0|bump|200|240-250",
+        "NONPROG0|freq|200|240-250",
+        "NONPROG0|mean|200|240-250"
+      ],
+      "seconds": 1222.412104845047,
+      "task_id": "NONPROG0|200|240-250"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|50-60",
+        "NONPROG0|freq|500|50-60",
+        "NONPROG0|mean|500|50-60"
+      ],
+      "seconds": 918.8987340927124,
+      "task_id": "NONPROG0|500|50-60"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|40-50",
+        "NONPROG0|freq|500|40-50",
+        "NONPROG0|mean|500|40-50"
+      ],
+      "seconds": 938.8851294517517,
+      "task_id": "NONPROG0|500|40-50"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|270-280",
+        "NONPROG0|bump|200|270-280",
+        "NONPROG0|freq|200|270-280",
+        "NONPROG0|mean|200|270-280"
+      ],
+      "seconds": 1196.9736342430115,
+      "task_id": "NONPROG0|200|270-280"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|250-260",
+        "NONPROG0|bump|200|250-260",
+        "NONPROG0|freq|200|250-260",
+        "NONPROG0|mean|200|250-260"
+      ],
+      "seconds": 1217.7406527996063,
+      "task_id": "NONPROG0|200|250-260"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|70-80",
+        "NONPROG0|freq|500|70-80",
+        "NONPROG0|mean|500|70-80"
+      ],
+      "seconds": 924.9766583442688,
+      "task_id": "NONPROG0|500|70-80"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|260-270",
+        "NONPROG0|bump|200|260-270",
+        "NONPROG0|freq|200|260-270",
+        "NONPROG0|mean|200|260-270"
+      ],
+      "seconds": 1209.5174481868744,
+      "task_id": "NONPROG0|200|260-270"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|280-290",
+        "NONPROG0|bump|200|280-290",
+        "NONPROG0|freq|200|280-290",
+        "NONPROG0|mean|200|280-290"
+      ],
+      "seconds": 1204.2534804344177,
+      "task_id": "NONPROG0|200|280-290"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|60-70",
+        "NONPROG0|freq|500|60-70",
+        "NONPROG0|mean|500|60-70"
+      ],
+      "seconds": 949.8363676071167,
+      "task_id": "NONPROG0|500|60-70"
+    },
+    {
+      "keys": [
+        "NONPROG0|None|200|290-300",
+        "NONPROG0|bump|200|290-300",
+        "NONPROG0|freq|200|290-300",
+        "NONPROG0|mean|200|290-300"
+      ],
+      "seconds": 1227.733805656433,
+      "task_id": "NONPROG0|200|290-300"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|80-90",
+        "NONPROG0|freq|500|80-90",
+        "NONPROG0|mean|500|80-90"
+      ],
+      "seconds": 941.8664209842682,
+      "task_id": "NONPROG0|500|80-90"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|90-100",
+        "NONPROG0|freq|500|90-100",
+        "NONPROG0|mean|500|90-100"
+      ],
+      "seconds": 975.8588807582855,
+      "task_id": "NONPROG0|500|90-100"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|110-120",
+        "NONPROG0|freq|500|110-120",
+        "NONPROG0|mean|500|110-120"
+      ],
+      "seconds": 980.5894904136658,
+      "task_id": "NONPROG0|500|110-120"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|190-200",
+        "NONPROG0|freq|500|190-200",
+        "NONPROG0|mean|500|190-200"
+      ],
+      "seconds": 919.8711247444153,
+      "task_id": "NONPROG0|500|190-200"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|120-130",
+        "NONPROG0|freq|500|120-130",
+        "NONPROG0|mean|500|120-130"
+      ],
+      "seconds": 965.8070106506348,
+      "task_id": "NONPROG0|500|120-130"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|100-110",
+        "NONPROG0|freq|500|100-110",
+        "NONPROG0|mean|500|100-110"
+      ],
+      "seconds": 1003.3027448654175,
+      "task_id": "NONPROG0|500|100-110"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|130-140",
+        "NONPROG0|freq|500|130-140",
+        "NONPROG0|mean|500|130-140"
+      ],
+      "seconds": 963.5209743976593,
+      "task_id": "NONPROG0|500|130-140"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|140-150",
+        "NONPROG0|freq|500|140-150",
+        "NONPROG0|mean|500|140-150"
+      ],
+      "seconds": 979.8757271766663,
+      "task_id": "NONPROG0|500|140-150"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|160-170",
+        "NONPROG0|freq|500|160-170",
+        "NONPROG0|mean|500|160-170"
+      ],
+      "seconds": 969.2787349224091,
+      "task_id": "NONPROG0|500|160-170"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|210-220",
+        "NONPROG0|freq|500|210-220",
+        "NONPROG0|mean|500|210-220"
+      ],
+      "seconds": 940.7615423202515,
+      "task_id": "NONPROG0|500|210-220"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|150-160",
+        "NONPROG0|freq|500|150-160",
+        "NONPROG0|mean|500|150-160"
+      ],
+      "seconds": 986.9155511856079,
+      "task_id": "NONPROG0|500|150-160"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|200-210",
+        "NONPROG0|freq|500|200-210",
+        "NONPROG0|mean|500|200-210"
+      ],
+      "seconds": 948.0414197444916,
+      "task_id": "NONPROG0|500|200-210"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|180-190",
+        "NONPROG0|freq|500|180-190",
+        "NONPROG0|mean|500|180-190"
+      ],
+      "seconds": 976.9041657447815,
+      "task_id": "NONPROG0|500|180-190"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|230-240",
+        "NONPROG0|freq|500|230-240",
+        "NONPROG0|mean|500|230-240"
+      ],
+      "seconds": 944.4022200107574,
+      "task_id": "NONPROG0|500|230-240"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|220-230",
+        "NONPROG0|freq|500|220-230",
+        "NONPROG0|mean|500|220-230"
+      ],
+      "seconds": 971.4713943004608,
+      "task_id": "NONPROG0|500|220-230"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|170-180",
+        "NONPROG0|freq|500|170-180",
+        "NONPROG0|mean|500|170-180"
+      ],
+      "seconds": 998.1380968093872,
+      "task_id": "NONPROG0|500|170-180"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|240-250",
+        "NONPROG0|freq|500|240-250",
+        "NONPROG0|mean|500|240-250"
+      ],
+      "seconds": 554.7704820632935,
+      "task_id": "NONPROG0|500|240-250"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|250-260",
+        "NONPROG0|freq|500|250-260",
+        "NONPROG0|mean|500|250-260"
+      ],
+      "seconds": 508.4880428314209,
+      "task_id": "NONPROG0|500|250-260"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|260-270",
+        "NONPROG0|freq|500|260-270",
+        "NONPROG0|mean|500|260-270"
+      ],
+      "seconds": 393.38175225257874,
+      "task_id": "NONPROG0|500|260-270"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|280-290",
+        "NONPROG0|freq|500|280-290",
+        "NONPROG0|mean|500|280-290"
+      ],
+      "seconds": 391.3980014324188,
+      "task_id": "NONPROG0|500|280-290"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|290-300",
+        "NONPROG0|freq|500|290-300",
+        "NONPROG0|mean|500|290-300"
+      ],
+      "seconds": 390.2549786567688,
+      "task_id": "NONPROG0|500|290-300"
+    },
+    {
+      "keys": [
+        "NONPROG0|bump|500|270-280",
+        "NONPROG0|freq|500|270-280",
+        "NONPROG0|mean|500|270-280"
+      ],
+      "seconds": 406.61235070228577,
+      "task_id": "NONPROG0|500|270-280"
+    }
+  ],
+  "tasks_on_disk": 71,
+  "tasks_recorded": 70,
+  "tasks_total": 70,
+  "tasks_total_note": "tasks_total counts the invocation-2 entries in tasks; the complete T10 fleet is tasks_on_disk=71 (see invocations and unrecorded_tasks)",
+  "tasks_unrecorded": 1,
+  "timezone_note": "all timestamps are local wall-clock strings as written by time.strftime, matching started/ended; no timezone is recorded",
+  "unrecorded_tasks": [
+    {
+      "keys": [
+        "NONPROG1|bump|500|190-200",
+        "NONPROG1|freq|500|190-200",
+        "NONPROG1|mean|500|190-200"
+      ],
+      "seconds": 292.7076323032379,
+      "seconds_source": "shard-internal seconds field, measured by _run_and_save before gzip serialization (same convention as F1 of the T10 audit)",
+      "shard_mtime": "2026-09-10 10:45:10",
+      "shard_path": "results/theory_validation/t10_shards/NONPROG1_500_190-200.json.gz",
+      "task_id": "NONPROG1|500|190-200"
+    }
+  ],
+  "wall_minutes": 94.70388241608937,
+  "workers": 16
+}

@@ -1,0 +1,3 @@
+[phase8] 1/2 cell_w1split_strong_n100_500reps_full.parquet: 500 reps, 0 failed, 1155s
+[phase8] 2/2 cell_w1split_strong_n200_500reps_full.parquet: 500 reps, 0 failed, 2283s
+[phase8] all cells done in 3438s

@@ -1,0 +1,64 @@
+{
+  "rows": [
+    {
+      "crit_multiplier_mean": 2.712555397837541,
+      "crit_perrep_gauss_mean": 2.7063464364704504,
+      "crit_unit_bootstrap_mean": 2.7022845687714083,
+      "law": "gaussian",
+      "n": 100,
+      "pooled_gauss_power": 0.06561,
+      "q": 8,
+      "reps": 80,
+      "self_multiplier_rate": 0.0875,
+      "self_unit_bootstrap_rate": 0.0875,
+      "true_rej_multiplier": 0.06546812499999999,
+      "true_rej_perrep_gauss": 0.06626625,
+      "true_rej_unit_bootstrap": 0.0672575
+    },
+    {
+      "crit_multiplier_mean": 2.919380582488523,
+      "crit_perrep_gauss_mean": 2.9199314799542675,
+      "crit_unit_bootstrap_mean": 2.9454236277810857,
+      "law": "heavy",
+      "n": 100,
+      "pooled_gauss_power": 0.06456,
+      "q": 8,
+      "reps": 80,
+      "self_multiplier_rate": 0.0375,
+      "self_unit_bootstrap_rate": 0.0375,
+      "true_rej_multiplier": 0.08044375000000001,
+      "true_rej_perrep_gauss": 0.08135125,
+      "true_rej_unit_bootstrap": 0.07800187499999998
+    },
+    {
+      "crit_multiplier_mean": 2.693776992293887,
+      "crit_perrep_gauss_mean": 2.6981131223332775,
+      "crit_unit_bootstrap_mean": 2.6924805208115403,
+      "law": "gaussian",
+      "n": 500,
+      "pooled_gauss_power": 0.06539,
+      "q": 8,
+      "reps": 80,
+      "self_multiplier_rate": 0.05,
+      "self_unit_bootstrap_rate": 0.05,
+      "true_rej_multiplier": 0.06865500000000002,
+      "true_rej_perrep_gauss": 0.06785875000000001,
+      "true_rej_unit_bootstrap": 0.06898187500000001
+    },
+    {
+      "crit_multiplier_mean": 2.8007747399150356,
+      "crit_perrep_gauss_mean": 2.8060559142391788,
+      "crit_unit_bootstrap_mean": 2.827684210884218,
+      "law": "heavy",
+      "n": 500,
+      "pooled_gauss_power": 0.06486,
+      "q": 8,
+      "reps": 80,
+      "self_multiplier_rate": 0.025,
+      "self_unit_bootstrap_rate": 0.0375,
+      "true_rej_multiplier": 0.06209562500000003,
+      "true_rej_perrep_gauss": 0.060873124999999986,
+      "true_rej_unit_bootstrap": 0.05792874999999999
+    }
+  ]
+}

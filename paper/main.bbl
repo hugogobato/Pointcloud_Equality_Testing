@@ -1,0 +1,372 @@
+\begin{thebibliography}{45}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Anderson(1955)]{anderson_1955}
+Theodore~W. Anderson.
+\newblock The integral of a symmetric unimodal function over a symmetric convex
+  set and some probability inequalities.
+\newblock \emph{Proceedings of the American Mathematical Society}, 6\penalty0
+  (2):\penalty0 170--176, 1955.
+\newblock \doi{10.1090/S0002-9939-1955-0069229-1}.
+
+\bibitem[Berry et~al.(2020)Berry, Chen, Cisewski-Kehe, and
+  Fasy]{berry_jact_2020}
+Eric Berry, Yen-Chi Chen, Jessi Cisewski-Kehe, and Brittany~Terese Fasy.
+\newblock Functional summaries of persistence diagrams.
+\newblock \emph{Journal of Applied and Computational Topology}, 4\penalty0
+  (2):\penalty0 211--262, 2020.
+\newblock \doi{10.1007/s41468-020-00048-w}.
+
+\bibitem[Bickel et~al.(1993)Bickel, Klaassen, Ritov, and
+  Wellner]{bickel_klaassen_ritov_wellner_1993}
+Peter~J. Bickel, Chris A.~J. Klaassen, Ya'acov Ritov, and Jon~A. Wellner.
+\newblock \emph{Efficient and Adaptive Estimation for Semiparametric Models}.
+\newblock Johns Hopkins University Press, Baltimore, MD, 1993.
+\newblock URL \url{https://link.springer.com/book/9780387984735}.
+\newblock Reprinted by Springer, New York, 1998, ISBN 978-0-387-98473-5; no
+  DOI.
+
+\bibitem[Bubenik(2015)]{bubenik_jmlr_2015}
+Peter Bubenik.
+\newblock Statistical topological data analysis using persistence landscapes.
+\newblock \emph{Journal of Machine Learning Research}, 16\penalty0
+  (3):\penalty0 77--102, 2015.
+\newblock URL \url{https://www.jmlr.org/papers/v16/bubenik15a.html}.
+\newblock CORRECTED: the ACM identifier 10.5555/2789272.2789275 carried in
+  VERIFIED.bib does NOT resolve (doi.org returns 404 on 2026-09-10); JMLR
+  assigns no journal DOI. URL only.
+
+\bibitem[Chazal et~al.(2014)Chazal, Fasy, Lecci, Rinaldo, and
+  Wasserman]{chazal_socg_2014}
+Fr{\'e}d{\'e}ric Chazal, Brittany~Terese Fasy, Fabrizio Lecci, Alessandro
+  Rinaldo, and Larry Wasserman.
+\newblock Stochastic convergence of persistence landscapes and silhouettes.
+\newblock In \emph{Proceedings of the 30th Annual Symposium on Computational
+  Geometry (SoCG 2014)}, pages 474--483. ACM, 2014.
+\newblock \doi{10.1145/2582112.2582128}.
+\newblock Extended version: Journal of Computational Geometry 6(2):140--161,
+  2015, doi:10.20382/jocg.v6i2a8.
+
+\bibitem[Che et~al.(2024)Che, Galaz-Garc{\'i}a, Guijarro, and
+  Membrillo~Solis]{che_jact_2024}
+Mauricio Che, Fernando Galaz-Garc{\'i}a, Luis Guijarro, and Ingrid~Amaranta
+  Membrillo~Solis.
+\newblock Metric geometry of spaces of persistence diagrams.
+\newblock \emph{Journal of Applied and Computational Topology}, 8\penalty0
+  (8):\penalty0 2197--2246, 2024.
+\newblock \doi{10.1007/s41468-024-00189-2}.
+
+\bibitem[Chernoff(1952)]{chernoff_1952}
+Herman Chernoff.
+\newblock A measure of asymptotic efficiency for tests of a hypothesis based on
+  the sum of observations.
+\newblock \emph{The Annals of Mathematical Statistics}, 23\penalty0
+  (4):\penalty0 493--507, 1952.
+\newblock \doi{10.1214/aoms/1177729330}.
+
+\bibitem[Chernozhukov et~al.(2013)Chernozhukov, Chetverikov, and
+  Kato]{cck_2013}
+Victor Chernozhukov, Denis Chetverikov, and Kengo Kato.
+\newblock Gaussian approximations and multiplier bootstrap for maxima of sums
+  of high-dimensional random vectors.
+\newblock \emph{The Annals of Statistics}, 41\penalty0 (6):\penalty0
+  2786--2819, 2013.
+\newblock \doi{10.1214/13-AOS1161}.
+
+\bibitem[Chernozhukov et~al.(2018)Chernozhukov, Chetverikov, Demirer, Duflo,
+  Hansen, Newey, and Robins]{chernozhukov_dml_2018}
+Victor Chernozhukov, Denis Chetverikov, Mert Demirer, Esther Duflo, Christian
+  Hansen, Whitney Newey, and James Robins.
+\newblock Double/debiased machine learning for treatment and structural
+  parameters.
+\newblock \emph{The Econometrics Journal}, 21\penalty0 (1):\penalty0 C1--C68,
+  2018.
+\newblock \doi{10.1111/ectj.12097}.
+\newblock Also NBER Working Paper 23564 and arXiv:1608.00060; Theorem 3.1,
+  Theorem 3.2 and Assumption 3.2 verified against arXiv v5.
+
+\bibitem[Chernozhukov et~al.(2022)Chernozhukov, Chetverikov, Kato, and
+  Koike]{cckk_improved_2022}
+Victor Chernozhukov, Denis Chetverikov, Kengo Kato, and Yuta Koike.
+\newblock Improved central limit theorem and bootstrap approximations in high
+  dimensions.
+\newblock \emph{The Annals of Statistics}, 50\penalty0 (5):\penalty0
+  2562--2586, 2022.
+\newblock \doi{10.1214/22-AOS2193}.
+
+\bibitem[Chung and Romano(2013)]{chung_romano_2013}
+EunYi Chung and Joseph~P. Romano.
+\newblock Exact and asymptotically robust permutation tests.
+\newblock \emph{The Annals of Statistics}, 41\penalty0 (2):\penalty0 484--507,
+  2013.
+\newblock \doi{10.1214/13-AOS1090}.
+
+\bibitem[Divol and Chazal(2020)]{divol_chazal_2020}
+Vincent Divol and Fr{\'e}d{\'e}ric Chazal.
+\newblock The density of expected persistence diagrams and its kernel based
+  estimation.
+\newblock \emph{Journal of Computational Geometry}, 10\penalty0 (2):\penalty0
+  127--153, 2020.
+\newblock \doi{10.20382/jocg.v10i2a7}.
+\newblock URL \url{https://jocg.org/index.php/jocg/article/view/3090}.
+\newblock DOI registered with DataCite (not Crossref); resolves via
+  https://doi.org/10.20382/jocg.v10i2a7.
+
+\bibitem[Divol and Lacombe(2021)]{divol_lacombe_2021}
+Vincent Divol and Th{\'e}o Lacombe.
+\newblock Understanding the topology and the geometry of the space of
+  persistence diagrams via optimal partial transport.
+\newblock \emph{Journal of Applied and Computational Topology}, 5\penalty0
+  (1):\penalty0 1--53, 2021.
+\newblock \doi{10.1007/s41468-020-00061-z}.
+\newblock Online first 2020-10-24; journal volume year 2021.
+
+\bibitem[Dubey and M{\"u}ller(2019)]{dubey_muller_2019}
+Paromita Dubey and Hans-Georg M{\"u}ller.
+\newblock Fr{\'e}chet analysis of variance for random objects.
+\newblock \emph{Biometrika}, 106\penalty0 (4):\penalty0 803--821, 2019.
+\newblock \doi{10.1093/biomet/asz052}.
+
+\bibitem[Gretton et~al.(2012)Gretton, Borgwardt, Rasch, Sch{\"o}lkopf, and
+  Smola]{gretton_2012}
+Arthur Gretton, Karsten~M. Borgwardt, Malte~J. Rasch, Bernhard Sch{\"o}lkopf,
+  and Alexander Smola.
+\newblock A kernel two-sample test.
+\newblock \emph{Journal of Machine Learning Research}, 13:\penalty0 723--773,
+  2012.
+\newblock URL \url{https://www.jmlr.org/papers/v13/gretton12a.html}.
+\newblock No DOI (JMLR); Theorem 5 verified against the JMLR PDF.
+
+\bibitem[Hahn(1998)]{hahn_1998}
+Jinyong Hahn.
+\newblock On the role of the propensity score in efficient semiparametric
+  estimation of average treatment effects.
+\newblock \emph{Econometrica}, 66\penalty0 (2):\penalty0 315--331, 1998.
+\newblock \doi{10.2307/2998560}.
+\newblock URL
+  \url{https://www.econometricsociety.org/publications/econometrica/1998/03/01/role-propensity-score-efficient-semiparametric-estimation}.
+
+\bibitem[Han et~al.(2026)Han, Kim, and Kim]{han_kim_kim_2026}
+Yeongung Han, Ilmun Kim, and Jisu Kim.
+\newblock A two-sample test for random persistence diagrams against
+  alternatives characterized by persistence intensity differences.
+\newblock \emph{arXiv preprint arXiv:2607.20893}, 2026.
+\newblock URL \url{https://arxiv.org/abs/2607.20893}.
+\newblock v3, 2026-09-09; v1 title differs (see comment above).
+
+\bibitem[Hirano et~al.(2003)Hirano, Imbens, and
+  Ridder]{hirano_imbens_ridder_2003}
+Keisuke Hirano, Guido~W. Imbens, and Geert Ridder.
+\newblock Efficient estimation of average treatment effects using the estimated
+  propensity score.
+\newblock \emph{Econometrica}, 71\penalty0 (4):\penalty0 1161--1189, 2003.
+\newblock \doi{10.1111/1468-0262.00442}.
+
+\bibitem[Ingster(1993)]{ingster_1993}
+Yuri~I. Ingster.
+\newblock Asymptotically minimax hypothesis testing for nonparametric
+  alternatives.
+\newblock \emph{Mathematical Methods of Statistics}, 2:\penalty0 85--114, 1993.
+\newblock Part I of a three-part series; Parts II and III appear in vols. 3 and
+  4 (1993--1994). No DOI or stable URL found.
+
+\bibitem[Ingster and Suslina(2003)]{ingster_suslina_2003}
+Yuri~I. Ingster and Irina~A. Suslina.
+\newblock \emph{Nonparametric Goodness-of-Fit Testing Under Gaussian Models},
+  volume 169 of \emph{Lecture Notes in Statistics}.
+\newblock Springer, 2003.
+\newblock \doi{10.1007/978-0-387-21580-8}.
+
+\bibitem[Islambekov and Pathirana(2024)]{islambekov_pathirana_2024}
+Umar Islambekov and Hasani Pathirana.
+\newblock Vector summaries of persistence diagrams for permutation-based
+  hypothesis testing.
+\newblock \emph{Foundations of Data Science}, 6\penalty0 (1):\penalty0 41--61,
+  2024.
+\newblock \doi{10.3934/fods.2024002}.
+
+\bibitem[Janssen(1997)]{janssen_1997}
+Arnold Janssen.
+\newblock Studentized permutation tests for non-i.i.d. hypotheses and the
+  generalized behrens--fisher problem.
+\newblock \emph{Statistics \& Probability Letters}, 36\penalty0 (1):\penalty0
+  9--21, 1997.
+\newblock \doi{10.1016/S0167-7152(97)00043-6}.
+
+\bibitem[Kennedy(2022)]{kennedy_review_2022}
+Edward~H. Kennedy.
+\newblock Semiparametric doubly robust targeted double machine learning: A
+  review.
+\newblock \emph{arXiv preprint arXiv:2203.06469}, 2022.
+\newblock URL \url{https://arxiv.org/abs/2203.06469}.
+
+\bibitem[Kennedy(2023)]{kennedy_drlearner_2023}
+Edward~H. Kennedy.
+\newblock Towards optimal doubly robust estimation of heterogeneous causal
+  effects.
+\newblock \emph{Electronic Journal of Statistics}, 17\penalty0 (2):\penalty0
+  3008--3049, 2023.
+\newblock \doi{10.1214/23-EJS2157}.
+
+\bibitem[Kennedy et~al.(2020)Kennedy, Balakrishnan, and
+  G'Sell]{kennedy_balakrishnan_gsell_2020}
+Edward~H. Kennedy, Sivaraman Balakrishnan, and Max G'Sell.
+\newblock Sharp instruments for classifying compliers and generalizing causal
+  effects.
+\newblock \emph{The Annals of Statistics}, 48\penalty0 (4):\penalty0
+  2008--2030, 2020.
+\newblock \doi{10.1214/19-AOS1874}.
+
+\bibitem[Kim and Lee(2026)]{kim_lee_tce_2026}
+Kwangho Kim and Hajin Lee.
+\newblock Topological causal effects.
+\newblock In \emph{Proceedings of the Fourteenth International Conference on
+  Learning Representations (ICLR 2026)}, 2026.
+\newblock URL \url{https://openreview.net/forum?id=dYaos1ITw4}.
+\newblock ICLR 2026 Poster; no DOI (conference proceedings).
+
+\bibitem[Krebs and Rademacher(2024)]{krebs_rademacher_2024}
+Johannes Krebs and Daniel Rademacher.
+\newblock Two-sample tests for relevant differences in persistence diagrams.
+\newblock \emph{arXiv preprint arXiv:2401.10349}, 2024.
+\newblock URL \url{https://arxiv.org/abs/2401.10349}.
+
+\bibitem[Kwitt et~al.(2015)Kwitt, Huber, Niethammer, Lin, and
+  Bauer]{kwitt_neurips_2015}
+Roland Kwitt, Stefan Huber, Marc Niethammer, Weili Lin, and Ulrich Bauer.
+\newblock Statistical topological data analysis -- a kernel perspective.
+\newblock In \emph{Advances in Neural Information Processing Systems 28
+  (NeurIPS 2015)}, pages 3070--3078, 2015.
+\newblock URL
+  \url{https://proceedings.neurips.cc/paper/2015/file/74563ba21a90da13dacf2a73e3ddefa7-Paper.pdf}.
+\newblock No DOI (NeurIPS proceedings); pages per DBLP.
+
+\bibitem[Le~Cam(1986)]{le_cam_1986}
+Lucien Le~Cam.
+\newblock \emph{Asymptotic Methods in Statistical Decision Theory}.
+\newblock Springer Series in Statistics. Springer, 1986.
+\newblock \doi{10.1007/978-1-4612-4946-7}.
+
+\bibitem[Lin(2013)]{lin_2013}
+Winston Lin.
+\newblock Agnostic notes on regression adjustments to experimental data:
+  Reexamining freedman's critique.
+\newblock \emph{The Annals of Applied Statistics}, 7\penalty0 (1):\penalty0
+  295--318, 2013.
+\newblock \doi{10.1214/12-AOAS583}.
+
+\bibitem[Mileyko et~al.(2011)Mileyko, Mukherjee, and Harer]{mileyko_2011}
+Yuriy Mileyko, Sayan Mukherjee, and John Harer.
+\newblock Probability measures on the space of persistence diagrams.
+\newblock \emph{Inverse Problems}, 27\penalty0 (12):\penalty0 124007, 2011.
+\newblock \doi{10.1088/0266-5611/27/12/124007}.
+
+\bibitem[Moon and Lazar(2023)]{moon_lazar_2023}
+Chul Moon and Nicole~A. Lazar.
+\newblock Hypothesis testing for shapes using vectorized persistence diagrams.
+\newblock \emph{Journal of the Royal Statistical Society Series C: Applied
+  Statistics}, 72\penalty0 (3):\penalty0 628--648, 2023.
+\newblock \doi{10.1093/jrsssc/qlad024}.
+
+\bibitem[Murris et~al.(2026)Murris, Stolz, and Borgwardt]{murris_strand_2026}
+Juliette Murris, Bernadette Stolz, and Karsten Borgwardt.
+\newblock From persistence to survival: Hypothesis testing, effect sizes and
+  vectorisation for topological features.
+\newblock \emph{arXiv preprint arXiv:2606.11911}, 2026.
+\newblock URL \url{https://arxiv.org/abs/2606.11911}.
+
+\bibitem[Newey and Robins(2018)]{new_robins_2018}
+Whitney~K. Newey and James~R. Robins.
+\newblock Cross-fitting and fast remainder rates for semiparametric estimation.
+\newblock \emph{arXiv preprint arXiv:1801.09138}, 2018.
+\newblock URL \url{https://arxiv.org/abs/1801.09138}.
+
+\bibitem[Perlman(1988)]{perlman_1988}
+Michael~D. Perlman.
+\newblock Anderson's theorem on the integral of a symmetric unimodal function
+  over a symmetric convex set and its applications in probability and
+  statistics.
+\newblock Technical Report Technical Report 126, Department of Statistics,
+  University of Washington, 1988.
+\newblock URL
+  \url{https://stat.uw.edu/research/tech-reports/andersons-theorem-integral-symmetric-unimodal-function-over-symmetric-convex-set-and-its}.
+
+\bibitem[Phipson and Smyth(2010)]{phipson_smyth_2010}
+Belinda Phipson and Gordon~K. Smyth.
+\newblock Permutation p-values should never be zero: Calculating exact p-values
+  when permutations are randomly drawn.
+\newblock \emph{Statistical Applications in Genetics and Molecular Biology},
+  9\penalty0 (1):\penalty0 Article 39, 2010.
+\newblock \doi{10.2202/1544-6115.1585}.
+
+\bibitem[Robinson and Turner(2017)]{robinson_turner_2017}
+Andrew Robinson and Katharine Turner.
+\newblock Hypothesis testing for topological data analysis.
+\newblock \emph{Journal of Applied and Computational Topology}, 1\penalty0
+  (2):\penalty0 241--261, 2017.
+\newblock \doi{10.1007/s41468-017-0008-7}.
+\newblock The permutation p-value algorithm used by the notes is Algorithm 2 in
+  the arXiv text; verified 2026-09-10.
+
+\bibitem[Saki and Faghihi(2026)]{saki_faghihi_2026}
+Amir Saki and Usef Faghihi.
+\newblock Beyond means: Topological causal effects under persistent-homology
+  ignorability.
+\newblock \emph{arXiv preprint arXiv:2603.14169}, 2026.
+\newblock URL \url{https://arxiv.org/abs/2603.14169}.
+
+\bibitem[Souto and Diamantis(2026)]{souto_diamantis_tcda_2026}
+Hugo~Gobato Souto and Ioannis Diamantis.
+\newblock A mathematical framework for topological causal data analysis.
+\newblock \emph{arXiv preprint arXiv:2607.28161}, 2026.
+\newblock URL \url{https://arxiv.org/abs/2607.28161}.
+
+\bibitem[Tsybakov(2009)]{tsybakov_2009}
+Alexandre~B. Tsybakov.
+\newblock \emph{Introduction to Nonparametric Estimation}.
+\newblock Springer Series in Statistics. Springer, 2009.
+\newblock \doi{10.1007/b13794}.
+
+\bibitem[Turner et~al.(2014)Turner, Mileyko, Mukherjee, and Harer]{turner_2014}
+Katharine Turner, Yuriy Mileyko, Sayan Mukherjee, and John Harer.
+\newblock Fr{\'e}chet means for distributions of persistence diagrams.
+\newblock \emph{Discrete \& Computational Geometry}, 52\penalty0 (1):\penalty0
+  44--70, 2014.
+\newblock \doi{10.1007/s00454-014-9604-7}.
+
+\bibitem[van~der Vaart(1991)]{vdv_1991}
+Aad~W. van~der Vaart.
+\newblock On differentiable functionals.
+\newblock \emph{The Annals of Statistics}, 19\penalty0 (1):\penalty0 178--204,
+  1991.
+\newblock \doi{10.1214/aos/1176347976}.
+
+\bibitem[van~der Vaart(2002)]{vdv_2002}
+Aad~W. van~der Vaart.
+\newblock Semiparametric statistics.
+\newblock In \emph{Lectures on Probability Theory and Statistics (Saint-Flour,
+  1999)}, volume 1781 of \emph{Lecture Notes in Mathematics}, pages 331--457.
+  Springer, 2002.
+\newblock \doi{10.1007/b93152}.
+\newblock Book DOI; chapter DOI not carried. MR1915446 (not independently
+  re-checked).
+
+\bibitem[van~der Vaart and Wellner(1996)]{vdv_wellner_1996}
+Aad~W. van~der Vaart and Jon~A. Wellner.
+\newblock \emph{Weak Convergence and Empirical Processes: With Applications to
+  Statistics}.
+\newblock Springer Series in Statistics. Springer, 1996.
+\newblock \doi{10.1007/978-1-4757-2545-2}.
+
+\bibitem[Vejdemo-Johansson and Mukherjee(2022)]{vejdemo_mukherjee_2022}
+Mikael Vejdemo-Johansson and Sayan Mukherjee.
+\newblock Multiple hypothesis testing with persistent homology.
+\newblock \emph{Foundations of Data Science}, 4\penalty0 (4):\penalty0
+  667--705, 2022.
+\newblock \doi{10.3934/fods.2022018}.
+
+\end{thebibliography}

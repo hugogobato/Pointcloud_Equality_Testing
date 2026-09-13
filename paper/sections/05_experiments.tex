@@ -1,0 +1,315 @@
+\section{Experiments}
+\label{sec:experiments}
+
+All evidence in this section is synthetic. There is no real dataset, no applied analysis, and no subgroup study anywhere in the design. The unit of analysis is one replicated cloud throughout. The section reports an imbalance sweep, an outcome-level calibration fleet, a distribution-level separation experiment, a weak-null calibration, a replicated-cloud bake-off, a local-power record, and a decision table. Every table names the null it evaluates, every rate carries its Monte Carlo standard error and replication count, and comparisons stay inside the target-matched class; no efficiency ranking crosses nulls.
+
+\subsection{Simulation design}
+\label{sec:exp:design}
+
+Across the batteries the covariate is $X \in \mathbb{R}^3$ with independent standard normal entries, group membership follows the propensity $e(X) = \mathrm{expit}(1.5\,\lambda\,X^{\top}\beta)$ with $\beta = (-0.5,-0.1,0.6)$, and $\lambda$ indexes the strength of covariate-driven imbalance. Under the causal null the label changes nothing conditional on $X$, so $H_0^{\mathrm{out}}$ holds exactly while the unadjusted conditional law $H_0^{\mathrm{cond}}$ fails whenever $\lambda>0$ and the propensity is non-constant. The validity sweep uses $\lambda \in \{0,0.2,0.4,0.6,0.8,1.0\}$; the bake-off uses randomized ($\lambda=0$), mild ($\lambda=0.5$), and strong ($\lambda=1.0$) imbalance. The masking design puts units into three strata with cloud types $A$, $B$, and $C$, uniform $X$, propensity $(1/2,1/2,1/4)$, and measured persistence separation, and it is constructed so that the arm diagram laws are exactly equal while the standardized contrast is nonzero (silhouette contrast sup norm $0.4934$, batch standard error $0.0002$).
+
+The oracle harness for the outcome-level calibration is a functional experiment rather than a cloud experiment. It simulates power-weighted silhouette surfaces directly for total sample sizes $n \in \{50,100,200,500\}$ under propensity regimes $0$, $0.5$, and $1.0$, with a null outcome and a mean-shifted alternative; it evaluates the adjusted max-over-scale statistic with Gaussian multiplier and frozen stratified permutation calibrations, five Fourier basis functions, two folds, $399$ calibration draws, and silhouettes on $(0,1)$ at resolution $50$.
+
+The replicated-cloud batteries use generators built on a single covariate-driven cloud process. The base generator draws clouds with $60$ points, computes persistence diagrams under the alpha filtration, and keeps both degree-zero and degree-one diagrams, retaining empty post-filtration diagrams because loop-count signal lives there. The imbalance sweep uses $120$ points per cloud and $200$ clouds per arm (total $n=400$). The bake-off also uses a stochastic cluster split (two blobs against three blobs at $36$ points per arm), a deterministic split (one $18$-gon against one $12$-gon with the persistence filter applied), a dispersion generator (loop counts drawn from $\{1,3\}$ with probability $1/2$ against a fixed count of two in the other arm, mean-matched in count only), and a rare-feature generator that adds a small loop with radius $0.35$ to $15\%$ of the units. The separation witnesses use the deterministic split (W1) and a multiplicity mixture over two locations (W2'), and the deterministic witness is the only design in the study with $H_0^{\mathrm{out}}$ true realization by realization and $H_0^{\mathrm{dist,grid}}$ false. The weak-null calibration adds a stochastic version of the same split, written stochastic W1, in which both arms draw noisy 2-blob and 3-blob clouds; it is a power design for the studentized distribution-level test and is not the deterministic separation witness. On the dispersion generator, write $H_0^{\mathrm{disp}}$ for equality of the arm-conditional loop-count (dispersion) laws, the target of the relevant-difference test on that generator.
+
+Both target procedures are built on a cross-fitted augmented inverse-probability-weighted score with five Fourier basis functions and two folds in the bake-off, and the estimator is delegated to the released implementation of the Banach-valued double-robust representation rather than reimplemented \cite{chernozhukov_dml_2018,souto_diamantis_tcda_2026}. The outcome-level test is a max-over-scale supremum norm on power-weighted silhouettes \cite{bubenik_jmlr_2015,chazal_socg_2014}, calibrated by Gaussian multipliers and, separately, by a frozen stratified permutation of labels. The distribution-level test is a studentized max-$t$ statistic over the coordinates of the expected persistence measure \cite{divol_chazal_2020} projected to one frozen $32\times 32$ grid on $(0,2)$ in (birth, midpoint), with weight $r=3$, persistence filter $\mathrm{TAU}=0.3$, variance floor $10^{-8}$, $1999$ Gaussian multiplier draws, and Phipson--Smyth $p$-values \cite{cck_2013,phipson_smyth_2010}. A universal-kernel MMD permutation test on the projected measure provides a secondary distribution-level readout \cite{kwitt_neurips_2015,gretton_2012}, and a margin-$0.25$ equivalence declaration, which rejects a two-sided non-equivalence null, completes the target family.
+The competitor set tests $H_0^{\mathrm{cond}}$: Robinson--Turner \cite{robinson_turner_2017}, kernel MMD \cite{gretton_2012}, Han et al.\ \cite{han_kim_kim_2026}, STRAND \cite{murris_strand_2026}, Moon--Lazar \cite{moon_lazar_2023}, and Fr\'echet ANOVA \cite{dubey_muller_2019}; Krebs--Rademacher \cite{krebs_rademacher_2024} is added on dispersion cells, and the degree-multiplicity comparator adapts the studentized procedure of Vejdemo-Johansson and Mukherjee \cite{vejdemo_mukherjee_2022}. Under randomization, $H_0^{\mathrm{cond}}$ implies $H_0^{\mathrm{out}}$ because group labels are independent of $X$, so the adjusted test also controls size under $H_0^{\mathrm{cond}}$ and the randomized power comparison is target-matched; the converse fails in general, so the implication is one-directional. Under imbalance neither implication holds, competitor rates then mix signal with size distortion, and the corresponding comparisons are descriptive only.
+
+Replication counts are as follows. The imbalance sweep uses $1000$ replications per test and per $\lambda$ in each of its two parts. The oracle calibration uses $24$ cells at $500$ replications. The point-cloud, learner, and stress batteries use $200$ and $100$ replications per cell. The degree-multiplicity battery uses $12$ cells at $500$ replications. The separation and reverse experiments use $300$ replications per design and sample size. The weak-null calibration uses $500$ replications per size cell and $300$ per local-power cell, for $13{,}000$ total. The bake-off evaluates $45$ design, imbalance, and sample-size cells at $100$ replications for $n \in \{50,100,200\}$, tightens four decision-relevant cells to $500$ replications, adds a four-cell robustness panel at $100$ replications, and includes one deterministic-witness pilot at $n=500$. The local-power record uses $300$ replications in each core cell, with one non-prognostic cell completed at the same count after a partial run.
+\subsection{Imbalance sweep: false positives and masking}
+\label{sec:exp:imbalance}
+
+The first battery holds the causal null exactly, sharing clouds and diagrams across $\lambda$ within each replication; it uses $1000$ replications per cell, $200$ permutations, and $2000$ multiplier draws for the prototype. Figure~\ref{fig:imbalance} and Table~\ref{tab:imbalance} report the false-positive arm and the masking arm.
+
+At $\lambda=0$ every procedure is near nominal: the six $H_0^{\mathrm{cond}}$ competitors read $0.035$ to $0.052$ and the adjusted prototype reads $0.006$. As $\lambda$ grows, the $H_0^{\mathrm{cond}}$ tests inflate rapidly. At $\lambda=0.4$ they already sit at $0.117$ to $0.745$; at $\lambda=0.6$ at $0.211$ to $0.951$; and at $\lambda=1.0$ at $0.651$ (Fr\'echet ANOVA) to $1.000$ (kernel MMD, Han et al., and STRAND), with the adjusted prototype flat in $0.005$ to $0.015$ over the whole sweep. Within that harness the arm loop-count gap at full imbalance is $0.373$ in absolute value (exact quadrature $0.3727$, direct simulation $-0.3738$ with Monte Carlo standard error $0.0013$), which quantifies the composition shift that the causal null produces without any change in the adjusted target. The slower climb of Fr\'echet ANOVA is a power artefact of that statistic on this harness and not a validity advantage, and the Moon--Lazar value of $0.035$ at $\lambda=0$ is about two standard errors conservative and therefore understates its later inflation. The 1000-replication Monte Carlo standard error is about $0.007$ near $\alpha=0.05$ and smaller near the boundaries.
+
+The masking arm is the complementary failure mode. The design satisfies $H_0^{\mathrm{cond}}$ exactly by construction, so every valid level-$\alpha$ test of that conditional null has power exactly $\alpha$, while the standardized causal contrast is nonzero. The six $H_0^{\mathrm{cond}}$ tests reject at $0.029$ to $0.054$ on this design, as they should for their own null, and the adjusted prototype rejects in $1000$ of $1000$ replications with a largest $p$-value of $0.0195$. The two arms therefore establish both directions of the leak: the wrong null fires under covariate shift, and it is blind when the adjusted target moves.
+
+The gate verdict for this battery is \textsc{inconclusive}, not pass. The false-positive and masking arms are both met, but the deliberately uncalibrated prototype multiplier null had size $0.005$ to $0.015$, outside the pre-registered $[0.03,0.08]$ band, and the prototype was superseded by the cross-fitted stratified-permutation calibration used in the outcome-level calibration battery and the bake-off. The diagnosis of the prototype defect attributes it to a variance-scale overestimate of about $1.29$ at the null coordinate, traceable to cross-fitted score variance rather than to positivity or truncation; basis-size and fold sweeps did not repair it. Because the defect is conservative and the competitor contrast runs from $0.65$ to $1.00$ against an adjusted rate of $0.015$, the competitor contrast cannot be manufactured by the prototype defect; what the battery cannot certify is the prototype's own size, and that component was replaced.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig1_imbalance_validity.png}
+\caption{Imbalance sweep with $1000$ replications per cell. Panel (a) reports rejection rates under exact causal nullity ($H_0^{\mathrm{out}}$ is true) as a function of the imbalance parameter $\lambda$ for the six tests of $H_0^{\mathrm{cond}}$ and for the adjusted outcome prototype; the band is $\alpha \pm 3$ Monte Carlo standard errors. Panel (b) reports the masking design, where $H_0^{\mathrm{cond}}$ holds exactly by construction while the standardized adjusted contrast is nonzero, so competitor rejection is their size and prototype rejection is power against $H_0^{\mathrm{out}}$.}
+\label{fig:imbalance}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccc}
+\toprule
+ & \multicolumn{6}{c}{$H_0^{\mathrm{out}}$ true, causal null, rejection rate (MC SE)} & Masking design \\
+\cmidrule(lr){2-7}
+\multicolumn{1}{c}{Test (null it tests)} & $\lambda=0$ & $\lambda=0.2$ & $\lambda=0.4$ & $\lambda=0.6$ & $\lambda=0.8$ & $\lambda=1.0$ & $H_0^{\mathrm{cond}}$ true \\
+\midrule
+\multicolumn{8}{l}{\emph{Competitors testing $H_0^{\mathrm{cond}}$}} \\
+Robinson--Turner & 0.050 (0.007) & 0.134 (0.011) & 0.456 (0.016) & 0.811 (0.012) & 0.968 (0.006) & 0.992 (0.003) & 0.045 (0.007) \\
+Kernel MMD & 0.052 (0.007) & 0.243 (0.014) & 0.709 (0.015) & 0.946 (0.007) & 0.996 (0.002) & 1.000 (0.000) & 0.051 (0.007) \\
+Han et al. & 0.044 (0.006) & 0.212 (0.013) & 0.687 (0.015) & 0.933 (0.008) & 0.990 (0.003) & 1.000 (0.000) & 0.044 (0.006) \\
+STRAND & 0.052 (0.007) & 0.260 (0.014) & 0.745 (0.014) & 0.951 (0.007) & 0.997 (0.002) & 1.000 (0.000) & 0.054 (0.007) \\
+Moon--Lazar & 0.035 (0.006) & 0.160 (0.012) & 0.469 (0.016) & 0.774 (0.013) & 0.917 (0.009) & 0.980 (0.004) & 0.029 (0.005) \\
+Fr\'echet ANOVA & 0.052 (0.007) & 0.052 (0.007) & 0.117 (0.010) & 0.211 (0.013) & 0.434 (0.016) & 0.651 (0.015) & 0.044 (0.006) \\
+\midrule
+\multicolumn{8}{l}{\emph{Adjusted outcome prototype testing $H_0^{\mathrm{out}}$}} \\
+Prototype multiplier & 0.006 (0.002) & 0.008 (0.003) & 0.005 (0.002) & 0.015 (0.004) & 0.011 (0.003) & 0.015 (0.004) & 1.000 (0.000) \\
+\bottomrule
+\end{tabular}}
+\caption{Imbalance sweep, $1000$ replications per cell, nominal $\alpha=0.05$. The first six rows test $H_0^{\mathrm{cond}}$, the conditional diagram law given covariates; the last row tests $H_0^{\mathrm{out}}$, the covariate-standardized functional mean. Under the causal null the first six rates are type-I error against a null that is false in composition, while the adjusted rate is type-I error against the target null. In the masking column, $H_0^{\mathrm{cond}}$ is true exactly and the adjusted contrast is nonzero, so the first six rates are size for their null and the adjusted rate is power against $H_0^{\mathrm{out}}$. Monte Carlo standard errors are binomial at $1000$ replications and are about $0.007$ at $\alpha=0.05$.}
+\label{tab:imbalance}
+\end{table}
+\subsection{Outcome-level calibration}
+\label{sec:exp:calibration}
+
+The outcome-level test is calibrated on the oracle fleet ($500$ replications in each of $24$ cells) and on three cloud, learner, and stress batteries reported in the appendix. Table~\ref{tab:oracle} gives the compact cell record. Across the twelve null cells the adjusted multiplier test rejects at $0.026$ to $0.064$ and the frozen stratified permutation at $0.026$ to $0.052$; across the twelve alternative cells the ranges are $0.990$ to $1.000$ and $0.944$ to $1.000$ respectively. The largest null rate, $0.064$ at $n=50$ under the randomized regime, is a small-sample fluctuation rather than a systematic defect. Two null cells read $0.026$, one for each calibration path, at $n=500$ under the strongest imbalance for the multiplier and at $n=200$ under intermediate imbalance for the permutation. Both lie below the pre-registered $0.03$ edge but within Monte Carlo error of it; both are recorded strictly rather than rounded and remain open items, not evidence of a uniform size guarantee.
+
+The point-cloud battery ($200$ replications per cell) reads $0.035$ (standard error $0.013$) for the multiplier and $0.025$ (standard error $0.011$) for the permutation under the same strong-imbalance null, and $0.415$ (standard error $0.035$) and $0.485$ (standard error $0.035$) on the covariate-driven alternative at $n=100$ with regime $1.0$. The learner battery ($100$ replications per learner) reads null rates of $0.03$ to $0.06$ for the multiplier and $0.03$ to $0.04$ for the permutation; the stress battery ($100$ replications per misspecification case) reads $0.00$ to $0.05$ and $0.00$ to $0.03$. A neural propensity learner at $n=200$ under the strongest imbalance gives $0.09$ to $0.10$, about one standard error ($0.029$) above the band, flagged as a learner-robustness item rather than a finding. The degree-multiplicity battery supports the same calibration layer: over $6000$ pooled replications the studentized comparator holds an empirical family-wise error rate of $0.0392$ under the frozen permutation and $0.0448$ under the shared multiplier, and it is exactly scale-invariant, whereas the unstudentized shared maximum collapses from $0.703$ to $0.053$ when one degree's silhouettes are rescaled while the studentized comparator holds $0.714$ against $0.709$. The battery carries one inherited conservative miss at $0.028$ and one finite-sample screen miss at $0.0364$ (pooled $0.0312$ across seeds), which falsifies finite-sample equality of size rather than upper control, and no finite-sample exactness is claimed.
+
+The double-robustness stress statement is deliberately narrow. The outcome regression in the stress design is a nine-term oracle model, and the battery misspecifies the Fourier basis, the two propensity interactions, or both. Under the stress cases the adjusted null rates stay in $0.00$ to $0.05$: the both-nuisances-misspecified stress cell itself reads $0.00$ for the multiplier and $0.00$ for the permutation at $n=100$ and $100$ replications, with Monte Carlo standard errors of $0.017$ to $0.024$. The battery therefore documents insensitivity along the tested misspecification directions, not double robustness at the rate the theory assumes, and the appendix records the cells. A separate both-nuisances-misspecified robustness panel in the bake-off (Section~\ref{sec:exp:bakeoff}) is the uninformative control, at $0.080$ and $0.090$; it is a different experiment from the stress cell and is labelled as such.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+\multicolumn{7}{l}{\emph{$H_0^{\mathrm{out}}$ true (null cells): rejection rate (MC SE), $500$ replications per cell}} \\
+\cmidrule(lr){2-7}
+$n$ (total) & regime $0$ mult & regime $0$ perm & regime $0.5$ mult & regime $0.5$ perm & regime $1.0$ mult & regime $1.0$ perm \\
+\midrule
+$50$   & 0.064 (0.011) & 0.040 (0.009) & 0.042 (0.009) & 0.034 (0.008) & 0.044 (0.009) & 0.046 (0.009) \\
+$100$  & 0.056 (0.010) & 0.038 (0.009) & 0.056 (0.010) & 0.034 (0.008) & 0.048 (0.010) & 0.052 (0.010) \\
+$200$  & 0.036 (0.008) & 0.030 (0.008) & 0.038 (0.009) & 0.026 (0.007) & 0.034 (0.008) & 0.030 (0.008) \\
+$500$  & 0.040 (0.009) & 0.046 (0.009) & 0.034 (0.008) & 0.030 (0.008) & 0.026 (0.007) & 0.038 (0.009) \\
+\midrule
+\multicolumn{7}{l}{\emph{$H_0^{\mathrm{out}}$ false (alternative cells): rejection rate (MC SE), $500$ replications per cell}} \\
+\cmidrule(lr){2-7}
+$n$ (total) & regime $0$ mult & regime $0$ perm & regime $0.5$ mult & regime $0.5$ perm & regime $1.0$ mult & regime $1.0$ perm \\
+\midrule
+$50$   & 0.992 (0.004) & 0.972 (0.007) & 0.996 (0.003) & 0.970 (0.008) & 0.990 (0.004) & 0.944 (0.010) \\
+$100$  & 1.000 (0.000) & 0.994 (0.003) & 1.000 (0.000) & 0.994 (0.003) & 1.000 (0.000) & 0.974 (0.007) \\
+$200$  & 1.000 (0.000) & 1.000 (0.000) & 1.000 (0.000) & 0.998 (0.002) & 1.000 (0.000) & 0.984 (0.006) \\
+$500$  & 1.000 (0.000) & 1.000 (0.000) & 1.000 (0.000) & 1.000 (0.000) & 1.000 (0.000) & 0.990 (0.004) \\
+\bottomrule
+\end{tabular}}
+\caption{Oracle calibration of the adjusted outcome test, $500$ replications per cell, nominal $\alpha=0.05$. Multiplier and frozen stratified permutation paths both test $H_0^{\mathrm{out}}$, the covariate-standardized functional mean; regime indexes the strength of covariate-driven imbalance ($0$, $0.5$, $1.0$). Null cells range from $0.026$ to $0.064$ for the multiplier and $0.026$ to $0.052$ for the permutation; the two $0.026$ cells lie one Monte Carlo step below the pre-registered $0.03$ edge and are recorded without rounding. Alternative cells range from $0.990$ to $1.000$ and $0.944$ to $1.000$. Point-cloud, learner, and stress batteries appear in the appendix.}
+\label{tab:oracle}
+\end{table}
+
+\subsection{Distribution-level separation}
+\label{sec:exp:separation}
+
+The distribution-level experiment uses $300$ replications per design and sample size for $n \in \{25,50,100,200\}$ and evaluates the frozen expected-measure test against the outcome-level tests on two exact witnesses. Table~\ref{tab:witnesses} records the exact values, and Figure~\ref{fig:separation} shows the empirical separation.
+
+The first witness, the deterministic W1, realizes $H_0^{\mathrm{out}}$ exactly at the realization level: the deterministic split leaves the mean normalized silhouette gap at machine zero, and the $300$-replication experiment reads a mean supremum gap of $1.1\times10^{-16}$ at $n=25$ and $0$ thereafter. The expected persistence measure nevertheless separates with an L1 contrast of $2.460375$, and the distribution-level permutation test rejects in $1.000$ of replications at every sample size with standard error $0.000$, as does the universal-kernel MMD (power $1.000$; squared discrepancy $1.916989$). On the same replications the outcome-level permutation test sits at $0.020$ to $0.043$, which is correct behavior because its null is true, and the outcome-level multiplier test is at $0.000$ because the AIPW scores are exactly constant on this realization-invariant statistic. That zero is a documented degenerate-conservative artefact of the multiplier null on a degenerate statistic, not a size claim, and the simulation pipeline refuses the studentized distribution-level statistic on the same witness for the same reason.
+
+The second witness, W2', reverses the roles: the expected measure is exactly unchanged in law, with population L1 zero, while the outcome-level laws differ through a multiplicity mixture over two locations. The experiment reads distribution-level rates of $0.030$ to $0.057$, in band, while the outcome multiplier has power $0.610$ to $1.000$ and the outcome permutation $0.457$ to $1.000$ across the sample sizes. The sample L1 falls from $1.842$ at $n=25$ to $0.634$ at $n=200$; this is Monte Carlo noise around an exactly zero population value and is not a power curve. The mean silhouette gap stays near the exact value throughout, with sample values from $0.526$ to $0.549$ against the exact $0.544$.
+
+The separation is therefore a matter of pairing, not of general topological sensitivity. Under the default normalized-silhouette and expected-measure pairing used here, the two nulls are logically independent: neither implies the other, and a rejection by one is not a rejection by the other. The universal-kernel MMD pairing is strictly stronger in the nested direction, and the same exact witnesses separate there as well, but the statement remains confined to the frozen finite grid, and equality of the unprojected persistence measures is not certified.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig2_c2_separation.png}
+\caption{Separation witnesses with $300$ replications per design and sample size. Left: the deterministic W1 holds $H_0^{\mathrm{out}}$ exactly while the expected persistence measure separates, so the two distribution-level procedures have power $1.000$ at every $n$ while the outcome permutation test stays near $\alpha$ and the outcome multiplier is degenerate. Right: W2' holds the expected-measure null in law while the outcome-level tests gain power; the distribution-level permutation curve stays near $\alpha$.}
+\label{fig:separation}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.4cm}cccc}
+\toprule
+Witness & Mean-silhouette gap & Expected-measure L1 & Squared MMD & Balanced root-MMD \\
+\midrule
+W1 (split, $H_0^{\mathrm{out}}$ true exactly; $H_0^{\mathrm{dist}}$ false) & $0$ (machine zero) & $2.460375$ & $1.916989$ & n/a \\
+W2' (multiplicity mixture, $H_0^{\mathrm{dist}}$ true; $H_0^{\mathrm{out}}$ false) & $0.544$ & $0$ & $0.398762$ & $0.631476$ \\
+\bottomrule
+\end{tabular}
+\caption{Exact witness values from finitely supported laws, computed in exact arithmetic with no Monte Carlo. The pairing is the default normalized-silhouette and expected-measure pairing at weight $r=3$. W1 has the outcome-level null true exactly while the finite-grid distribution-level null is false; W2' reverses this. The two nulls are logically independent under this pairing, the MMD pairing is strictly stronger in the nested direction, and the balanced root-MMD is reported for the balanced version of W2'. The deterministic W1 here is the separation witness; the stochastic W1 power design of Section~\ref{sec:exp:weaknull} is a different, stochastic counterpart and is not used as evidence of separation.}
+\label{tab:witnesses}
+\end{table}
+\subsection{Weak-null calibration of the distribution-level test}
+\label{sec:exp:weaknull}
+
+The distribution-level test targets $H_0^{\mathrm{dist,grid}}$, the weak expected-measure null on the frozen grid, for which the sharp null of identical unit-level laws is a strict subset. The calibration fleet uses $500$ replications per size cell and $300$ per local-power cell, the cell record is summarized below with the frozen contract described in the design subsection and printed in full, with per-cell standard errors, in Table~\ref{tab:weaknull} of the appendix, and Figure~\ref{fig:calibration} shows the size and power curves. W2' and confounded $r=0$ cells are in band at every sample size, reading $0.042$ to $0.070$ and $0.046$ to $0.076$; the intermediate-confounding cells range from $0.050$ to $0.094$.
+
+The strict pre-registered gate, which applies to the gating cells with $n \ge 200$, fails in exactly one cell: under strong confounding ($r=1.0$) at $n=200$ the studentized max-$t$ rejects at $0.096$ with a standard error of $0.013$, about $1.2$ standard errors above the upper edge of the band. The same design reads $0.066$ at $n=500$, and the remaining strong-confounding cells read $0.154$ at $n=50$ and $0.090$ at $n=100$. The matching sharp null is in band from $n=100$ onward ($0.056$, $0.072$, $0.058$) and reads $0.118$ at $n=50$. The operating recommendation is therefore differentiated: $n \ge 500$ under the strongest tested confounding, and $n \ge 200$ for the other tested weak-null designs, with no claim of finite-sample or uniform weak-null control. Power against the stochastic W1 power design is $0.996$ at $n=50$ and $1.000$ at $n \ge 100$, and the local-mixture curve rises from $0.033$ at weight $0$ to $0.380$, $0.997$, and $1.000$ at weights $0.25$, $0.5$, and $0.75$, so the size qualification is not a blanket loss of power.
+
+The frozen relabeling diagnostics are reported as diagnostics only. Under strong confounding at $r=1.0$ the frozen label permutation rejects at $0.198$, $0.208$, $0.220$, and $0.228$ at $n=50$ through $500$, and the studentized stratified permutation at $0.228$, $0.244$, $0.214$, and $0.248$; these rates are witnesses that the exchangeability law of the relabeling does not match the weak-null sampling law when nuisances are frozen, and they are not size claims. Under the sharp null the permutation and multiplier paths agree empirically from $n=100$ onward, which supports the permutation as a diagnostic while the studentized multiplier remains the production calibration, empirically only and without an exact finite-sample guarantee. The Rademacher multiplier path reads $0.106$ against the Gaussian path's $0.056$ at $n=50$ and is retained as a diagnostic rather than treated as interchangeable with the Gaussian multiplier.
+
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lcccc}
+\toprule
+\multicolumn{5}{@{}p{15.3cm}@{}}{\textbf{Weak-null cell record, null tested: $H_0^{\mathrm{dist,grid}}$, rate (MC SE), $500$ replications per cell, band $[0.03,0.08]$}} \\
+\midrule
+Design & $n=50$ & $n=100$ & $n=200$ & $n=500$ \\
+\midrule
+W2' (no covariates) & 0.056 (0.010) & 0.058 (0.011) & 0.070 (0.011) & 0.042 (0.009) \\
+Confounded $r=0.0$ & 0.076 (0.012) & 0.046 (0.009) & 0.054 (0.010) & 0.058 (0.011) \\
+Confounded $r=0.5$ & 0.094 (0.013) & 0.058 (0.011) & 0.050 (0.010) & 0.050 (0.010) \\
+Confounded $r=1.0$ & 0.154 (0.016) & 0.090 (0.013) & \textbf{0.096 (0.013)} & 0.066 (0.011) \\
+Sharp null, $r=1.0$ & 0.118 (0.014) & 0.056 (0.010) & 0.072 (0.012) & 0.058 (0.011) \\
+\midrule
+\multicolumn{5}{@{}p{15.3cm}@{}}{\emph{Frozen permutation diagnostic, $r=1.0$: 0.198 (0.018), 0.208 (0.018), 0.220 (0.019), 0.228 (0.019); diagnostic only}} \\
+\multicolumn{5}{@{}p{15.3cm}@{}}{\emph{Stratified permutation diagnostic, $r=1.0$: 0.228 (0.019), 0.244 (0.019), 0.214 (0.018), 0.248 (0.019); diagnostic only}} \\
+\midrule
+\multicolumn{5}{@{}p{15.3cm}@{}}{Power against stochastic W1 ($H_0^{\mathrm{dist,grid}}$ false): 0.996 at $n=50$, 1.000 at $n \ge 100$ (MC SE $\le 0.003$)} \\
+\multicolumn{5}{@{}p{15.3cm}@{}}{Local mixture at $n=200$ ($300$ replications per cell): 0.033, 0.380, 0.997, 1.000, 1.000 at weights $0,0.25,0.5,0.75,1.0$ (MC SE $\le 0.028$)} \\
+\midrule
+\multicolumn{5}{@{}p{15.3cm}@{}}{\emph{The bold entry is the single strict-gate failure; the same strong-confounding design is in band at $n=500$ ($0.066$).}} \\
+\multicolumn{5}{@{}p{15.3cm}@{}}{\emph{The sharp-null rows are a strict subset of $H_0^{\mathrm{dist,grid}}$; the permutation rows are exchangeability-failure witnesses and carry no size claim.}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig3_calibration_scope.png}
+\caption{Weak-null calibration of the distribution-level test, nominal $\alpha=0.05$. Panel (a) shows size under the weak expected-measure null $H_0^{\mathrm{dist,grid}}$ for the tested designs and sample sizes; the shaded band is the pre-registered $[0.03,0.08]$ region. Panel (b) shows power against the stochastic W1 power design (a stochastic counterpart of the deterministic separation witness), and panel (c) shows power on the local mixture as the mixture weight varies. The bold cell in the cell record, strong confounding at $n=200$ ($0.096$), is visible as the upper excursion of the strongest-confounding curve; the same design is in band at $n=500$.}
+\label{fig:calibration}
+\end{figure}
+
+\subsection{Replicated-cloud bake-off}
+\label{sec:exp:bakeoff}
+
+The bake-off evaluates all procedures on the replicated-cloud panel across five alternative families plus a no-effect panel, three imbalance levels, and $n \in \{50,100,200\}$ at $100$ replications per cell, with $500$-replication tightenings on four decision-relevant cells. Table~\ref{tab:bakeoff-size} reports size at $n=200$ under randomization and under strong imbalance; Figure~\ref{fig:bakeoff} shows the full grid; Table~\ref{tab:winslosses} records the named wins and losses.
+
+Under randomization every procedure holds size at $n=200$, with rates between $0.020$ and $0.070$. Under strong imbalance the six $H_0^{\mathrm{cond}}$ tests reject at $0.430$ (Fr\'echet ANOVA) to $0.950$ (kernel MMD and Han et al.), whereas the adjusted outcome multiplier reads $0.030$ (standard error $0.017$), the frozen permutation $0.000$, the distribution-level max-$t$ $0.060$ (standard error $0.024$), and the distribution-level MMD $0.020$ (standard error $0.014$). This reproduces the imbalance sweep's false-positive finding inside the bake-off. Two flags are reported: the outcome multiplier reads $0.120$ (standard error $0.032$) at strong imbalance and $n=100$, about one standard error above the band and consistent with the small-sample strong-confounding wobble of the distribution-level calibration, and the frozen permutation reads $0.000$ at strong imbalance and $n=200$, which is conservative, not anti-conservative.
+
+The losses come first. At small $n$ and under randomization the adjusted outcome tests lose to the unadjusted procedures on a gross mean shift: at $n=50$ the outcome multiplier reads $0.110$ (standard error $0.031$) and the permutation $0.090$ (standard error $0.029$) against $0.800$ for Robinson--Turner and $1.000$ for STRAND, kernel MMD, and Han et al.; at $n=100$ the outcome multiplier reads $0.450$ (standard error $0.050$) against $1.000$ for the same group. The full-stage tightenings confirm the losses under confounding: the outcome multiplier reads $0.212$ (standard error $0.018$) at strong imbalance and $n=50$ and $0.332$ (standard error $0.021$) at $n=100$, against $0.900$ and $0.996$ for STRAND. Under confounding those competitor rates mix signal with size distortion and are not like-for-like power; they are reported descriptively. The permutation path additionally trails the multiplier under strong confounding, reading $0.360$ (standard error $0.048$) against $0.760$ (standard error $0.043$) at $n=200$, and it remains the conservative second calibration rather than the primary one. Han et al.\ win their turf on the faint rare-feature signal under mild confounding at $n=200$, reading $0.890$ (standard error $0.031$) against $0.390$ (standard error $0.049$) for the outcome multiplier, and the paper does not claim to beat the minimax-optimal intensity test on a faint intensity signal.
+
+The wins are equally specific. The distribution-level max-$t$ is the most uniformly powerful of the distribution-level readouts on this panel: it reads $0.998$ to $1.000$ on the stochastic-split family, $1.000$ on the dispersion family, and $1.000$ on the mean-shift family at $n=200$, and $0.770$ to $0.940$ on the rare-feature family at $n=200$. On the deterministic separation witness the studentized max-$t$ is undefined because the AIPW scores are exactly constant, and the simulation pipeline correctly refuses it; the defined distribution-level readouts there are the L1 diagnostic and the kernel MMD, both $1.000$. On the rare-feature signal under randomization at $n=200$ it reads $0.940$ (standard error $0.024$) and the outcome tests read $0.530$ (standard error $0.050$) and $0.480$ (standard error $0.050$), against $0.400$ (standard error $0.049$) for the best $H_0^{\mathrm{cond}}$ competitor, Robinson--Turner. The secondary distribution-level MMD is blind to the rare feature, reading $0.020$ to $0.070$ across the grid (the largest value occurs under mild confounding at $n=100$), and is reported as a secondary-method loss rather than a failure of the distribution-level target. On the dispersion family Krebs--Rademacher holds its own target at $0.930$ (standard error $0.026$) at $n=50$ and $1.000$ (standard error $0.000$) at $n=200$, while STRAND is weak on the same alternative at $0.090$ (standard error $0.029$) and $0.230$ (standard error $0.042$); symmetrically, STRAND is blind to the deterministic split at $0.000$ where the $H_0^{\mathrm{cond}}$ tests fire at $1.000$ for their own null. The deterministic witness also isolates the separation the paper is built on: with $H_0^{\mathrm{out}}$ true, the frozen outcome permutation holds $0.040$ (standard error $0.020$) at $n=200$ and $0.010$ (standard error $0.010$) at $n=500$, the outcome multiplier reads $0.000$, and the L1 diagnostic and kernel MMD read $1.000$. The stochastic-split column saturates for all procedures except the outcome permutation at strong imbalance and $n=200$, where the full-stage record reads $0.746$ (standard error $0.019$) against $0.972$ (standard error $0.007$) for the multiplier.
+
+The equivalence declaration is scoped rather than general. Under the null at $n=200$ it declares equivalence at $0.970$ (standard error $0.017$) under randomization, $0.890$ (standard error $0.031$) under mild imbalance, and $0.650$ (standard error $0.048$) under strong imbalance, and at $n=50$ it reads $0.000$ to $0.010$ because the margin of $0.25$ is unreachable at that sample size. It therefore supports a sameness certification only at $n \ge 200$ under randomization or mild imbalance, never at $n=50$ and not under strong confounding.
+
+Cost and memory are measured, not modelled. At $n=200$ the mean per-replication wall time is $17.5$ seconds for Han et al., $10.9$ seconds for Robinson--Turner, and $48.6$ seconds for the distribution-level MMD, while the adjusted outcome cross-fit costs $11.2$ to $11.7$ seconds and is flat over $n=50$ to $200$ because the silhouette regression dominates. Every calibration step after the fits is on the order of milliseconds, with the distribution-level max-$t$ calibration at $0.66$ seconds. A single sequential replication at $n=200$ peaks at $1548$ megabytes of resident memory and runs in $48.95$ seconds. Those measurements are why coarse $n=500$ coverage for the full loops-cloud families was deferred (about $284$ seconds per replication sequential, an estimated $8$ to $11$ hours at sixteen workers) and why the strong-imbalance mean-shift cell at $n=200$ was deferred as a run of over two hours; the only $n=500$ bake-off evidence is the deterministic-witness pilot, and this coverage limit is not repaired by any claim.
+
+The robustness panel ($100$ replications, $n=100$) reports four design perturbations under the null. Uniform outliers on $10\%$ of units leave every procedure in band, with the adjusted outcome multiplier at $0.090$ (standard error $0.029$), the permutation at $0.040$ (standard error $0.020$), and the distribution-level max-$t$ at $0.020$ (standard error $0.014$) against $H_0^{\mathrm{cond}}$ rates of $0.040$ to $0.090$. Heavy-tailed loop counts leave every procedure in band with rates at or below $0.040$. Arm-confounded cloud cardinality, by contrast, rejects at $1.000$ in every column including the adjusted and distribution-level procedures: cloud cardinality is itself part of the diagram signal, so an arm-confounded point count is a confounded contrast rather than power, and the design instruction is to equalise it or treat size as part of the treatment. The both-nuisances-misspecified control at $n=100$ leaves the adjusted procedures at $0.080$ and $0.090$ and fails to separate them from luck; it is reported as an uninformative negative control, not as evidence for or against the adjustment. This panel is distinct from the outcome-level stress battery's both-misspecified cell, which reads $0.00$ (multiplier) and $0.00$ (permutation) at $n=100$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig4_bakeoff.png}
+\caption{Bake-off rejection rates at $n=200$ by alternative family and imbalance strength, with $100$ replications and bars of $\pm 2$ Monte Carlo standard errors. The null tested by each curve is printed in the legend and in the panel titles: the outcome multiplier tests $H_0^{\mathrm{out}}$, the distribution-level max-$t$ and MMD test the two distribution-level nulls, and the unadjusted curves test $H_0^{\mathrm{cond}}$. Under strong imbalance the unadjusted curves on the no-effect panel measure size distortion, not power.}
+\label{fig:bakeoff}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{5.6cm}cc}
+\toprule
+Null tested & Procedure & Randomized ($\lambda=0$) & Strong imbalance ($\lambda=1.0$) \\
+\midrule
+$H_0^{\mathrm{cond}}$ & Robinson--Turner & 0.040 (0.020) & 0.840 (0.037) \\
+$H_0^{\mathrm{cond}}$ & Kernel MMD & 0.020 (0.014) & 0.950 (0.022) \\
+$H_0^{\mathrm{cond}}$ & Han et al. & 0.030 (0.017) & 0.950 (0.022) \\
+$H_0^{\mathrm{cond}}$ & STRAND & 0.050 (0.022) & 0.940 (0.024) \\
+$H_0^{\mathrm{cond}}$ & Moon--Lazar & 0.040 (0.020) & 0.700 (0.046) \\
+$H_0^{\mathrm{cond}}$ & Fr\'echet ANOVA & 0.040 (0.020) & 0.430 (0.050) \\
+\midrule
+$H_0^{\mathrm{disp}}$ & Krebs--Rademacher & 0.020 (0.014) & 0.180 (0.038) \\
+\midrule
+$H_0^{\mathrm{out}}$ & Outcome multiplier & 0.070 (0.026) & 0.030 (0.017) \\
+$H_0^{\mathrm{out}}$ & Outcome permutation & 0.060 (0.024) & 0.000 (0.000) \\
+$H_0^{\mathrm{dist,grid}}$ & Distribution-level max-$t$ & 0.030 (0.017) & 0.060 (0.024) \\
+$H_0^{\mathrm{dist}}$ (kernel) & Distribution-level MMD & 0.050 (0.022) & 0.020 (0.014) \\
+\midrule
+$H_0^{\mathrm{equiv}}$ & Equivalence declaration (rejection declares equivalence) & 0.970 (0.017) & 0.650 (0.048) \\
+\bottomrule
+\end{tabular}
+\caption{Null-family size in the bake-off at $n=200$, $100$ replications per cell, nominal $\alpha=0.05$. Each row names the null it tests. Under randomization all procedures hold size because $H_0^{\mathrm{cond}}$ implies $H_0^{\mathrm{out}}$ there (the converse fails in general); under strong imbalance the six $H_0^{\mathrm{cond}}$ rows measure rejection of a conditional null that is false in composition, while the adjusted and distribution-level rows measure size against their own targets. The permutation row is conservative, not anti-conservative; the equivalence row is a declaration rate under the non-equivalence null, so higher is sameness, not type-I error. The Krebs--Rademacher row tests $H_0^{\mathrm{disp}}$, equality of the arm-conditional loop-count (dispersion) laws.}
+\label{tab:bakeoff-size}
+\end{table}
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{p{3.6cm}p{1.0cm}p{3.9cm}p{3.6cm}p{2.6cm}}
+\toprule
+Setting (null tested) & Reps & Target procedure(s), rate (SE) & Named comparator(s), rate (SE) & Read \\
+\midrule
+Mean shift, randomized, $n=50$ ($H_0^{\mathrm{cond}}\Rightarrow H_0^{\mathrm{out}}$) & 100 & multiplier 0.110 (0.031); permutation 0.090 (0.029) & RT 0.800 (0.040); STRAND, MMD, Han 1.000 (0.000) & Loss at small $n$ \\
+Mean shift, randomized, $n=100$ & 100 & multiplier 0.450 (0.050); permutation 0.280 (0.045) & same group 1.000 (0.000) & Loss at small $n$ \\
+Mean shift, strong, $n=50$ & 500 & multiplier 0.212 (0.018); permutation 0.120 (0.015) & STRAND 0.900 (0.013); Han 0.802 (0.018) & Loss, descriptive under confounding \\
+Mean shift, strong, $n=100$ & 500 & multiplier 0.332 (0.021); permutation 0.144 (0.016) & STRAND 0.996 (0.003); Han 0.992 (0.004) & Loss, descriptive under confounding \\
+Mean shift, randomized, $n=200$ & 100 & multiplier 0.990 (0.010); max-$t$ 1.000 (0.000) & $H_0^{\mathrm{cond}}$ group 1.000 (0.000) & Catch-up at $n=200$ \\
+Dispersion, randomized, $n=50$ and $n=200$ & 100 & max-$t$ 1.000 (0.000); multiplier 0.970 (0.017) at $n=50$, 1.000 (0.000) at $n=200$ & KR 0.930 (0.026), 1.000 (0.000, own dispersion null); STRAND 0.090 (0.029), 0.230 (0.042) & KR holds its turf; STRAND weak \\
+Stochastic split, strong, $n=200$ (full stage) & 500 & max-$t$ 0.998 (0.002); multiplier 0.972 (0.007); permutation 0.746 (0.019) & $H_0^{\mathrm{cond}}$ group 1.000 (0.000) & Permutation trails the multiplier \\
+Deterministic split, randomized, $n=200$ ($H_0^{\mathrm{out}}$ true) & 100 & permutation 0.040 (0.020); multiplier 0.000 (0.000); distribution-level L1 diagnostic and kernel MMD 1.000 (0.000) & STRAND 0.000 (0.000); RT, kernel MMD, Han, Moon 1.000 (0.000) for $H_0^{\mathrm{cond}}$; Fr\'echet 0.570 (0.050) & Separation; STRAND blind; max-$t$ undefined \\
+Rare feature, randomized, $n=200$ & 100 & max-$t$ 0.940 (0.024); multiplier 0.530 (0.050); permutation 0.480 (0.050) & best $H_0^{\mathrm{cond}}$, RT 0.400 (0.049); dist-level MMD 0.060 (0.024) & Win on subtle signal; secondary MMD blind \\
+Rare feature, mild, $n=200$ & 100 & multiplier 0.390 (0.049); permutation 0.380 (0.049) & Han 0.890 (0.031) & Han wins its turf \\
+Equivalence, $n=200$ (and $n=50$) & 100 & declaration 0.970 (0.017) randomized, 0.890 (0.031) mild, 0.650 (0.048) strong; 0.000 to 0.010 at $n=50$ & none & Scope: $n \ge 200$ randomized or mild only \\
+\bottomrule
+\end{tabular}
+\caption{Named wins and losses in the bake-off. Every row names the null tested. Randomized rows are target-matched because $H_0^{\mathrm{cond}}$ implies $H_0^{\mathrm{out}}$ there and the converse fails in general; confounded rows are descriptive, their comparator rates mixing signal with size distortion (Table~\ref{tab:bakeoff-size}), and are not cross-null efficiency statements. Rows flagged ``full stage'' print the $500$-replication tightened estimate with its Monte Carlo standard error, which replaces the coarse $100$-replication estimate. On the deterministic split the studentized max-$t$ is undefined because the AIPW scores are exactly constant, and the distribution-level readouts there are the L1 diagnostic and the kernel MMD. The deterministic-split row is separation evidence: the outcome null holds while the distribution-level target moves, so the unadjusted rejections are correct for their own conditional null. ``Declaration'' is the equivalence rejection rate under the non-equivalence null, so higher is a sameness statement.}
+\label{tab:winslosses}
+\end{table}
+
+\subsection{Local-power record}
+\label{sec:exp:localpower}
+
+The local-power program is reported with its recorded pre-registered mismatch intact. The oracle harness uses a Pitman shift of order $n^{-1/2}g$ for three shift directions (a mean shift, a bump shift, and a frequency shift), crossed with a prognostic and a non-prognostic nuisance variant (prognostic means the outcome regression depends on the covariates; the non-prognostic variant removes that dependence), at $n \in \{100,200,500\}$, with $300$ replications in each core cell and a pre-registered tolerance of $0.06$ on the gap between the empirical rate and a Gaussian-shift prediction from the pooled centered-score covariance ($20{,}000$ draws). Figure~\ref{fig:localpower} shows the empirical and predicted curves, and Table~\ref{tab:localpower} records every criterion.
+
+At $n=500$ five of the six adjusted cells match the naive prediction within $0.06$: the non-prognostic mean cell reads $0.623$ against $0.628$, bump $0.397$ against $0.410$, and frequency $0.917$ against $0.867$; the prognostic mean reads $0.410$ against $0.450$ and bump $0.277$ against $0.285$. The prognostic frequency cell misses at $0.730$ against $0.628$, a gap of $+0.102$ with a Monte Carlo standard error of $0.026$, and this is the recorded headline mismatch. A separate valid-regime cell on the unadjusted statistic misses marginally at $+0.064$ on a partial run, and the null cells at $n=200$ confirm the predicted bias break. A completed full-fleet validator, which scores only the naive prediction, records $51$ scored rows, $9$ over the $0.06$ tolerance, $17$ beyond two standard errors, a maximum absolute gap of $0.275$, and a verdict of \texttt{confirmed=false}. The pre-registered gate therefore remains failed, and no sentence in this paper describes the local-power program as numerically confirmed.
+
+A finite-sample correction has been derived and is reported separately, with its limits. The mechanism is an out-of-span truncation of the drift times an estimated propensity mean ratio, $g_{\mathrm{eff}} = g + \kappa_n\,(g - P_K g)$, with the basis enlarged to seven Fourier terms. The mechanism experiment removes the out-of-span fraction ($0.998$ to $0$), returns the projected score to the oracle value ($5.01$ against $4.99$), and moves the headline gap from $+0.102$ to $-0.053$, with other corrected gaps of $-0.019$, $-0.041$, $-0.022$, and $-0.043$; an $n=100$ frequency edge reads $+0.068$ and a stress setting at triple propensity scale reads $+0.157$. The correction is a finite-n expansion, not an asymptotic theorem, its mean-ratio rate is not proved, and the full-fleet validator does not apply it. The exact-ARE design record completes the picture: under the non-prognostic design the adjusted power sits below the unadjusted test at $n=200$ ($0.563$ against $0.753$) and $n=500$ ($0.567$ against $0.707$), with mean gaps of $0.14$ to $0.19$, so the asymptotic efficiency statement does not translate into finite-sample power parity. That record is reported as open, not validated.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{fig5_local_power.png}
+\caption{Local-power record. Panel (a) shows size under the global null at $n=200$. Panel (b) shows power against sample size for the prognostic, confounded variant, with the adjusted multiplier and the unadjusted statistic along with their Gaussian-shift predictions. Panel (c) shows the prognostic, randomized variant, and panel (d) plots empirical against predicted power for all cells, where the visible departures from the diagonal include the recorded mismatch. The null tested is $H_0^{\mathrm{out}}$ for the adjusted statistic and the corresponding unadjusted null for the baseline.}
+\label{fig:localpower}
+\end{figure}
+
+\clearpage
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{1.9cm}}
+\toprule
+Criterion (scope, null) & Pre-registered rule & Recorded outcome & Corrected outcome & Status \\
+\midrule
+Naive Gaussian-shift screen, six core cells at $n=500$ ($H_0^{\mathrm{out}}$) & all six within $0.06$ & five within; prognostic frequency $0.730$ against $0.628$, gap $+0.102$ ($300$ reps, MC SE $0.026$) & corrected prediction $0.783$, gap $-0.053$ (mean-ratio estimate $0.138$, probe SE $0.021$ to $0.034$) & Pre-registered rule fails; corrected rule passes \\
+Completed full fleet, all scored rows ($H_0^{\mathrm{out}}$) & flag at $2$ SE or $0.06$ & $51$ scored, $9$ over $0.06$, $17$ beyond $2$ SE, max $|$gap$|$ $0.275$ & correction not applied by the validator & \texttt{confirmed=}\allowbreak\texttt{false} \\
+Truncation mechanism, basis enlarged to $K=7$ ($H_0^{\mathrm{out}}$) & remove the out-of-span fraction & fraction $0.998$ to $0$; projection $5.01$ against oracle $4.99$ & not applicable & Finite-n expansion; mean-ratio rate unproved \\
+Exact-ARE design, non-prognostic cells at $n=200$ and $n=500$ ($H_0^{\mathrm{out}}$) & parity with the unadjusted test under ARE $=1$ & adjusted $0.563$ against $0.753$ at $n=200$; $0.567$ against $0.707$ at $n=500$; mean gaps $0.14$ to $0.19$ ($300$ reps, MC SE $0.028$ to $0.029$) & not applicable & Open; no numerical confirmation claimed \\
+\bottomrule
+\end{tabular}
+\caption{Local-power criterion record. The pre-registered criteria and the post-hoc corrected expansion are reported side by side under their own labels; the completed-fleet validator scores only the naive prediction, so its verdict and the corrected-gap calculation answer different questions. The null tested is $H_0^{\mathrm{out}}$ in every row, with the unadjusted baseline defined by the comparison statistic's own null. No entry supports the wording ``numerically confirmed'' or a gate pass.}
+\label{tab:localpower}
+\end{table}
+
+\subsection{Decision table}
+\label{sec:exp:decision}
+
+Table~\ref{tab:decision} translates the bake-off into operating guidance. Each row names the sampling situation and the null that the recommended procedure actually tests, so procedure and target are chosen together rather than conflated. The first rows route gross mean shifts to the unadjusted tests and confounding or law-level questions to the adjusted and distribution-level targets, the middle rows hand specific signals to the procedures whose targets match them, the sixth scopes the equivalence declaration, and the last two state design limits that no test repairs.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.3cm}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{5.0cm}}
+\toprule
+Situation & Use & Null actually tested \\
+\midrule
+Replicated clouds, randomized groups, gross mean shift, $n \le 100$ & STRAND or Han/MMD; adjusted test as sensitivity & $H_0^{\mathrm{cond}}$, which implies $H_0^{\mathrm{out}}$ under randomization \\
+Replicated clouds with suspected covariate imbalance & Outcome multiplier (primary) plus distribution-level max-$t$ & $H_0^{\mathrm{out}}$ and $H_0^{\mathrm{dist,grid}}$ on the frozen grid \\
+Question is the interventional law, not the mean (split, merge, multiplicity) & Distribution-level max-$t$ (headline) plus distribution-level MMD (secondary) & $H_0^{\mathrm{dist,grid}}$ on the frozen grid, and $H_0^{\mathrm{dist}}$ in the kernel metric \\
+Faint or diffuse intensity signal, randomized & Han et al.\ on its own target; no adjusted win expected & $H_0^{\mathrm{cond}}$ \\
+Dispersion or scale question & Krebs--Rademacher plus Robinson--Turner and kernel MMD alongside; STRAND likely misses & $H_0^{\mathrm{disp}}$ and $H_0^{\mathrm{cond}}$ \\
+Need to certify sameness & Equivalence declaration at margin $0.25$, $n \ge 200$, randomized or mild only & $H_0^{\mathrm{equiv}}$ (non-equivalence null; rejection declares equivalence) \\
+Fewer than three clouds, no replication & No procedure here is validated; replicated units are required & Not covered by this design \\
+Cloud sizes differ by arm & Fix the design first; equalise cloud size & No test survives an arm-confounded cardinality \\
+\bottomrule
+\end{tabular}
+\caption{Decision table from the sampling unit upward. Every row names the null tested, and no row is a cross-null ranking. The unreplicated and arm-confounded cases are scope limits, not recommendations.}
+\label{tab:decision}
+\end{table}
+

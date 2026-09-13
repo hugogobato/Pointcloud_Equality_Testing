@@ -368,12 +368,12 @@ def figure(separation: str | None = None, reverse: str | None = None,
                      "witnesses: under candidate (ii) H0^dist is strictly "
                      "stronger, so no reverse case exists there.")}
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.6), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(10.0, 4.3), sharey=True)
     styles = [
-        ("outcome_permutation", "o-", "#c0392b", "outcome-level (permutation)"),
-        ("outcome_multiplier", "s--", "#e67e22", "outcome-level (multiplier)"),
-        ("dist_permutation", "^-", "#2980b9", "dist-level: expected measure"),
-        ("mmd_permutation", "d-.", "#27ae60", "dist-level: universal-kernel MMD"),
+        ("outcome_permutation", "o-", "#D55E00", "outcome-level (permutation)"),
+        ("outcome_multiplier", "s--", "#E69F00", "outcome-level (multiplier)"),
+        ("dist_permutation", "^-", "#0072B2", "dist-level: expected measure"),
+        ("mmd_permutation", "d-.", "#009E73", "dist-level: universal-kernel MMD"),
     ]
     titles = {
         "separation": "W1: H$_0^{out}$ true, H$_0^{dist}$ false\n"
@@ -385,21 +385,24 @@ def figure(separation: str | None = None, reverse: str | None = None,
         rows = sorted(payload["rows"], key=lambda r: r["n"])
         ns = [r["n"] for r in rows]
         for name, fmt, color, label in styles:
-            ax.plot(ns, [r[f"{name}_rejection_rate"] for r in rows], fmt,
-                    color=color, label=label, markersize=5)
+            rates = np.array([r[f"{name}_rejection_rate"] for r in rows])
+            mc_se = np.array([r[f"{name}_mc_se"] for r in rows])
+            ax.errorbar(ns, rates, yerr=2 * mc_se, fmt=fmt, color=color,
+                        label=label, markersize=4.5, capsize=2,
+                        elinewidth=0.7)
         ax.axhline(ALPHA, color="0.45", ls=":", lw=1)
-        ax.text(ns[-1], ALPHA + 0.012, r"$\alpha=0.05$", ha="right", fontsize=8,
+        ax.text(ns[-1], ALPHA + 0.012, r"$\alpha=0.05$", ha="right", fontsize=8.5,
                 color="0.3")
-        ax.set_xlabel("clouds per group $n/2$")
+        ax.set_xlabel("total clouds $n$ ($n/2$ per arm)")
         ax.set_ylim(-0.03, 1.03)
-        ax.set_title(titles[design], fontsize=9)
+        ax.set_title(titles[design], fontsize=9.5)
         ax.grid(alpha=0.3)
     axes[0].set_ylabel("empirical rejection rate")
-    axes[0].legend(fontsize=7.5, loc="upper left")
+    axes[0].legend(fontsize=9.5, loc="upper left", framealpha=0.9)
     fig.tight_layout()
     if output is None:
         output = os.path.join(RESULTS, "phase4_figure.png")
-    fig.savefig(output, dpi=150)
+    fig.savefig(output, dpi=200)
     plt.close(fig)
     fig_json = os.path.join(RESULTS, "phase4_figure.json")
     with open(fig_json, "w") as fh:

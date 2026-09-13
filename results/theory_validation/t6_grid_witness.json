@@ -1,0 +1,25 @@
+{
+ "diagram_1": [
+  [
+   0.1,
+   0.45999999999999996
+  ]
+ ],
+ "diagram_2": [
+  [
+   0.12000000000000001,
+   0.48
+  ]
+ ],
+ "persistence": 0.36,
+ "weight": 0.046655999999999996,
+ "grid_bin_birth": 1,
+ "grid_bin_mid": 4,
+ "projected_vectors_equal": true,
+ "projected_l1": 0.0,
+ "tv_distance_between_measures": 0.09331199999999999,
+ "tv_convention": "unnormalised total variation, 2*w for the two one-atom measures; the normalised TV distance between the one-atom probability measures is w",
+ "tv_distance_normalised": 0.046655999999999996,
+ "euclidean_atom_displacement": 0.028284271247461874,
+ "note": "bin width = 2/32 = 0.0625; birth drift 0.02 and mid drift 0.02 keep both atoms inside the same (birth, mid) cells"
+}

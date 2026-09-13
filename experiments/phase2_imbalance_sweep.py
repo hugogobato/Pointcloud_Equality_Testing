@@ -417,28 +417,38 @@ def _rates_b(part_b):
     return rates
 
 
-def make_figure(sweep_rates, masking_rates, n_reps):
+PALETTE = ("#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00",
+           "#56B4E9", "#000000")
+
+
+def make_figure(sweep_rates, masking_rates, n_reps, out=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13.5, 5.4))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.0, 4.3))
     tests = list(COMPETITORS) + ["dr"]
     labels = {"rt": "Robinson-Turner", "mmd": "MMD", "han": "Han et al.",
               "strand": "STRAND", "moon_lazar": "Moon-Lazar",
               "frechet_anova": "Frechet ANOVA", "dr": "DR prototype"}
     lam_keys = [f"lam{lam:g}" for lam in LAMBDAS]
     xs = np.arange(len(lam_keys))
-    for t in tests:
-        ax1.plot(xs, [sweep_rates[t][k] for k in lam_keys], marker="o",
-                 ms=4, lw=1.4, label=labels[t])
+    for t, color in zip(tests, PALETTE):
+        rates = np.array([sweep_rates[t][k] for k in lam_keys])
+        # per-point MC SE: every curve is a binomial rate over n_reps
+        mc_se = np.sqrt(np.maximum(rates * (1.0 - rates), 0.0)
+                        / max(1, n_reps))
+        ax1.errorbar(xs, rates, yerr=2 * mc_se, marker="o", ms=3.5, lw=1.3,
+                     color=color, capsize=2, elinewidth=0.7,
+                     markeredgecolor="white", markeredgewidth=0.4,
+                     label=labels[t])
     ax1.axhline(ALPHA, color="k", ls="--", lw=0.9)
     # a rejection rate cannot be negative, so clip the band rather than let it
     # run below the axis at small replication counts
     se = np.sqrt(ALPHA * (1 - ALPHA) / max(1, n_reps))
     # annotate at the right edge, above the band: the left edge is where every
     # curve starts at alpha, so a label there sits on top of the data
-    ax1.text(xs[-1], ALPHA + 3 * se + 0.015, r"$\alpha = 0.05$", fontsize=8,
+    ax1.text(xs[-1], ALPHA + 3 * se + 0.015, r"$\alpha = 0.05$", fontsize=9,
              ha="right", va="bottom")
     ax1.fill_between(xs, max(0.0, ALPHA - 3 * se), ALPHA + 3 * se, color="k",
                      alpha=0.12,
@@ -446,15 +456,17 @@ def make_figure(sweep_rates, masking_rates, n_reps):
     ax1.set_xticks(xs, [f"{lam:g}" for lam in LAMBDAS])
     ax1.set_ylim(-0.02, 1.02)
     ax1.set_xlabel("imbalance $\\lambda$ (propensity logit scale)")
-    ax1.set_ylabel("type-I error rate at $\\alpha = 0.05$")
+    ax1.set_ylabel("type-I error rate at $\\alpha = 0.05$, $H_0^{\\mathrm{out}}$ true")
     ax1.set_title("(a) false positives under covariate shift ($\\psi_d \\equiv 0$)")
-    ax1.legend(fontsize=7.5, loc="upper left")
+    ax1.legend(fontsize=9.5, loc="upper left", framealpha=0.9)
     ax1.grid(alpha=0.25)
 
-    y = [masking_rates[t] for t in tests]
-    bars = ax2.bar(np.arange(len(tests)), y, color=["#4477AA"] * 6 + ["#CC6677"])
+    y = np.array([masking_rates[t] for t in tests])
+    mc_se = np.sqrt(np.maximum(y * (1.0 - y), 0.0) / max(1, n_reps))
+    bars = ax2.bar(np.arange(len(tests)), y, color=["#4477AA"] * 6 + ["#CC6677"],
+                   yerr=2 * mc_se, capsize=2, error_kw={"elinewidth": 0.7})
     ax2.axhline(ALPHA, color="k", ls="--", lw=0.9)
-    ax2.set_xticks(np.arange(len(tests)), [labels[t] for t in tests], rotation=28, fontsize=8)
+    ax2.set_xticks(np.arange(len(tests)), [labels[t] for t in tests], rotation=28, fontsize=9)
     ax2.set_ylabel("rejection rate at $\\alpha = 0.05$")
     ax2.set_ylim(0, 1.12)   # headroom for the bar value labels
     ax2.set_title("(b) Simpson masking ($L(D|A{=}1)=L(D|A{=}0)$, $\\psi_d \\neq 0$)")
@@ -462,9 +474,9 @@ def make_figure(sweep_rates, masking_rates, n_reps):
     for b, v in zip(bars, y):
         # clear the alpha line: a near-alpha bar's label lands on it at +0.02
         ax2.text(b.get_x() + b.get_width() / 2, v + 0.045, f"{v:.3f}",
-                 ha="center", fontsize=8)
+                 ha="center", fontsize=9)
     fig.tight_layout()
-    fig.savefig(FIG_PNG, dpi=200)
+    fig.savefig(out or FIG_PNG, dpi=200)
     return fig
 
 
